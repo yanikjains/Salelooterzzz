@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "FkvUPIwqnVlb4yGZBatZI"
+uri = "file://artifacts/salelooterz/public/assets/hero.png"
+type = "image"
+title = "Hero 3D shopping abstract"
+
+[[generated]]
+id = "Imj81ucab1bnaF-7uuExE"
+uri = "file://artifacts/salelooterz/public/assets/product1.png"
+type = "image"
+title = "Gaming laptop neon lit"
+
+[[generated]]
+id = "xtQ1erpPGu48rbpt_6DjT"
+uri = "file://artifacts/salelooterz/public/assets/product2.png"
+type = "image"
+title = "Headphones floating fast"
+
+[[generated]]
+id = "IEiz1pNjjgbhA5yojSf2T"
+uri = "file://artifacts/salelooterz/public/assets/product3.png"
+type = "image"
+title = "Smart watch on pedestal"
