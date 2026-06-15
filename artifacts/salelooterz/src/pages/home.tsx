@@ -48,11 +48,9 @@ function Navbar() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-2xl font-black tracking-tight no-underline"
+        className="no-underline"
       >
-        <span style={{ color: "#ff2d78" }}>Sale</span>
-        <span className="text-white">looter</span>
-        <span style={{ color: "#ff2d78" }}>Z</span>
+        <img src="/assets/logo.jpg" alt="Salelooterz" className="h-10 w-auto rounded-xl object-contain" />
       </motion.a>
 
       <motion.div
@@ -400,33 +398,25 @@ function Founder() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div
-              className="w-72 h-72 md:w-96 md:h-96 rounded-3xl mx-auto lg:mx-0 flex items-center justify-center relative overflow-hidden"
-              style={{ background: "linear-gradient(135deg, #1a0a14, #0f0f1a)" }}
-            >
+            <div className="relative mx-auto lg:mx-0 w-72 md:w-96">
               <div
-                className="absolute inset-0 opacity-20"
-                style={{ background: "radial-gradient(circle at 50% 50%, #ff2d78 0%, transparent 70%)" }}
-              />
-              <div className="relative z-10 text-center">
-                <div
-                  className="w-32 h-32 rounded-full mx-auto mb-4 flex items-center justify-center text-5xl font-black border-4"
-                  style={{ background: "linear-gradient(135deg, #ff2d78, #a855f7)", borderColor: "#ff2d78" + "40" }}
-                >
-                  S
-                </div>
-                <p className="text-white font-bold text-lg">Founder & CEO</p>
-                <p className="text-white/40 text-sm">Salelooterz</p>
+                className="w-72 h-72 md:w-96 md:h-96 rounded-3xl overflow-hidden border-2"
+                style={{ borderColor: "#ff2d78" + "40" }}
+              >
+                <img
+                  src="/assets/founder.jpeg"
+                  alt="Founder of Salelooterz"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div
+                className="absolute -bottom-4 -right-4 bg-[#111] border border-white/10 rounded-2xl px-5 py-3 shadow-xl"
+              >
+                <p className="text-white font-black text-base">The Yanik</p>
+                <p className="text-xs" style={{ color: "#ff2d78" }}>Founder, Salelooterz</p>
               </div>
             </div>
 
-            <div
-              className="absolute -bottom-4 -right-4 lg:right-8 bg-[#111] border border-white/10 rounded-2xl p-4 shadow-xl"
-            >
-              <p className="text-xs text-white/40 mb-1">Community Started</p>
-              <p className="text-white font-black text-lg">2021</p>
-              <p className="text-xs" style={{ color: "#ff2d78" }}>3+ years of saving</p>
-            </div>
           </motion.div>
 
           <motion.div
