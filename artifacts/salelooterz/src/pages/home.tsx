@@ -225,15 +225,14 @@ function Hero() {
 
 function Stats() {
   const stats = [
-    { value: "2.63M+", label: "Active Members" },
-    { value: "500+", label: "Deals Posted Daily" },
+    { value: "2.63M+", label: "& Continuously Growing", growing: true },
     { value: "80%", label: "Avg. Discount Found" },
     { value: "4.9/5", label: "Member Rating" },
   ];
 
   return (
     <section style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)" }} className="py-16">
-      <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
         {stats.map((s, i) => (
           <motion.div
             key={i}
@@ -242,8 +241,21 @@ function Stats() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
           >
-            <div className="text-4xl font-black mb-1" style={{ color: PINK }}>{s.value}</div>
-            <div className="text-sm font-medium" style={{ color: "rgba(0,0,0,0.45)" }}>{s.label}</div>
+            {"growing" in s && s.growing ? (
+              <>
+                <div className="text-4xl font-black mb-1" style={{ color: PINK }}>{s.value}</div>
+                <div className="text-sm font-bold" style={{ color: "#0a0a0a" }}>Active Members</div>
+                <div className="text-xs font-medium mt-0.5 flex items-center justify-center gap-1" style={{ color: "rgba(0,0,0,0.45)" }}>
+                  <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
+                  {s.label}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-4xl font-black mb-1" style={{ color: PINK }}>{s.value}</div>
+                <div className="text-sm font-medium" style={{ color: "rgba(0,0,0,0.45)" }}>{s.label}</div>
+              </>
+            )}
           </motion.div>
         ))}
       </div>
