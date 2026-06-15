@@ -92,11 +92,12 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <div className="w-8 h-8 mb-8 opacity-60">
-            <svg viewBox="0 0 32 32" fill="none">
-              <path d="M16 2C16 2 10 8 10 16C10 20 13 24 16 24C19 24 22 20 22 16C22 8 16 2 16 2Z" fill="#7c3aed" opacity="0.7" />
-              <path d="M16 8C16 8 20 14 20 18C20 20.2 18.2 22 16 22C13.8 22 12 20.2 12 18C12 14 16 8 16 8Z" fill="#a855f7" opacity="0.5" />
-            </svg>
+          <div className="mb-4">
+            <span className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none">
+              <span style={{ color: "#ff2d78" }}>Sale</span>
+              <span className="text-white">looter</span>
+              <span style={{ color: "#ff2d78" }}>Z</span>
+            </span>
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] mb-6 text-white">
