@@ -51,8 +51,22 @@ function Navbar() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4 }}
+        className="flex items-center gap-3 no-underline"
       >
-        <img src="/assets/logo.jpg" alt="Salelooterz" className="h-10 w-auto rounded-xl object-contain" />
+        <img src="/assets/logo.jpg" alt="Salelooterz" className="h-10 w-auto rounded-xl object-contain shrink-0" />
+        <span
+          className="text-2xl font-black tracking-tight leading-none hidden sm:block"
+          style={{
+            background: `linear-gradient(135deg, #0a0a0a 0%, ${PINK} 60%, #a855f7 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            fontStyle: "italic",
+            letterSpacing: "-0.03em",
+          }}
+        >
+          Salelooterz
+        </span>
       </motion.a>
 
       <motion.div
