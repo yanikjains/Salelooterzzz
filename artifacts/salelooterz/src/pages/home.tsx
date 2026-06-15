@@ -55,18 +55,32 @@ function Navbar() {
         <span style={{ color: "#ff2d78" }}>Z</span>
       </motion.a>
 
-      <motion.a
-        href={TELEGRAM_URL}
-        target="_blank"
-        rel="noopener noreferrer"
+      <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center gap-2 border border-white/30 hover:border-white/60 text-white rounded-full px-5 py-2 text-sm font-semibold transition-all hover:bg-white/5"
+        className="flex items-center gap-3"
       >
-        <TelegramIcon />
-        Join Telegram
-      </motion.a>
+        <a
+          href={TELEGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-full px-5 py-2 text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+          style={{ backgroundColor: "#ff2d78" }}
+        >
+          <TelegramIcon />
+          Join Telegram
+        </a>
+        <a
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 border border-white/30 hover:border-white/60 text-white rounded-full px-5 py-2 text-sm font-bold transition-all hover:bg-white/5 active:scale-95"
+        >
+          <WhatsAppIcon />
+          Join WhatsApp
+        </a>
+      </motion.div>
     </header>
   );
 }
