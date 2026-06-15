@@ -55,18 +55,6 @@ function Navbar() {
         <span style={{ color: "#ff2d78" }}>Z</span>
       </motion.a>
 
-      <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/50">
-        {["Deals", "How It Works", "About", "FAQ"].map((item) => (
-          <a
-            key={item}
-            href={`#${item.toLowerCase().replace(/\s/g, "-")}`}
-            className="hover:text-white transition-colors"
-          >
-            {item}
-          </a>
-        ))}
-      </nav>
-
       <motion.a
         href={TELEGRAM_URL}
         target="_blank"
