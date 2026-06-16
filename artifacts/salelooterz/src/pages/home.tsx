@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -23,20 +23,194 @@ function WhatsAppIcon({ size = 18 }: { size?: number }) {
 }
 
 export default function Home() {
+  const [splashDone, setSplashDone] = useState(false);
+
   return (
-    <div className="min-h-screen font-sans" style={{ background: "#f0f0f0", color: "#0a0a0a" }}>
-      <Navbar />
-      <Hero />
-      <Stats />
-      <FeaturedDeals />
-      <HowItWorks />
-      <Founder />
-      <Testimonials />
-      <Categories />
-      <FAQ />
-      <FinalCTA />
-      <Footer />
-    </div>
+    <>
+      <AnimatePresence>
+        {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
+      </AnimatePresence>
+      <motion.div
+        className="min-h-screen font-sans"
+        style={{ background: "#f0f0f0", color: "#0a0a0a" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: splashDone ? 1 : 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Navbar />
+        <Hero />
+        <Stats />
+        <FeaturedDeals />
+        <HowItWorks />
+        <Founder />
+        <Testimonials />
+        <Categories />
+        <FAQ />
+        <FinalCTA />
+        <Footer />
+      </motion.div>
+    </>
+  );
+}
+
+const DEAL_BADGES = [
+  { text: "🔥 50% OFF", color: "#ff2d78", x: "-38%", y: "-30%", rotate: -18, delay: 0.5 },
+  { text: "⚡ Flash Sale", color: "#f59e0b", x: "38%", y: "-28%", rotate: 14, delay: 0.65 },
+  { text: "💸 ₹999 Deal", color: "#10b981", x: "-42%", y: "20%", rotate: -10, delay: 0.8 },
+  { text: "🛍️ Free Shipping", color: "#6366f1", x: "40%", y: "22%", rotate: 12, delay: 0.9 },
+  { text: "🎯 Cashback Alert", color: "#ec4899", x: "0%", y: "-50%", rotate: -4, delay: 0.55 },
+  { text: "🏷️ Price Drop", color: "#0ea5e9", x: "-10%", y: "48%", rotate: 6, delay: 0.75 },
+];
+
+function SplashScreen({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 3200);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  const letters = "Salelooterz".split("");
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+      style={{ background: "#09090b" }}
+      exit={{ y: "-100%", transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] } }}
+    >
+      {/* Radial glow */}
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          background: `radial-gradient(ellipse 70% 55% at 50% 50%, rgba(255,45,120,0.22) 0%, transparent 70%)`,
+        }}
+      />
+
+      {/* Floating particle dots */}
+      {[...Array(18)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: Math.random() * 5 + 2,
+            height: Math.random() * 5 + 2,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            background: [PINK, "#a855f7", "#f59e0b", "#10b981"][i % 4],
+            opacity: 0.5,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.3, 0.8, 0.3],
+          }}
+          transition={{
+            duration: 2 + Math.random() * 2,
+            repeat: Infinity,
+            delay: Math.random() * 1.5,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+
+      <div className="relative flex flex-col items-center select-none">
+        {/* Logo burst */}
+        <motion.div
+          initial={{ scale: 0, rotate: -20, opacity: 0 }}
+          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 280, damping: 18, delay: 0.1 }}
+          className="mb-5 relative"
+        >
+          <motion.div
+            className="absolute inset-0 rounded-2xl blur-2xl"
+            style={{ background: PINK, opacity: 0.5 }}
+            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.25, 0.5] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <img
+            src="/assets/logo.jpg"
+            alt="Salelooterz"
+            className="relative h-24 w-24 rounded-2xl object-contain shadow-2xl"
+          />
+        </motion.div>
+
+        {/* Letter-by-letter brand name */}
+        <div className="flex items-center gap-[2px] mb-3">
+          {letters.map((l, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 30, scale: 0.5 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: 0.35 + i * 0.055,
+              }}
+              className="text-5xl md:text-7xl font-black leading-none"
+              style={{
+                background: `linear-gradient(135deg, #fff 0%, ${PINK} 55%, #a855f7 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                fontStyle: "italic",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              {l}
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
+          className="text-sm md:text-base font-medium tracking-widest uppercase"
+          style={{ color: "rgba(255,255,255,0.45)", letterSpacing: "0.2em" }}
+        >
+          India's #1 Deal Alert Community
+        </motion.p>
+
+        {/* Deal badges flying in */}
+        {DEAL_BADGES.map((b, i) => (
+          <motion.div
+            key={i}
+            className="absolute px-3 py-1.5 rounded-full text-white text-xs font-bold shadow-lg pointer-events-none whitespace-nowrap"
+            style={{
+              background: b.color,
+              left: `calc(50% + ${b.x})`,
+              top: `calc(50% + ${b.y})`,
+              transform: `translate(-50%, -50%) rotate(${b.rotate}deg)`,
+              boxShadow: `0 4px 24px ${b.color}55`,
+            }}
+            initial={{ scale: 0, opacity: 0, rotate: b.rotate - 20 }}
+            animate={{ scale: 1, opacity: 1, rotate: b.rotate }}
+            transition={{ type: "spring", stiffness: 320, damping: 16, delay: b.delay }}
+          >
+            {b.text}
+          </motion.div>
+        ))}
+
+        {/* Loading bar */}
+        <motion.div
+          className="mt-10 h-0.5 rounded-full overflow-hidden"
+          style={{ background: "rgba(255,255,255,0.1)", width: 180 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4 }}
+        >
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: `linear-gradient(90deg, ${PINK}, #a855f7)` }}
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ delay: 1.5, duration: 1.5, ease: "easeInOut" }}
+          />
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }
 
