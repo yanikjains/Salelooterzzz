@@ -33,64 +33,104 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 
-const SPLASH_BADGES = [
-  { text: "🔥 50% OFF",    color: FIRE,      x: "-40%", y: "-32%", rotate: -18, delay: 0.5  },
-  { text: "⚡ Flash Sale", color: "#0284c7", x: "40%",  y: "-28%", rotate: 14,  delay: 0.65 },
-  { text: "💸 ₹999 Deal",  color: GREEN,     x: "-44%", y: "22%",  rotate: -10, delay: 0.8  },
-  { text: "🛍️ Free Ship",  color: "#7c3aed", x: "42%",  y: "24%",  rotate: 12,  delay: 0.9  },
-  { text: "🎯 Cashback",   color: "#db2777", x: "0%",   y: "-52%", rotate: -4,  delay: 0.55 },
-  { text: "🏷️ Price Drop", color: "#0891b2", x: "-8%",  y: "50%",  rotate: 6,   delay: 0.75 },
-];
+// Ease curve used by premium brands for curtain reveals
+const EXPO_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+function MaskedReveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <div style={{ overflow: "hidden" }}>
+      <motion.div
+        initial={{ y: "110%" }}
+        animate={{ y: "0%" }}
+        transition={{ duration: 1, ease: EXPO_EASE, delay }}>
+        {children}
+      </motion.div>
+    </div>
+  );
+}
 
 function SplashScreen({ onDone }: { onDone: () => void }) {
-  useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
-  const letters = "Salelooterz".split("");
+  useEffect(() => { const t = setTimeout(onDone, 3400); return () => clearTimeout(t); }, [onDone]);
+
   return (
-    <motion.div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+    <motion.div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
       style={{ background: "#0a0a0a" }}
-      exit={{ y: "-100%", transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] } }}>
-      <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 70% 55% at 50% 50%, rgba(234,88,12,0.15) 0%, transparent 70%)` }} />
-      <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)`, backgroundSize: "40px 40px" }} />
-      {[...Array(14)].map((_, i) => (
-        <motion.div key={i} className="absolute rounded-full"
-          style={{ width: Math.random() * 4 + 2, height: Math.random() * 4 + 2, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, background: [FIRE, GREEN, "#f59e0b", "#7c3aed"][i % 4], opacity: 0.5 }}
-          animate={{ y: [0, -28, 0], opacity: [0.2, 0.7, 0.2] }}
-          transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 1.5, ease: "easeInOut" }} />
-      ))}
-      <div className="relative flex flex-col items-center select-none">
-        <motion.div initial={{ scale: 0, rotate: -20, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 280, damping: 18, delay: 0.1 }} className="mb-5 relative">
-          <motion.div className="absolute inset-0 rounded-2xl blur-2xl" style={{ background: FIRE, opacity: 0.5 }}
-            animate={{ scale: [1, 1.35, 1], opacity: [0.5, 0.2, 0.5] }} transition={{ duration: 1.8, repeat: Infinity }} />
-          <img src="/assets/logo.jpg" alt="Salelooterz" className="relative h-24 w-24 rounded-2xl object-contain shadow-2xl" />
-        </motion.div>
-        <div className="flex items-center gap-[2px] mb-3">
-          {letters.map((l, i) => (
-            <motion.span key={i} initial={{ opacity: 0, y: 30, scale: 0.5 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.35 + i * 0.055 }}
-              className="text-5xl md:text-7xl font-black leading-none"
-              style={{ background: `linear-gradient(135deg, #fff 0%, ${FIRE} 55%, #f59e0b 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontStyle: "italic", letterSpacing: "-0.03em" }}>
-              {l}
-            </motion.span>
-          ))}
+      exit={{ y: "-100%", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}>
+
+      {/* Top-left corner label */}
+      <motion.div
+        className="absolute top-6 left-8 text-xs font-semibold uppercase tracking-widest"
+        style={{ color: "rgba(255,255,255,0.2)", letterSpacing: "0.18em" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
+        Est. 2021 · India
+      </motion.div>
+
+      {/* Top-right corner label */}
+      <motion.div
+        className="absolute top-6 right-8 text-xs font-semibold uppercase tracking-widest"
+        style={{ color: "rgba(255,255,255,0.2)", letterSpacing: "0.18em" }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
+        2.63M+ Members
+      </motion.div>
+
+      {/* Center content */}
+      <div className="flex flex-col items-center gap-5">
+
+        {/* Logo */}
+        <MaskedReveal delay={0.1}>
+          <motion.img
+            src="/assets/logo.jpg"
+            alt="Salelooterz"
+            className="h-16 w-16 rounded-2xl object-contain"
+            style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
+          />
+        </MaskedReveal>
+
+        {/* Wordmark */}
+        <div className="flex flex-col items-center gap-0">
+          <MaskedReveal delay={0.28}>
+            <h1
+              className="font-black italic uppercase leading-none"
+              style={{
+                fontSize: "clamp(3.5rem, 12vw, 9rem)",
+                color: "#ffffff",
+                letterSpacing: "-0.035em",
+              }}>
+              Salelooterz
+            </h1>
+          </MaskedReveal>
         </div>
-        <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.5 }}
-          className="text-sm font-medium uppercase" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.2em" }}>
-          India's #1 Deal Alert Community
-        </motion.p>
-        {SPLASH_BADGES.map((b, i) => (
-          <motion.div key={i} className="absolute px-3 py-1.5 rounded-full text-white text-xs font-bold pointer-events-none whitespace-nowrap"
-            style={{ background: b.color, left: `calc(50% + ${b.x})`, top: `calc(50% + ${b.y})`, transform: `translate(-50%, -50%) rotate(${b.rotate}deg)`, boxShadow: `0 4px 20px ${b.color}55` }}
-            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 16, delay: b.delay }}>
-            {b.text}
-          </motion.div>
-        ))}
-        <motion.div className="mt-10 h-px rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.1)", width: 180 }}
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}>
-          <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, ${FIRE}, #f59e0b)` }}
-            initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ delay: 1.5, duration: 1.3, ease: "easeInOut" }} />
-        </motion.div>
+
+        {/* Orange rule */}
+        <div style={{ width: "100%", overflow: "hidden", height: 2 }}>
+          <motion.div
+            style={{ height: "100%", background: FIRE, transformOrigin: "left" }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.9, duration: 0.9, ease: EXPO_EASE }}
+          />
+        </div>
+
+        {/* Tagline */}
+        <MaskedReveal delay={1.1}>
+          <p
+            className="text-xs font-semibold uppercase tracking-widest"
+            style={{ color: "rgba(255,255,255,0.35)", letterSpacing: "0.22em" }}>
+            India's #1 Deal Alert Community
+          </p>
+        </MaskedReveal>
+      </div>
+
+      {/* Bottom progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <motion.div
+          className="h-full"
+          style={{ background: FIRE }}
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ delay: 0.4, duration: 2.6, ease: "linear" }}
+        />
       </div>
     </motion.div>
   );
