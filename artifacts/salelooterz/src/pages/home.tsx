@@ -1,20 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
 
-const BG     = "#fafaf9";
-const BG2    = "#f3f2ef";
-const TEXT   = "#0a0a0a";
-const TEXT2  = "#6b7280";
-const FIRE   = "#ea580c";
-const GREEN  = "#16a34a";
-const BORDER = "rgba(0,0,0,0.08)";
+// ── Design tokens ──────────────────────────────────────────────────────────────
+const BG      = "#ffffff";
+const OUTER   = "#fce8ef";      // soft pink outer background (like the reference)
+const YELLOW  = "#f5d742";      // bright yellow for stat cards
+const PURPLE  = "#ede9ff";      // soft purple cards
+const ORANGE  = "#ea580c";      // brand orange
+const GREEN   = "#d1fae5";      // soft green
+const TEXT    = "#0a0a0a";
+const TEXT2   = "#6b7280";
+const BORDER  = "rgba(0,0,0,0.07)";
+const R       = "24px";         // global border radius
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
+// ── Ease ───────────────────────────────────────────────────────────────────────
+const EXPO: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
+// ── Icons ──────────────────────────────────────────────────────────────────────
 function TelegramIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -22,7 +28,6 @@ function TelegramIcon({ size = 16 }: { size?: number }) {
     </svg>
   );
 }
-
 function WhatsAppIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -31,17 +36,13 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-// ─── Splash Screen ────────────────────────────────────────────────────────────
-
-// Ease curve used by premium brands for curtain reveals
-const EXPO_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+// ── Splash ─────────────────────────────────────────────────────────────────────
+const EXPO_EASE: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
 function MaskedReveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
     <div style={{ overflow: "hidden" }}>
-      <motion.div
-        initial={{ y: "110%" }}
-        animate={{ y: "0%" }}
+      <motion.div initial={{ y: "110%" }} animate={{ y: "0%" }}
         transition={{ duration: 1, ease: EXPO_EASE, delay }}>
         {children}
       </motion.div>
@@ -51,510 +52,565 @@ function MaskedReveal({ children, delay = 0 }: { children: React.ReactNode; dela
 
 function SplashScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => { const t = setTimeout(onDone, 3400); return () => clearTimeout(t); }, [onDone]);
-
   return (
-    <motion.div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
+    <motion.div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
       style={{ background: "#0a0a0a" }}
       exit={{ y: "-100%", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}>
-
-      {/* Top-left corner label */}
-      <motion.div
-        className="absolute top-6 left-8 text-xs font-semibold uppercase tracking-widest"
+      <motion.div className="absolute top-6 left-8 text-xs font-semibold uppercase tracking-widest"
         style={{ color: "rgba(255,255,255,0.2)", letterSpacing: "0.18em" }}
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
         Est. 2021 · India
       </motion.div>
-
-      {/* Top-right corner label */}
-      <motion.div
-        className="absolute top-6 right-8 text-xs font-semibold uppercase tracking-widest"
+      <motion.div className="absolute top-6 right-8 text-xs font-semibold uppercase tracking-widest"
         style={{ color: "rgba(255,255,255,0.2)", letterSpacing: "0.18em" }}
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.6 }}>
         2.63M+ Members
       </motion.div>
-
-      {/* Center content */}
       <div className="flex flex-col items-center gap-5">
-
-        {/* Logo */}
         <MaskedReveal delay={0.1}>
-          <motion.img
-            src="/assets/logo.jpg"
-            alt="Salelooterz"
-            className="h-16 w-16 rounded-2xl object-contain"
-            style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
-          />
+          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-16 w-16 rounded-2xl object-contain"
+            style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }} />
         </MaskedReveal>
-
-        {/* Wordmark */}
-        <div className="flex flex-col items-center gap-0">
-          <MaskedReveal delay={0.28}>
-            <h1
-              className="font-black italic uppercase leading-none"
-              style={{
-                fontSize: "clamp(3.5rem, 12vw, 9rem)",
-                color: "#ffffff",
-                letterSpacing: "-0.035em",
-              }}>
-              Salelooterz
-            </h1>
-          </MaskedReveal>
-        </div>
-
-        {/* Orange rule */}
+        <MaskedReveal delay={0.28}>
+          <h1 className="font-black italic uppercase leading-none"
+            style={{ fontSize: "clamp(3.5rem, 12vw, 9rem)", color: "#ffffff", letterSpacing: "-0.035em" }}>
+            Salelooterz
+          </h1>
+        </MaskedReveal>
         <div style={{ width: "100%", overflow: "hidden", height: 2 }}>
-          <motion.div
-            style={{ height: "100%", background: FIRE, transformOrigin: "left" }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.9, duration: 0.9, ease: EXPO_EASE }}
-          />
+          <motion.div style={{ height: "100%", background: ORANGE, transformOrigin: "left" }}
+            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.9, duration: 0.9, ease: EXPO_EASE }} />
         </div>
-
-        {/* Tagline */}
         <MaskedReveal delay={1.1}>
-          <p
-            className="text-xs font-semibold uppercase tracking-widest"
+          <p className="text-xs font-semibold uppercase tracking-widest"
             style={{ color: "rgba(255,255,255,0.35)", letterSpacing: "0.22em" }}>
             India's #1 Deal Alert Community
           </p>
         </MaskedReveal>
       </div>
-
-      {/* Bottom progress bar */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <motion.div
-          className="h-full"
-          style={{ background: FIRE }}
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ delay: 0.4, duration: 2.6, ease: "linear" }}
-        />
+        <motion.div className="h-full" style={{ background: ORANGE }}
+          initial={{ width: "0%" }} animate={{ width: "100%" }}
+          transition={{ delay: 0.4, duration: 2.6, ease: "linear" }} />
       </div>
     </motion.div>
   );
 }
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
-
+// ── Root ───────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [splashDone, setSplashDone] = useState(false);
   return (
     <>
       <AnimatePresence>{!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}</AnimatePresence>
-      <motion.div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}
-        initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.6 }}>
-        <AnnouncementBar />
-        <Navbar />
-        <Hero />
-        <HowItWorks />
-        <About />
-        <Testimonials />
-        <FAQ />
-        <FinalCTA />
+      <motion.div style={{ background: OUTER, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}
+        initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.5 }}>
+        <div className="max-w-6xl mx-auto px-4 md:px-6 pb-10">
+          <Navbar />
+          <Hero />
+          <PlatformStrip />
+          <AboutUs />
+          <HowItWorks />
+          <CommunityStats />
+          <Testimonials />
+          <FAQ />
+          <FinalCTA />
+        </div>
         <Footer />
       </motion.div>
     </>
   );
 }
 
-// ─── Announcement Bar ─────────────────────────────────────────────────────────
-
-function AnnouncementBar() {
+// ── Shared card ────────────────────────────────────────────────────────────────
+function Card({ children, bg = BG, style = {}, className = "" }: {
+  children: React.ReactNode; bg?: string; style?: React.CSSProperties; className?: string;
+}) {
   return (
-    <div className="flex items-center justify-center gap-8 px-6 py-2 text-xs font-medium" style={{ background: TEXT, color: "rgba(255,255,255,0.7)" }}>
-      <span>Free to join · No spam, ever</span>
-      <span className="hidden sm:block" style={{ color: "rgba(255,255,255,0.25)" }}>|</span>
-      <span className="hidden sm:block">2.63M+ members saving daily</span>
-      <span className="hidden md:block" style={{ color: "rgba(255,255,255,0.25)" }}>|</span>
-      <span className="hidden md:block">500+ deals posted every day</span>
+    <div className={className} style={{ background: bg, borderRadius: R, overflow: "hidden", ...style }}>
+      {children}
     </div>
   );
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-
+// ── Navbar ─────────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
+    const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 transition-all duration-300"
-      style={{ background: scrolled ? "rgba(250,250,249,0.96)" : BG, backdropFilter: "blur(12px)", borderBottom: `1px solid ${scrolled ? BORDER : "transparent"}` }}>
-      <div className="max-w-6xl mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-6">
-        <a href="#" className="flex items-center gap-2.5 no-underline">
-          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="font-black text-xl" style={{ color: TEXT, letterSpacing: "-0.04em", fontStyle: "italic" }}>Salelooterz</span>
+    <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: EXPO }}
+      className="sticky top-4 z-50 mb-6" style={{ paddingTop: 16 }}>
+      <Card style={{
+        padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between",
+        boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.08)" : "0 2px 8px rgba(0,0,0,0.05)",
+        transition: "box-shadow 0.3s",
+      }}>
+        <a href="#" className="flex items-center gap-2 no-underline">
+          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-xl object-contain" />
+          <span className="font-black text-lg" style={{ color: TEXT, letterSpacing: "-0.03em" }}>Salelooterz</span>
         </a>
-        <div className="flex items-center gap-3">
-          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white transition-all hover:opacity-90 active:scale-95"
-            style={{ background: TEXT }}>
-            <TelegramIcon /> Join Telegram
-          </a>
+        <div className="flex items-center gap-2">
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-black/5 active:scale-95"
-            style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
-            <WhatsAppIcon /> WhatsApp
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-black/5"
+            style={{ border: `1.5px solid ${BORDER}`, color: TEXT }}>
+            <WhatsAppIcon size={13} /> WhatsApp
+          </a>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white transition-all hover:opacity-90"
+            style={{ background: TEXT }}>
+            <TelegramIcon size={13} /> Join — Free
           </a>
         </div>
-      </div>
-    </header>
+      </Card>
+    </motion.header>
   );
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-
+// ── Hero ───────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 pt-10 pb-6">
-      <div className="grid lg:grid-cols-[1fr_1fr] gap-8 items-center">
-
+    <Card className="mb-4">
+      <div className="grid lg:grid-cols-[1fr_auto] gap-0">
         {/* Left */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-6"
-            style={{ background: `${FIRE}12`, color: FIRE, border: `1px solid ${FIRE}25` }}>
-            <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style={{ background: FIRE }} />
-            Live deals updated every hour
+        <div className="p-8 md:p-12 flex flex-col justify-between min-h-[420px]">
+          <div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-6"
+                style={{ background: `${ORANGE}15`, color: ORANGE }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: ORANGE }} />
+                500+ deals posted today
+              </span>
+            </motion.div>
+
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7, ease: EXPO }}
+              className="font-black leading-tight mb-4"
+              style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+              Meet India's biggest<br />
+              <span style={{ color: ORANGE }}>deal alert</span> community
+            </motion.h1>
+
+            <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
+              className="text-base leading-relaxed mb-8 max-w-md" style={{ color: TEXT2 }}>
+              Instant deal alerts, flash sales, and massive discounts on electronics, fashion, food, and travel —
+              delivered straight to your phone.
+            </motion.p>
+
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="flex flex-wrap gap-3">
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white hover:opacity-90 transition-all active:scale-95"
+                style={{ background: TEXT }}>
+                <TelegramIcon size={14} /> Join Telegram — Free
+              </a>
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold hover:bg-black/5 transition-all active:scale-95"
+                style={{ border: `1.5px solid ${BORDER}`, color: TEXT }}>
+                <WhatsAppIcon size={14} /> Join WhatsApp
+              </a>
+            </motion.div>
           </div>
 
-          <h1 className="font-black uppercase leading-[0.95] mb-6"
-            style={{ fontSize: "clamp(2.8rem, 5.5vw, 5.2rem)", color: TEXT, letterSpacing: "-0.02em" }}>
-            YOUR ULTIMATE{" "}
-            <span style={{ color: FIRE }}>✦</span>{" "}
-            DEAL{" "}
-            <span style={{ color: FIRE }}>✦</span>
-            <br />ALERT COMMUNITY
-          </h1>
-
-          <p className="text-base leading-relaxed mb-8 max-w-sm" style={{ color: TEXT2 }}>
-            Instant deal alerts, flash sales, and massive discounts delivered straight to your phone. Join 2.63M+ smart shoppers.
-          </p>
-
-          <div className="flex flex-wrap gap-3">
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: TEXT }}>
-              <TelegramIcon size={15} /> Join on Telegram
-            </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-bold transition-all hover:bg-black/5 active:scale-95"
-              style={{ border: `1.5px solid ${BORDER}`, color: TEXT }}>
-              <WhatsAppIcon size={15} /> Join on WhatsApp
-            </a>
-          </div>
-
-          <div className="flex gap-8 mt-10 pt-8" style={{ borderTop: `1px solid ${BORDER}` }}>
-            {[
-              { v: "2.63M+", l: "Members" },
-              { v: "80%",    l: "Avg Discount" },
-              { v: "4.9★",   l: "Community Rating" },
-            ].map((s, i) => (
-              <div key={i}>
-                <p className="text-2xl font-black" style={{ color: TEXT }}>{s.v}</p>
-                <p className="text-xs font-medium mt-0.5" style={{ color: TEXT2 }}>{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+          {/* Yellow stat card */}
+          <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8, duration: 0.6, ease: EXPO }}
+            className="mt-10 inline-flex items-center gap-4 px-5 py-4 rounded-2xl w-fit"
+            style={{ background: YELLOW }}>
+            <div>
+              <p className="text-3xl font-black" style={{ color: TEXT }}>2.63M+</p>
+              <p className="text-xs font-semibold mt-0.5" style={{ color: "rgba(0,0,0,0.5)" }}>Members across India</p>
+            </div>
+            <div className="w-px h-10 bg-black/10" />
+            <div>
+              <p className="text-3xl font-black" style={{ color: TEXT }}>80%</p>
+              <p className="text-xs font-semibold mt-0.5" style={{ color: "rgba(0,0,0,0.5)" }}>Average discount</p>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Right: image collage */}
-        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
-          className="grid grid-cols-2 gap-3">
-          <div className="col-span-1 row-span-2 relative rounded-2xl overflow-hidden" style={{ aspectRatio: "3/4", background: BG2 }}>
+        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.8, ease: EXPO }}
+          className="hidden lg:flex flex-col gap-3 p-4 w-72 xl:w-80"
+          style={{ background: OUTER }}>
+          {/* Top image */}
+          <div className="relative rounded-2xl overflow-hidden flex-1" style={{ minHeight: 160, background: "#f3f4f6" }}>
             <img src="/assets/product1.png" alt="Deal" className="w-full h-full object-cover" />
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }}
-              className="absolute top-4 right-4 px-3 py-2 rounded-xl text-xs shadow-lg"
-              style={{ background: "#fff", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base">🤖</span>
-                <div>
-                  <p className="font-black text-xs" style={{ color: TEXT }}>Deal Finder</p>
-                  <p className="text-[10px]" style={{ color: TEXT2 }}>AI-curated picks</p>
-                </div>
-              </div>
-            </motion.div>
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="px-3 py-2 rounded-xl text-xs font-bold backdrop-blur-sm" style={{ background: "rgba(255,255,255,0.92)", color: TEXT }}>
-                <span style={{ color: FIRE }}>37% OFF</span> · Sony WH-1000XM5
-              </div>
+            <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white"
+              style={{ background: ORANGE }}>37% OFF</div>
+          </div>
+          {/* Bottom two */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "1", background: "#f3f4f6" }}>
+              <img src="/assets/product3.png" alt="Deal" className="w-full h-full object-cover" />
+              <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-bold text-white"
+                style={{ background: "#7c3aed" }}>⚡ Flash</div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "1", background: "#f3f4f6" }}>
+              <img src="/assets/hero.png" alt="Deal" className="w-full h-full object-cover" />
+              <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-bold"
+                style={{ background: YELLOW, color: TEXT }}>🔥 Hot</div>
             </div>
           </div>
-          <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "1/1", background: BG2 }}>
-            <img src="/assets/product3.png" alt="Deal" className="w-full h-full object-cover" />
-            <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white" style={{ background: GREEN }}>🔥 Hot Deal</div>
-          </div>
-          <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: "1/1", background: BG2 }}>
-            <img src="/assets/hero.png" alt="Deal" className="w-full h-full object-cover" />
-            <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white" style={{ background: "#7c3aed" }}>⚡ Flash Sale</div>
+          {/* Floating stat */}
+          <div className="rounded-2xl p-4" style={{ background: BG }}>
+            <p className="text-xs font-semibold mb-1" style={{ color: TEXT2 }}>Deals today</p>
+            <p className="text-2xl font-black" style={{ color: TEXT }}>500+</p>
+            <div className="flex gap-1 mt-2">
+              {["Electronics","Fashion","Food","Travel"].map(c => (
+                <span key={c} className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                  style={{ background: PURPLE, color: "#7c3aed" }}>{c}</span>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </Card>
   );
 }
 
-// ─── How It Works ─────────────────────────────────────────────────────────────
-
-function HowItWorks() {
-  const steps = [
-    { num: "01", icon: "📲", title: "Join Our Channel",   desc: "Click Telegram or WhatsApp to join instantly. It's completely free, forever." },
-    { num: "02", icon: "⚡", title: "Get Instant Alerts", desc: "Flash sales and price drops hit your phone the moment they go live." },
-    { num: "03", icon: "🎯", title: "Loot the Savings",   desc: "Click the verified link, claim the deal. No fees, no catch." },
-  ];
-
+// ── Platform Strip ─────────────────────────────────────────────────────────────
+function PlatformStrip() {
+  const brands = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato"];
   return (
-    <section style={{ background: BG2, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }} className="py-20">
-      <div className="max-w-6xl mx-auto px-6 md:px-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: FIRE }}>Simple & free</p>
-          <h2 className="text-3xl md:text-5xl font-black uppercase" style={{ color: TEXT, letterSpacing: "-0.02em" }}>
-            How It Works <span style={{ color: FIRE }}>✦</span>
-          </h2>
-          <p className="text-base mt-3 max-w-sm" style={{ color: TEXT2 }}>Three steps to never paying full price again.</p>
-        </motion.div>
+    <Card className="mb-4 py-5 px-8">
+      <p className="text-xs font-semibold text-center mb-4 uppercase tracking-widest" style={{ color: TEXT2 }}>
+        Deals from your favourite platforms
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-6">
+        {brands.map(b => (
+          <span key={b} className="text-sm font-black" style={{ color: "rgba(0,0,0,0.25)", letterSpacing: "-0.02em" }}>{b}</span>
+        ))}
+      </div>
+    </Card>
+  );
+}
 
-        <div className="grid md:grid-cols-3 gap-5">
-          {steps.map((step, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }} whileHover={{ y: -4 }}
-              className="rounded-2xl p-8" style={{ background: BG, border: `1px solid ${BORDER}` }}>
-              <div className="text-3xl mb-4">{step.icon}</div>
-              <span className="block text-6xl font-black mb-3 leading-none" style={{ color: TEXT, opacity: 0.06 }}>{step.num}</span>
-              <h3 className="text-lg font-black mb-2 uppercase" style={{ color: TEXT, letterSpacing: "-0.02em" }}>{step.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>{step.desc}</p>
+// ── About Us ───────────────────────────────────────────────────────────────────
+function AboutUs() {
+  return (
+    <div className="grid md:grid-cols-2 gap-4 mb-4">
+      {/* Left: Story card */}
+      <Card className="p-8 md:p-10 flex flex-col justify-between" style={{ minHeight: 420 }}>
+        <div>
+          <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-5"
+            style={{ background: PURPLE, color: "#7c3aed" }}>About Us</span>
+          <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}
+            className="font-black leading-tight mb-4"
+            style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+            Built by a frustrated shopper, for every shopper
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: 0.15, duration: 0.6 }}
+            className="text-sm leading-relaxed mb-3" style={{ color: TEXT2 }}>
+            Salelooterz was started in 2021 by The Yanik — someone who got tired of spending hours
+            comparing prices, hunting coupons, and missing flash sales by minutes.
+          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: 0.25, duration: 0.6 }}
+            className="text-sm leading-relaxed" style={{ color: TEXT2 }}>
+            What started as a small Telegram group of friends has grown into India's largest deal alert
+            community — with 2.63 million members and hundreds of verified deals posted every single day.
+          </motion.p>
+        </div>
+
+        {/* Mission stat */}
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.6 }}
+          className="mt-8 p-5 rounded-2xl" style={{ background: OUTER }}>
+          <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: TEXT2 }}>Our mission</p>
+          <p className="font-black text-lg leading-snug" style={{ color: TEXT, letterSpacing: "-0.02em" }}>
+            Make sure no Indian ever pays full price again.
+          </p>
+        </motion.div>
+      </Card>
+
+      {/* Right: Founder + values */}
+      <div className="flex flex-col gap-4">
+        {/* Founder card */}
+        <Card bg={TEXT} style={{ flex: 1, padding: "28px", display: "flex", gap: "20px", alignItems: "flex-start", minHeight: 220 }}>
+          <div className="rounded-2xl overflow-hidden shrink-0" style={{ width: 80, height: 80 }}>
+            <img src="/assets/founder.jpeg" alt="The Yanik" className="w-full h-full object-cover object-top" />
+          </div>
+          <div className="flex flex-col justify-between h-full">
+            <div>
+              <p className="text-white font-black text-lg leading-tight mb-1" style={{ letterSpacing: "-0.02em" }}>The Yanik</p>
+              <p className="text-xs font-semibold mb-4" style={{ color: ORANGE }}>Founder & Chief Deal Hunter</p>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+                "I was tired of overpaying. So I built a community to make sure no one else had to."
+              </p>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white hover:opacity-80 transition-all"
+                style={{ background: ORANGE }}>
+                <TelegramIcon size={12} /> Follow on Telegram
+              </a>
+            </div>
+          </div>
+        </Card>
+
+        {/* Values grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { icon: "🚫", label: "Zero Spam",     desc: "Every post is a real, verified deal", bg: BG },
+            { icon: "⚡", label: "Instant Alerts", desc: "Deals reach you before anyone else",  bg: YELLOW },
+            { icon: "💯", label: "100% Free",      desc: "No fees, no premium tiers, ever",     bg: PURPLE },
+            { icon: "🎯", label: "Curated Picks",  desc: "Human-vetted, not bot-generated",     bg: GREEN },
+          ].map((v, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.5, ease: EXPO }}>
+              <Card bg={v.bg} style={{ padding: "20px" }}>
+                <div className="text-2xl mb-2">{v.icon}</div>
+                <p className="font-black text-sm mb-1" style={{ color: TEXT, letterSpacing: "-0.02em" }}>{v.label}</p>
+                <p className="text-xs leading-relaxed" style={{ color: TEXT2 }}>{v.desc}</p>
+              </Card>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
-// ─── About / Founder ──────────────────────────────────────────────────────────
-
-function About() {
-  return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 py-24">
-      <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: FIRE }}>Our Story</p>
-        <h2 className="text-3xl md:text-5xl font-black uppercase" style={{ color: TEXT, letterSpacing: "-0.02em" }}>
-          Meet the Founder <span style={{ color: FIRE }}>✦</span>
-        </h2>
-      </motion.div>
-
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
-        <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
-          <div className="relative w-72 md:w-96 mx-auto lg:mx-0">
-            <div className="rounded-3xl overflow-hidden" style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}>
-              <img src="/assets/founder.jpeg" alt="The Yanik – Founder"
-                className="w-full block" style={{ aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
-            </div>
-            <div className="absolute -bottom-4 -right-4 rounded-2xl px-5 py-3 shadow-lg"
-              style={{ background: "#fff", border: `1px solid ${BORDER}` }}>
-              <p className="font-black text-base" style={{ color: TEXT }}>The Yanik</p>
-              <p className="text-xs font-semibold" style={{ color: FIRE }}>Founder, Salelooterz</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-          <blockquote className="text-2xl md:text-3xl font-black leading-tight mb-8 pl-5 uppercase"
-            style={{ borderLeft: `4px solid ${FIRE}`, color: TEXT, letterSpacing: "-0.02em" }}>
-            "I was tired of overpaying. So I built a community to make sure no one else had to."
-          </blockquote>
-          <div className="space-y-4 text-sm leading-relaxed" style={{ color: TEXT2 }}>
-            <p>Salelooterz was born out of frustration. I used to spend hours comparing prices, hunting coupon codes, and waiting for the right moment to buy. It was exhausting — and I knew I wasn't alone.</p>
-            <p>In 2021, I started sharing deals with a small group of friends on Telegram. Within months, thousands had joined, and the community took on a life of its own.</p>
-            <p>Our mission: <strong style={{ color: TEXT }}>find the best deals, share them instantly, and help every member save money every single day.</strong></p>
-          </div>
-          <div className="flex flex-wrap gap-4 mt-10">
-            {[{ v: "3+", l: "Years Running" }, { v: "2.63M", l: "Members Helped" }, { v: "₹100Cr+", l: "Community Savings" }].map((s, i) => (
-              <div key={i} className="rounded-xl px-6 py-4 text-center" style={{ background: BG2, border: `1px solid ${BORDER}` }}>
-                <p className="text-2xl font-black" style={{ color: i === 2 ? FIRE : TEXT }}>{s.v}</p>
-                <p className="text-xs font-medium mt-1" style={{ color: TEXT2 }}>{s.l}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-3 mt-8">
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: TEXT }}>
-              <TelegramIcon size={14} /> Join Telegram
-            </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold transition-all hover:bg-black/5 active:scale-95"
-              style={{ border: `1.5px solid ${BORDER}`, color: TEXT }}>
-              <WhatsAppIcon size={14} /> WhatsApp
-            </a>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Testimonials ─────────────────────────────────────────────────────────────
-
-function Testimonials() {
-  const reviews = [
-    { name: "Priya Sharma",  location: "Delhi",     text: "I saved ₹12,000 on my laptop because of a deal on Salelooterz. Literally the best Telegram channel I've ever joined." },
-    { name: "Rahul Verma",   location: "Mumbai",    text: "The deals are legit and instant. By the time I see a flash sale elsewhere, Salelooterz posted it 2 hours earlier." },
-    { name: "Sneha Iyer",    location: "Bangalore", text: "I've shared this channel with my entire family. We collectively save thousands every month." },
-    { name: "Arjun Mehta",   location: "Hyderabad", text: "Got a 77% off deal on earbuds I'd been eyeing for months. The channel posts crazy deals daily." },
-    { name: "Divya Nair",    location: "Chennai",   text: "Best thing — zero spam. Only real deals. Finally a group worth keeping notifications on." },
-    { name: "Karan Patel",   location: "Ahmedabad", text: "Joined 6 months ago and saved over ₹25,000. This community completely changed how I shop online." },
+// ── How It Works ───────────────────────────────────────────────────────────────
+function HowItWorks() {
+  const steps = [
+    { num: "01", icon: "📲", title: "Join Our Channel",   desc: "Click Telegram or WhatsApp to join instantly — completely free, forever.", bg: YELLOW },
+    { num: "02", icon: "⚡", title: "Get Instant Alerts", desc: "Flash sales and price drops hit your phone the moment they go live.",        bg: PURPLE },
+    { num: "03", icon: "🎯", title: "Loot the Savings",   desc: "Click the verified link, claim the deal. No hidden fees, no catch.",         bg: BG },
   ];
 
   return (
-    <section style={{ background: BG2, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }} className="py-20">
-      <div className="max-w-6xl mx-auto px-6 md:px-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: FIRE }}>Real savings</p>
-          <h2 className="text-3xl md:text-5xl font-black uppercase" style={{ color: TEXT, letterSpacing: "-0.02em" }}>
-            What Members Say <span style={{ color: FIRE }}>✦</span>
-          </h2>
-        </motion.div>
+    <div className="mb-4">
+      <Card className="p-8 md:p-10 mb-4">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
+          style={{ background: `${ORANGE}15`, color: ORANGE }}>How it works</span>
+        <h2 className="font-black leading-tight mb-2"
+          style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+          Three steps to never<br />paying full price again
+        </h2>
+        <p className="text-sm" style={{ color: TEXT2 }}>Simple, instant, and completely free.</p>
+      </Card>
+      <div className="grid md:grid-cols-3 gap-4">
+        {steps.map((step, i) => (
+          <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6, ease: EXPO }}>
+            <Card bg={step.bg} style={{ padding: "28px", height: "100%" }}>
+              <div className="text-3xl mb-4">{step.icon}</div>
+              <p className="text-5xl font-black mb-3 leading-none" style={{ color: TEXT, opacity: 0.08 }}>{step.num}</p>
+              <h3 className="font-black text-lg mb-2" style={{ color: TEXT, letterSpacing: "-0.02em" }}>{step.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>{step.desc}</p>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {reviews.map((r, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }} whileHover={{ y: -4 }}
-              className="rounded-2xl p-6" style={{ background: BG, border: `1px solid ${BORDER}` }}>
+// ── Community Stats ────────────────────────────────────────────────────────────
+function CommunityStats() {
+  const stats = [
+    { v: "2.63M+",   l: "Active members",       sub: "Across Telegram & WhatsApp", bg: TEXT,   textColor: "#fff",          subColor: "rgba(255,255,255,0.4)" },
+    { v: "500+",     l: "Deals per day",         sub: "Across all categories",      bg: YELLOW, textColor: TEXT,            subColor: "rgba(0,0,0,0.45)" },
+    { v: "₹100Cr+",  l: "Community savings",     sub: "Estimated total saved",      bg: PURPLE, textColor: TEXT,            subColor: "rgba(0,0,0,0.45)" },
+    { v: "4.9★",     l: "Member rating",         sub: "Based on community reviews", bg: BG,     textColor: TEXT,            subColor: TEXT2 },
+    { v: "80%",      l: "Average discount",      sub: "On all posted deals",        bg: BG,     textColor: TEXT,            subColor: TEXT2 },
+    { v: "3+",       l: "Years running",         sub: "Trusted since 2021",         bg: `${ORANGE}15`, textColor: ORANGE,  subColor: "rgba(234,88,12,0.5)" },
+  ];
+
+  return (
+    <div className="mb-4">
+      <Card className="p-8 mb-4">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
+          style={{ background: PURPLE, color: "#7c3aed" }}>Community benchmarks</span>
+        <h2 className="font-black leading-tight"
+          style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+          The numbers speak<br />for themselves
+        </h2>
+      </Card>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {stats.map((s, i) => (
+          <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.5, ease: EXPO }}>
+            <Card bg={s.bg} style={{ padding: "28px" }}>
+              <p className="text-4xl font-black mb-1" style={{ color: s.textColor, letterSpacing: "-0.03em" }}>{s.v}</p>
+              <p className="font-bold text-sm mb-1" style={{ color: s.textColor }}>{s.l}</p>
+              <p className="text-xs" style={{ color: s.subColor }}>{s.sub}</p>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Testimonials ───────────────────────────────────────────────────────────────
+function Testimonials() {
+  const reviews = [
+    { name: "Priya Sharma",  loc: "Delhi",     text: "I saved ₹12,000 on my laptop because of a deal from Salelooterz. The best Telegram channel I've ever joined.", bg: YELLOW },
+    { name: "Rahul Verma",   loc: "Mumbai",    text: "Deals are legit and instant. By the time I see a flash sale on social media, Salelooterz posted it 2 hours earlier.", bg: BG },
+    { name: "Sneha Iyer",    loc: "Bangalore", text: "I've shared this channel with my entire family. We collectively save thousands every month.", bg: PURPLE },
+    { name: "Arjun Mehta",   loc: "Hyderabad", text: "Got a 77% off deal on earbuds I'd been eyeing for months. The channel posts crazy deals daily.", bg: BG },
+    { name: "Divya Nair",    loc: "Chennai",   text: "Zero spam. Only real deals. Finally a group worth keeping notifications on for.", bg: `${ORANGE}15` },
+    { name: "Karan Patel",   loc: "Ahmedabad", text: "Joined 6 months ago and saved over ₹25,000. This community completely changed how I shop online.", bg: TEXT },
+  ];
+
+  return (
+    <div className="mb-4">
+      <Card className="p-8 mb-4">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
+          style={{ background: YELLOW, color: TEXT }}>Member stories</span>
+        <h2 className="font-black leading-tight"
+          style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+          Real people,<br />real savings
+        </h2>
+      </Card>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {reviews.map((r, i) => (
+          <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.5, ease: EXPO }}>
+            <Card bg={r.bg} style={{ padding: "24px", height: "100%" }}>
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, j) => (
-                  <svg key={j} width="12" height="12" viewBox="0 0 24 24" style={{ fill: FIRE }}>
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  <svg key={j} width="12" height="12" viewBox="0 0 24 24"
+                    style={{ fill: r.bg === TEXT ? "rgba(255,255,255,0.4)" : ORANGE }}>
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 ))}
               </div>
-              <p className="text-sm leading-relaxed mb-5" style={{ color: TEXT2 }}>"{r.text}"</p>
-              <div className="flex items-center gap-3">
+              <p className="text-sm leading-relaxed mb-5"
+                style={{ color: r.bg === TEXT ? "rgba(255,255,255,0.6)" : TEXT2 }}>"{r.text}"</p>
+              <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black shrink-0"
-                  style={{ background: TEXT }}>
+                  style={{ background: r.bg === TEXT ? ORANGE : TEXT }}>
                   {r.name[0]}
                 </div>
                 <div>
-                  <p className="font-bold text-sm" style={{ color: TEXT }}>{r.name}</p>
-                  <p className="text-xs" style={{ color: TEXT2 }}>{r.location}</p>
+                  <p className="font-bold text-sm" style={{ color: r.bg === TEXT ? "#fff" : TEXT }}>{r.name}</p>
+                  <p className="text-xs" style={{ color: r.bg === TEXT ? "rgba(255,255,255,0.4)" : TEXT2 }}>{r.loc}</p>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </Card>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }
 
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
-
+// ── FAQ ─────────────────────────────────────────────────────────────────────────
 function FAQ() {
   const faqs = [
-    { q: "Is Salelooterz completely free to join?",      a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
-    { q: "How many deals are shared per day?",            a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
-    { q: "Will I get spammed with unnecessary messages?", a: "Absolutely not. Every message is a verified deal with a real discount. No promotional fluff, no sponsored junk." },
-    { q: "Are the deals only for India?",                 a: "Primarily yes — most deals are from Amazon India, Flipkart, Myntra, Nykaa, Meesho, and others. We occasionally share international deals too." },
-    { q: "How do I claim a deal once I see it?",          a: "Each deal post includes a direct link. Just click it and you'll be taken straight to the checkout or coupon page." },
-    { q: "Can I submit deals I've found myself?",         a: "Yes! Message our admin on Telegram. We verify and post the best community-submitted deals too." },
+    { q: "Is Salelooterz completely free to join?",       a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
+    { q: "How many deals are shared per day?",             a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
+    { q: "Will I get spammed with unnecessary messages?",  a: "Absolutely not. Every message is a verified deal with a real discount. No promotional fluff, no sponsored junk." },
+    { q: "Are the deals only for India?",                  a: "Primarily yes — most deals are from Amazon India, Flipkart, Myntra, Nykaa, Meesho, and others. We occasionally share international deals too." },
+    { q: "How do I claim a deal once I see it?",           a: "Each deal post includes a direct link. Just click it and you'll be taken straight to the checkout or coupon page." },
+    { q: "Can I submit deals I've found myself?",          a: "Yes! Message our admin on Telegram. We verify and post the best community-submitted deals too." },
   ];
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 py-20">
-      <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: FIRE }}>Got questions?</p>
-        <h2 className="text-3xl md:text-5xl font-black uppercase" style={{ color: TEXT, letterSpacing: "-0.02em" }}>
-          Frequently Asked <span style={{ color: FIRE }}>✦</span>
+    <div className="mb-4">
+      <Card className="p-8 mb-4">
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
+          style={{ background: `${ORANGE}15`, color: ORANGE }}>FAQ</span>
+        <h2 className="font-black leading-tight"
+          style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+          Got questions?<br />We've got answers.
         </h2>
-      </motion.div>
-
-      <div className="max-w-3xl space-y-2">
+      </Card>
+      <Card>
         {faqs.map((faq, i) => (
-          <motion.div key={i} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }} className="rounded-2xl overflow-hidden"
-            style={{ border: `1px solid ${open === i ? `${FIRE}40` : BORDER}`, transition: "border-color 0.2s" }}>
+          <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+            viewport={{ once: true }} transition={{ delay: i * 0.04 }}>
             <button onClick={() => setOpen(open === i ? null : i)}
-              className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-black/[0.015] transition-colors"
-              style={{ background: open === i ? "#fff" : BG }}>
-              <span className="font-semibold text-sm pr-4" style={{ color: TEXT }}>{faq.q}</span>
+              className="w-full flex items-center justify-between px-7 py-5 text-left hover:bg-black/[0.015] transition-colors"
+              style={{ borderBottom: i < faqs.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+              <span className="font-semibold text-sm pr-6" style={{ color: TEXT }}>{faq.q}</span>
               <ChevronDown className="w-4 h-4 shrink-0 transition-transform duration-300"
-                style={{ color: FIRE, transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }} />
+                style={{ color: ORANGE, transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
             <AnimatePresence initial={false}>
               {open === i && (
-                <motion.div key="c" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+                <motion.div key="body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
-                  className="overflow-hidden" style={{ background: "#fff", borderTop: `1px solid ${BORDER}` }}>
-                  <p className="px-6 pb-5 pt-4 text-sm leading-relaxed" style={{ color: TEXT2 }}>{faq.a}</p>
+                  className="overflow-hidden" style={{ borderBottom: `1px solid ${BORDER}` }}>
+                  <p className="px-7 pb-5 pt-3 text-sm leading-relaxed" style={{ color: TEXT2 }}>{faq.a}</p>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         ))}
-      </div>
-    </section>
+      </Card>
+    </div>
   );
 }
 
-// ─── Final CTA ────────────────────────────────────────────────────────────────
-
+// ── Final CTA ──────────────────────────────────────────────────────────────────
 function FinalCTA() {
   return (
-    <section className="max-w-6xl mx-auto px-6 md:px-10 pb-20">
-      <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="rounded-3xl p-12 md:p-20 text-center relative overflow-hidden"
-        style={{ background: TEXT }}>
-        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 70% 60% at 50% 50%, rgba(234,88,12,0.15) 0%, transparent 70%)` }} />
+    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}>
+      <Card bg={TEXT} style={{ padding: "60px 40px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 60% 60% at 50% 0%, rgba(234,88,12,0.18) 0%, transparent 70%)` }} />
         <div className="relative z-10">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>Join the community</p>
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-5 leading-tight uppercase" style={{ letterSpacing: "-0.03em" }}>
-            Ready to Start <span style={{ color: FIRE }}>✦</span><br />Looting?
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-6"
+            style={{ background: `${ORANGE}25`, color: ORANGE }}>
+            Join 2.63M+ smart shoppers
+          </div>
+          <h2 className="font-black text-white mb-4 leading-tight"
+            style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.03em" }}>
+            Ready to start saving?
           </h2>
-          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.45)" }}>
-            Join millions of smart shoppers who never pay full price. Free to join. Deals every day. No spam.
+          <p className="text-base mb-10 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.45)" }}>
+            Free to join. Deals every day. No spam. No catch.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: FIRE, boxShadow: `0 0 40px ${FIRE}50` }}>
-              <TelegramIcon size={15} /> Join on Telegram
+              className="flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-sm text-white hover:opacity-90 transition-all active:scale-95"
+              style={{ background: ORANGE }}>
+              <TelegramIcon size={14} /> Join Telegram — Free
             </a>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm text-white transition-all hover:bg-white/10 active:scale-95"
-              style={{ border: "1.5px solid rgba(255,255,255,0.2)" }}>
-              <WhatsAppIcon size={15} /> Join on WhatsApp
+              className="flex items-center gap-2 px-7 py-3.5 rounded-full font-bold text-sm text-white hover:bg-white/10 transition-all active:scale-95"
+              style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}>
+              <WhatsAppIcon size={14} /> Join WhatsApp
             </a>
           </div>
         </div>
-      </motion.div>
-    </section>
+      </Card>
+    </motion.div>
   );
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
-
+// ── Footer ─────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ background: BG2, borderTop: `1px solid ${BORDER}` }} className="py-10">
-      <div className="max-w-6xl mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6">
+    <footer className="max-w-6xl mx-auto px-4 md:px-6 py-8">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2.5">
-          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="font-black italic text-xl" style={{ color: TEXT, letterSpacing: "-0.04em" }}>Salelooterz</span>
+          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-7 w-7 rounded-xl object-contain" />
+          <span className="font-black text-base" style={{ color: TEXT, letterSpacing: "-0.03em" }}>Salelooterz</span>
         </div>
-        <div className="flex flex-wrap justify-center gap-6 text-sm" style={{ color: TEXT2 }}>
-          {["Privacy Policy", "Terms", "Contact", "About"].map(link => (
-            <a key={link} href="#" className="hover:text-black transition-colors">{link}</a>
+        <div className="flex flex-wrap justify-center gap-5 text-xs" style={{ color: TEXT2 }}>
+          {["Privacy Policy","Terms","Contact","About"].map(l => (
+            <a key={l} href="#" className="hover:text-black transition-colors">{l}</a>
           ))}
         </div>
-        <p className="text-sm whitespace-nowrap" style={{ color: "rgba(107,114,128,0.45)" }}>
-          © {new Date().getFullYear()} Salelooterz
-        </p>
+        <p className="text-xs" style={{ color: "rgba(107,114,128,0.5)" }}>© {new Date().getFullYear()} Salelooterz</p>
       </div>
     </footer>
   );
