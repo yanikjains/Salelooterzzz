@@ -106,7 +106,7 @@ export default function Home() {
       <AnimatePresence>{!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}</AnimatePresence>
       <motion.div style={{ background: OUTER, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}
         initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.5 }}>
-        <div className="max-w-6xl mx-auto px-4 md:px-6 pb-10">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 pb-10 space-y-6">
           <Navbar />
           <Hero />
           <PlatformStrip />
@@ -176,10 +176,30 @@ function Navbar() {
 // ── Hero ───────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
-    <Card className="mb-4">
+    <Card style={{ position: "relative" }}>
+      {/* ── BIG DECORATIVE "SALE" background text ── */}
+      <motion.div
+        className="absolute bottom-0 left-0 pointer-events-none select-none overflow-hidden"
+        style={{ lineHeight: 1 }}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.6, duration: 1.1, ease: EXPO }}>
+        <span style={{
+          fontSize: "clamp(90px, 20vw, 210px)",
+          fontWeight: 900,
+          letterSpacing: "-0.05em",
+          lineHeight: 0.82,
+          color: "transparent",
+          WebkitTextStroke: "2px rgba(234,88,12,0.13)",
+          userSelect: "none",
+          display: "block",
+          paddingLeft: 32,
+        }}>SALE</span>
+      </motion.div>
+
       <div className="grid lg:grid-cols-[1fr_auto] gap-0">
         {/* Left */}
-        <div className="p-8 md:p-12 flex flex-col justify-between min-h-[420px]">
+        <div className="p-8 md:p-12 flex flex-col justify-between min-h-[480px]">
           <div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-6"
@@ -192,9 +212,14 @@ function Hero() {
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.7, ease: EXPO }}
               className="font-black leading-tight mb-4"
-              style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.8rem)", color: TEXT, letterSpacing: "-0.03em" }}>
+              style={{ fontSize: "clamp(2.4rem, 5vw, 4.2rem)", color: TEXT, letterSpacing: "-0.03em" }}>
               Meet India's biggest<br />
-              <span style={{ color: ORANGE }}>deal alert</span> community
+              <span style={{
+                color: "transparent",
+                WebkitTextStroke: "2px " + ORANGE,
+                display: "inline",
+              }}>deal alert</span>{" "}
+              <span style={{ color: ORANGE }}>community</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -282,7 +307,7 @@ function Hero() {
 function PlatformStrip() {
   const brands = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato"];
   return (
-    <Card className="mb-4 py-5 px-8">
+    <Card className="py-5 px-8">
       <p className="text-xs font-semibold text-center mb-4 uppercase tracking-widest" style={{ color: TEXT2 }}>
         Deals from your favourite platforms
       </p>
@@ -298,7 +323,7 @@ function PlatformStrip() {
 // ── About Us ───────────────────────────────────────────────────────────────────
 function AboutUs() {
   return (
-    <div className="grid md:grid-cols-2 gap-4 mb-4">
+    <div className="grid md:grid-cols-2 gap-6">
       {/* Left: Story card */}
       <Card className="p-8 md:p-10 flex flex-col justify-between" style={{ minHeight: 420 }}>
         <div>
@@ -392,8 +417,8 @@ function HowItWorks() {
   ];
 
   return (
-    <div className="mb-4">
-      <Card className="p-8 md:p-10 mb-4">
+    <div>
+      <Card className="p-8 md:p-10 mb-6">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
           style={{ background: `${ORANGE}15`, color: ORANGE }}>How it works</span>
         <h2 className="font-black leading-tight mb-2"
@@ -402,7 +427,7 @@ function HowItWorks() {
         </h2>
         <p className="text-sm" style={{ color: TEXT2 }}>Simple, instant, and completely free.</p>
       </Card>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-5">
         {steps.map((step, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6, ease: EXPO }}>
@@ -431,8 +456,8 @@ function CommunityStats() {
   ];
 
   return (
-    <div className="mb-4">
-      <Card className="p-8 mb-4">
+    <div>
+      <Card className="p-8 mb-6">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
           style={{ background: PURPLE, color: "#7c3aed" }}>Community benchmarks</span>
         <h2 className="font-black leading-tight"
@@ -440,7 +465,7 @@ function CommunityStats() {
           The numbers speak<br />for themselves
         </h2>
       </Card>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
         {stats.map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.5, ease: EXPO }}>
@@ -468,8 +493,8 @@ function Testimonials() {
   ];
 
   return (
-    <div className="mb-4">
-      <Card className="p-8 mb-4">
+    <div>
+      <Card className="p-8 mb-6">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
           style={{ background: YELLOW, color: TEXT }}>Member stories</span>
         <h2 className="font-black leading-tight"
@@ -477,7 +502,7 @@ function Testimonials() {
           Real people,<br />real savings
         </h2>
       </Card>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {reviews.map((r, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.5, ease: EXPO }}>
@@ -523,8 +548,8 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="mb-4">
-      <Card className="p-8 mb-4">
+    <div>
+      <Card className="p-8 mb-6">
         <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-4"
           style={{ background: `${ORANGE}15`, color: ORANGE }}>FAQ</span>
         <h2 className="font-black leading-tight"
