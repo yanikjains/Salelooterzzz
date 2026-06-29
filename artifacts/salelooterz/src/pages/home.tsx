@@ -1,18 +1,21 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-const TELEGRAM_URL = "https://t.me/salelooterz";
-const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
+const TELEGRAM_URL  = "https://t.me/salelooterz";
+const WHATSAPP_URL  = "https://whatsapp.com/channel/salelooterz";
 
-// ── Design tokens ──────────────────────────────────────────────────────────────
-const BG       = "#111111";
-const CARD     = "#1c1c1c";
-const CARD2    = "#222222";
-const PINK     = "#ff1f7e";
-const TEXT     = "#ffffff";
-const TEXT2    = "rgba(255,255,255,0.45)";
-const BORDER   = "rgba(255,255,255,0.08)";
+// ── Palette ────────────────────────────────────────────────────────────────────
+const BG      = "#0e0c0a";
+const SURFACE = "#181410";
+const CARD    = "#1f1b16";
+const CARD2   = "#252018";
+const BROWN   = "#b8834a";
+const BROWN2  = "#8a6035";
+const CREAM   = "#f2ead8";
+const TEXT    = "#f5f0e8";
+const TEXT2   = "rgba(242,234,216,0.4)";
+const BORDER  = "rgba(184,131,74,0.15)";
 
 const EXPO: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
@@ -32,53 +35,66 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-// ── Splash ─────────────────────────────────────────────────────────────────────
-const EXPO_EASE: [number,number,number,number] = [0.16, 1, 0.3, 1];
+// ── 3D Tilt card hook ──────────────────────────────────────────────────────────
+function use3DTilt() {
+  const ref = useRef<HTMLDivElement>(null);
+  const x   = useMotionValue(0);
+  const y   = useMotionValue(0);
+  const rx  = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]),  { stiffness: 200, damping: 20 });
+  const ry  = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]),  { stiffness: 200, damping: 20 });
 
-function MaskedReveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!ref.current) return;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    x.set((e.clientX - left) / width  - 0.5);
+    y.set((e.clientY - top)  / height - 0.5);
+  }
+  function onMouseLeave() { x.set(0); y.set(0); }
+
+  return { ref, rx, ry, onMouseMove, onMouseLeave };
+}
+
+// ── Grain overlay (adds luxury texture) ───────────────────────────────────────
+function Grain() {
   return (
-    <div style={{ overflow: "hidden" }}>
-      <motion.div initial={{ y: "110%" }} animate={{ y: "0%" }}
-        transition={{ duration: 1, ease: EXPO_EASE, delay }}>
-        {children}
-      </motion.div>
-    </div>
+    <div className="pointer-events-none fixed inset-0 z-[999] opacity-[0.035]"
+      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "repeat", backgroundSize: "200px" }} />
   );
 }
 
+// ── Splash ─────────────────────────────────────────────────────────────────────
 function SplashScreen({ onDone }: { onDone: () => void }) {
-  useEffect(() => { const t = setTimeout(onDone, 3200); return () => clearTimeout(t); }, [onDone]);
+  useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
   return (
     <motion.div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
       style={{ background: BG }}
-      exit={{ y: "-100%", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}>
-      <div className="flex flex-col items-center gap-5">
-        <MaskedReveal delay={0.1}>
-          <img src="/assets/logo.jpg" alt="Salelooterz" className="h-16 w-16 rounded-2xl object-contain" />
-        </MaskedReveal>
-        <MaskedReveal delay={0.28}>
-          <h1 className="font-black italic uppercase leading-none"
-            style={{ fontSize: "clamp(3.5rem, 12vw, 9rem)", color: TEXT, letterSpacing: "-0.035em" }}>
-            Salelooterz
+      exit={{ opacity: 0, transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}>
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: EXPO }}
+        className="flex flex-col items-center gap-6">
+        <motion.img src="/assets/logo.jpg" alt="Salelooterz"
+          className="h-16 w-16 rounded-2xl object-contain"
+          initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.7, ease: EXPO }}
+          style={{ boxShadow: `0 0 60px ${BROWN}40` }} />
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-center mb-3"
+            style={{ color: TEXT2 }}>Est. 2021 · India</p>
+          <h1 className="font-black uppercase text-center leading-none"
+            style={{ fontSize: "clamp(3rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+            SALELOOTERZ
           </h1>
-        </MaskedReveal>
-        <div style={{ width: "100%", overflow: "hidden", height: 2 }}>
-          <motion.div style={{ height: "100%", background: PINK, transformOrigin: "left" }}
-            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-            transition={{ delay: 0.9, duration: 0.9, ease: EXPO_EASE }} />
         </div>
-        <MaskedReveal delay={1.1}>
-          <p className="text-xs font-semibold uppercase tracking-widest"
-            style={{ color: TEXT2, letterSpacing: "0.22em" }}>
-            India's #1 Deal Alert Community
-          </p>
-        </MaskedReveal>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: BORDER }}>
-        <motion.div className="h-full" style={{ background: PINK }}
-          initial={{ width: "0%" }} animate={{ width: "100%" }}
-          transition={{ delay: 0.4, duration: 2.4, ease: "linear" }} />
-      </div>
+        <div style={{ width: 240, height: 1, background: BORDER, position: "relative", overflow: "hidden" }}>
+          <motion.div style={{ position: "absolute", inset: 0, background: BROWN, transformOrigin: "left" }}
+            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+            transition={{ delay: 0.5, duration: 2, ease: "linear" }} />
+        </div>
+        <p className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: TEXT2 }}>
+          India's #1 Deal Alert Community
+        </p>
+      </motion.div>
     </motion.div>
   );
 }
@@ -87,173 +103,316 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 export default function Home() {
   const [splashDone, setSplashDone] = useState(false);
   return (
-    <>
+    <div style={{ background: BG, fontFamily: "'Inter', sans-serif" }}>
+      <Grain />
       <AnimatePresence>{!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}</AnimatePresence>
-      <motion.div style={{ background: BG, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}
-        initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.5 }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.7 }}>
         <Navbar />
         <Hero />
+        <MarqueeStrip />
         <Stats />
+        <DealShowcase />
         <FAQ />
         <FinalCTA />
         <Footer />
       </motion.div>
-    </>
+    </div>
   );
 }
 
 // ── Navbar ─────────────────────────────────────────────────────────────────────
 function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
   return (
-    <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: EXPO }}
-      className="flex items-center justify-between px-6 md:px-10 py-5">
-      <a href="#" className="flex items-center gap-2.5 no-underline">
-        <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-xl object-contain" />
-        <span className="font-black text-lg" style={{ color: PINK, letterSpacing: "-0.03em" }}>SaleLooterz</span>
+    <motion.header initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.7, ease: EXPO }}
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-14 py-5"
+      style={{
+        background: scrolled ? `${BG}e8` : "transparent",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
+        transition: "all 0.4s ease",
+      }}>
+      <a href="#" className="flex items-center gap-3 no-underline">
+        <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-xl object-contain"
+          style={{ boxShadow: `0 0 20px ${BROWN}30` }} />
+        <span className="font-black text-base tracking-tight" style={{ color: CREAM, letterSpacing: "-0.02em" }}>
+          SaleLooterz
+        </span>
       </a>
       <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-        className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:opacity-85 active:scale-95"
-        style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
-        <TelegramIcon size={14} /> Join Telegram
+        className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold transition-all hover:opacity-80 active:scale-95"
+        style={{
+          background: BROWN,
+          color: BG,
+          borderRadius: 100,
+        }}>
+        <TelegramIcon size={13} /> Join Telegram
       </a>
     </motion.header>
   );
 }
 
 // ── Hero ───────────────────────────────────────────────────────────────────────
-const DEAL_IMAGES = [
-  { src: "/assets/product1.png", label: "37% OFF",  labelBg: PINK },
-  { src: "/assets/hero.png",     label: "⚡ Flash",  labelBg: "#7c3aed" },
-  { src: "/assets/product3.png", label: "🔥 Hot",   labelBg: "#ea580c" },
-  { src: "/assets/product2.png", label: "Up to 80% OFF", labelBg: PINK },
-  { src: "/assets/product1.png", label: "Deal Alert", labelBg: "#059669" },
-  { src: "/assets/product3.png", label: "Loot Price", labelBg: "#7c3aed" },
-];
-
 function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y    = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   return (
-    <section className="relative min-h-[88vh] flex items-center overflow-hidden px-6 md:px-10">
-      {/* Decorative background glow */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+    <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
+      {/* Radial glow */}
+      <div className="absolute inset-0 pointer-events-none">
         <div style={{
-          position: "absolute", top: "10%", left: "5%",
-          width: 500, height: 500, borderRadius: "50%",
-          background: `radial-gradient(circle, ${PINK}18 0%, transparent 70%)`,
+          position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)",
+          width: 700, height: 700, borderRadius: "50%",
+          background: `radial-gradient(circle, ${BROWN}18 0%, transparent 65%)`,
         }} />
         <div style={{
-          position: "absolute", top: "30%", right: "10%",
+          position: "absolute", bottom: 0, left: "20%",
           width: 400, height: 400, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
+          background: `radial-gradient(circle, rgba(90,55,20,0.2) 0%, transparent 70%)`,
         }} />
-        {/* Grid lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-        {/* Decorative asterisks */}
-        <span className="absolute text-3xl font-black select-none"
-          style={{ top: "22%", left: "18%", color: PINK, opacity: 0.7 }}>✦</span>
-        <span className="absolute text-2xl font-black select-none"
-          style={{ top: "55%", right: "28%", color: "#7c3aed", opacity: 0.6 }}>✦</span>
-        <span className="absolute text-lg font-black select-none"
-          style={{ bottom: "18%", left: "32%", color: "rgba(255,255,255,0.15)" }}>•</span>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-        {/* Left */}
-        <div>
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.85, ease: EXPO }}
-            className="font-black leading-none mb-6"
-            style={{ fontSize: "clamp(3rem, 6vw, 5.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
-            Stop Overpaying.<br />
-            <span style={{ color: PINK }}>Start Saving Big.</span>
-          </motion.h1>
+      {/* Top label */}
+      <motion.p style={{ y, opacity: fade }}
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.7 }}
+        className="text-xs font-semibold uppercase tracking-[0.28em] mb-8"
+        style={{ color: BROWN }}>
+        India's #1 Deal Alert Community
+      </motion.p>
 
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.7 }}
-            className="text-base leading-relaxed mb-10 max-w-sm"
-            style={{ color: TEXT2, fontFamily: "'Courier New', monospace" }}>
-            Join 2.63M+ shoppers getting instant alerts on the best deals. Flash sales, price drops, and
-            crazy discounts delivered to your phone
-          </motion.p>
+      {/* Main headline */}
+      <motion.h1 style={{ y, opacity: fade }}
+        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.9, ease: EXPO }}
+        className="font-black text-center leading-none mb-8"
+        style={{ fontSize: "clamp(3.5rem, 9vw, 8.5rem)", color: TEXT, letterSpacing: "-0.045em", maxWidth: 900 }}>
+        Stop Overpaying.{" "}
+        <span style={{
+          color: "transparent",
+          WebkitTextStroke: `1.5px ${BROWN}`,
+          display: "inline",
+        }}>Start Saving</span>{" "}Big.
+      </motion.h1>
 
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-wrap gap-3">
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: PINK }}>
-              <TelegramIcon size={15} /> Telegram
-            </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:bg-white/10 active:scale-95"
-              style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
-              <WhatsAppIcon size={15} /> WhatsApp
-            </a>
-          </motion.div>
-        </div>
+      {/* Sub */}
+      <motion.p style={{ y, opacity: fade }}
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.38, duration: 0.7 }}
+        className="text-center max-w-md mb-12 text-base leading-relaxed"
+        style={{ color: TEXT2 }}>
+        Join 2.63M+ shoppers getting instant alerts on the best deals across India.
+        Flash sales, price drops &amp; crazy discounts.
+      </motion.p>
 
-        {/* Right: image grid */}
-        <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 1, ease: EXPO }}
-          className="hidden lg:grid grid-cols-3 gap-3"
-          style={{ transform: "perspective(900px) rotateY(-4deg) rotateX(3deg)" }}>
-          {DEAL_IMAGES.map((img, i) => (
-            <motion.div key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: i % 2 === 0 ? 0 : 20 }}
-              transition={{ delay: 0.3 + i * 0.07, duration: 0.7, ease: EXPO }}
-              className="relative rounded-2xl overflow-hidden"
-              style={{ aspectRatio: "3/4", background: CARD }}>
-              <img src={img.src} alt="Deal" className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)" }} />
-              <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
-                style={{ background: img.labelBg }}>
-                {img.label}
-              </span>
-            </motion.div>
+      {/* CTA buttons */}
+      <motion.div style={{ y, opacity: fade }}
+        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.52, duration: 0.6 }}
+        className="flex flex-wrap gap-3 justify-center mb-20">
+        <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:opacity-85 active:scale-95"
+          style={{ background: BROWN, color: BG }}>
+          <TelegramIcon size={14} /> Join on Telegram
+        </a>
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:bg-white/5 active:scale-95"
+          style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
+          <WhatsAppIcon size={14} /> Join on WhatsApp
+        </a>
+      </motion.div>
+
+      {/* 3D Product cards row */}
+      <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.65, duration: 1, ease: EXPO }}
+        className="w-full max-w-5xl relative"
+        style={{ perspective: 1000 }}>
+        <div className="flex gap-4 justify-center items-end">
+          {[
+            { src: "/assets/product1.png", label: "37% OFF",     rotate: -6, translateY: 20,  zIndex: 1 },
+            { src: "/assets/product3.png", label: "⚡ Flash",    rotate: -2, translateY: 8,   zIndex: 2 },
+            { src: "/assets/hero.png",     label: "🔥 Hot Deal", rotate: 0,  translateY: 0,   zIndex: 3 },
+            { src: "/assets/product2.png", label: "Up to 80%",   rotate: 2,  translateY: 8,   zIndex: 2 },
+            { src: "/assets/product1.png", label: "Loot Price",  rotate: 6,  translateY: 20,  zIndex: 1 },
+          ].map((card, i) => (
+            <HeroCard key={i} {...card} delay={0.7 + i * 0.07} />
           ))}
-        </motion.div>
-      </div>
+        </div>
+        {/* Reflection gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+          style={{ background: `linear-gradient(to top, ${BG} 0%, transparent 100%)` }} />
+      </motion.div>
     </section>
+  );
+}
+
+function HeroCard({ src, label, rotate, translateY, zIndex, delay }: {
+  src: string; label: string; rotate: number; translateY: number; zIndex: number; delay: number;
+}) {
+  const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+  return (
+    <motion.div ref={ref} style={{ zIndex, rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+      initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: translateY }}
+      transition={{ delay, duration: 0.9, ease: EXPO }}
+      onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+      className="relative rounded-2xl overflow-hidden shrink-0 cursor-pointer"
+      whileHover={{ scale: 1.04, y: translateY - 8, transition: { duration: 0.3, ease: "easeOut" } }}
+      style={{
+        width: 160, aspectRatio: "3/4",
+        transform: `rotate(${rotate}deg)`,
+        background: CARD,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px ${BORDER}, inset 0 1px 0 rgba(255,255,255,0.04)`,
+      }}>
+      <img src={src} alt="Deal" className="w-full h-full object-cover" />
+      <div className="absolute inset-0"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }} />
+      <span className="absolute bottom-3 left-3 right-3 text-[10px] font-bold text-center py-1 px-2 rounded-full"
+        style={{ background: BROWN, color: BG }}>
+        {label}
+      </span>
+    </motion.div>
+  );
+}
+
+// ── Marquee strip ──────────────────────────────────────────────────────────────
+const MARQUEE_ITEMS = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato", "boAt", "Croma"];
+
+function MarqueeStrip() {
+  return (
+    <div className="relative overflow-hidden py-5"
+      style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: SURFACE }}>
+      <div className="flex gap-16 items-center whitespace-nowrap"
+        style={{ animation: "marquee 22s linear infinite" }}>
+        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((b, i) => (
+          <span key={i} className="text-sm font-black uppercase tracking-wider shrink-0"
+            style={{ color: TEXT2, letterSpacing: "0.1em" }}>{b}</span>
+        ))}
+      </div>
+      <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
+    </div>
   );
 }
 
 // ── Stats ──────────────────────────────────────────────────────────────────────
-const STATS = [
-  { value: "2.63M+",  label: "Active Members",      sub: "Across Telegram & WhatsApp" },
-  { value: "330K+",   label: "Telegram Subscribers", sub: "Growing every day" },
-  { value: "500+",    label: "Deals Per Day",         sub: "Across all categories" },
-  { value: "₹100Cr+", label: "Community Savings",    sub: "Estimated total saved" },
+const STAT_DATA = [
+  { value: "2.63M+",  label: "Active Members",        sub: "Telegram & WhatsApp combined" },
+  { value: "500+",    label: "Deals Posted Daily",     sub: "Across all categories"        },
+  { value: "₹100Cr+", label: "Community Savings",     sub: "Estimated total saved"        },
+  { value: "4.9★",    label: "Member Satisfaction",   sub: "Based on community reviews"   },
 ];
 
 function Stats() {
   return (
-    <section className="px-6 md:px-10 pb-20">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {STATS.map((s, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.6, ease: EXPO }}
-            className="rounded-2xl p-7"
-            style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-            <p className="font-black mb-1" style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.04em" }}>{s.value}</p>
-            <p className="font-bold text-sm mb-1" style={{ color: TEXT }}>{s.label}</p>
-            <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
-          </motion.div>
-        ))}
+    <section className="px-6 md:px-14 py-28">
+      <div className="max-w-6xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}
+          className="mb-16 text-center">
+          <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>By the numbers</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+            The community<br />speaks for itself
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {STAT_DATA.map((s, i) => {
+            const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+            return (
+              <motion.div key={i} ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
+                onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+                className="rounded-2xl p-7 relative overflow-hidden"
+                style={{
+                  background: CARD,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: `0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)`,
+                }}>
+                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+                  style={{ background: `radial-gradient(circle at top right, ${BROWN}18, transparent 70%)` }} />
+                <p className="font-black mb-2 leading-none" style={{ fontSize: "clamp(2.2rem, 4vw, 3rem)", color: CREAM, letterSpacing: "-0.04em" }}>{s.value}</p>
+                <p className="font-bold text-sm mb-1.5" style={{ color: TEXT }}>{s.label}</p>
+                <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
 
-// ── FAQ ─────────────────────────────────────────────────────────────────────────
+// ── Deal Showcase ──────────────────────────────────────────────────────────────
+function DealShowcase() {
+  const deals = [
+    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF",  cat: "boAt · Samsung · JBL"     },
+    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF",  cat: "Myntra · Ajio · Meesho"  },
+    { src: "/assets/product2.png", title: "Home & Living", pct: "Up to 60% OFF",  cat: "Amazon · Flipkart · Pepperfry" },
+  ];
+
+  return (
+    <section className="px-6 md:px-14 pb-28">
+      <div className="max-w-6xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }}
+          className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>What we cover</p>
+            <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+              Every category.<br />Every platform.
+            </h2>
+          </div>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm shrink-0 transition-all hover:opacity-80"
+            style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
+            <TelegramIcon size={13} /> See all deals
+          </a>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          {deals.map((d, i) => {
+            const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+            return (
+              <motion.div key={i} ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
+                onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+                className="rounded-2xl overflow-hidden group cursor-pointer"
+                style={{
+                  background: CARD,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: "0 16px 50px rgba(0,0,0,0.35)",
+                  aspectRatio: "4/5",
+                  position: "relative",
+                }}>
+                <img src={d.src} alt={d.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0"
+                  style={{ background: "linear-gradient(to top, rgba(14,12,10,0.95) 0%, rgba(14,12,10,0.2) 50%, transparent 100%)" }} />
+                <div className="absolute bottom-0 left-0 right-0 p-7">
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
+                  <h3 className="font-black text-2xl mb-1.5" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
+                  <p className="text-xs" style={{ color: TEXT2 }}>{d.cat}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── FAQ ────────────────────────────────────────────────────────────────────────
 const FAQS = [
   { q: "Is Salelooterz completely free to join?",       a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
   { q: "How many deals are shared per day?",             a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
@@ -265,31 +424,34 @@ const FAQS = [
 function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section className="px-6 md:px-10 pb-20">
+    <section className="px-6 md:px-14 pb-28">
       <div className="max-w-3xl mx-auto">
-        <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.6, ease: EXPO }}
-          className="font-black mb-8 text-center"
-          style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: TEXT, letterSpacing: "-0.035em" }}>
-          Frequently Asked<br /><span style={{ color: PINK }}>Questions</span>
-        </motion.h2>
-        <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${BORDER}` }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }}
+          className="mb-12 text-center">
+          <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>FAQ</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+            Common<br />Questions
+          </h2>
+        </motion.div>
+
+        <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${BORDER}`, background: CARD }}>
           {FAQS.map((faq, i) => (
             <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
               viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
               <button onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between px-7 py-5 text-left transition-colors hover:bg-white/[0.03]"
-                style={{ borderBottom: i < FAQS.length - 1 ? `1px solid ${BORDER}` : "none", background: CARD }}>
-                <span className="font-semibold text-sm pr-6" style={{ color: TEXT }}>{faq.q}</span>
+                className="w-full flex items-center justify-between px-8 py-6 text-left transition-all hover:bg-white/[0.025]"
+                style={{ borderBottom: i < FAQS.length - 1 || open === i ? `1px solid ${BORDER}` : "none" }}>
+                <span className="font-semibold text-sm pr-8" style={{ color: TEXT }}>{faq.q}</span>
                 <ChevronDown className="w-4 h-4 shrink-0 transition-transform duration-300"
-                  style={{ color: PINK, transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }} />
+                  style={{ color: BROWN, transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }} />
               </button>
               <AnimatePresence initial={false}>
                 {open === i && (
                   <motion.div key="body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
-                    className="overflow-hidden" style={{ background: CARD, borderBottom: `1px solid ${BORDER}` }}>
-                    <p className="px-7 pb-5 pt-1 text-sm leading-relaxed" style={{ color: TEXT2 }}>{faq.a}</p>
+                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
+                    className="overflow-hidden" style={{ borderBottom: `1px solid ${BORDER}` }}>
+                    <p className="px-8 pb-6 pt-2 text-sm leading-relaxed" style={{ color: TEXT2 }}>{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -303,36 +465,49 @@ function FAQ() {
 
 // ── Final CTA ──────────────────────────────────────────────────────────────────
 function FinalCTA() {
+  const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
   return (
-    <section className="px-6 md:px-10 pb-20">
-      <div className="max-w-7xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}
-          className="rounded-3xl p-14 text-center relative overflow-hidden"
-          style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+    <section className="px-6 md:px-14 pb-28">
+      <div className="max-w-6xl mx-auto">
+        <motion.div ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+          onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
+          className="rounded-3xl p-16 md:p-24 text-center relative overflow-hidden"
+          style={{
+            background: CARD2,
+            border: `1px solid ${BORDER}`,
+            boxShadow: `0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)`,
+          }}>
+          {/* Glow */}
           <div className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse 60% 80% at 50% 0%, ${PINK}20 0%, transparent 65%)` }} />
+            style={{ background: `radial-gradient(ellipse 70% 60% at 50% 0%, ${BROWN}25 0%, transparent 65%)` }} />
+          {/* Corner decoration */}
+          <div className="absolute top-0 right-0 w-px h-32 pointer-events-none"
+            style={{ background: `linear-gradient(to bottom, ${BROWN}60, transparent)` }} />
+          <div className="absolute top-0 right-0 h-px w-32 pointer-events-none"
+            style={{ background: `linear-gradient(to left, ${BROWN}60, transparent)` }} />
+
           <div className="relative z-10">
-            <p className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6"
-              style={{ background: `${PINK}20`, color: PINK }}>
+            <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-8" style={{ color: BROWN }}>
               Join 2.63M+ smart shoppers
             </p>
-            <h2 className="font-black text-white mb-4 leading-tight"
-              style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", letterSpacing: "-0.035em" }}>
-              Ready to start saving?
+            <h2 className="font-black text-white leading-none mb-6"
+              style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.045em" }}>
+              Ready to start<br />saving?
             </h2>
-            <p className="text-base mb-10 max-w-sm mx-auto" style={{ color: TEXT2 }}>
+            <p className="text-base mb-12 max-w-sm mx-auto" style={{ color: TEXT2 }}>
               Free to join. Deals every day. No spam. No catch.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-all active:scale-95"
-                style={{ background: PINK }}>
+                className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:opacity-85 active:scale-95"
+                style={{ background: BROWN, color: BG }}>
                 <TelegramIcon size={14} /> Join Telegram — Free
               </a>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-white transition-all active:scale-95"
-                style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
+                className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:bg-white/5 active:scale-95"
+                style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
                 <WhatsAppIcon size={14} /> Join WhatsApp
               </a>
             </div>
@@ -346,18 +521,18 @@ function FinalCTA() {
 // ── Footer ─────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="px-6 md:px-10 py-8" style={{ borderTop: `1px solid ${BORDER}` }}>
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2.5">
+    <footer className="px-6 md:px-14 py-10" style={{ borderTop: `1px solid ${BORDER}` }}>
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+        <div className="flex items-center gap-3">
           <img src="/assets/logo.jpg" alt="Salelooterz" className="h-7 w-7 rounded-xl object-contain" />
-          <span className="font-black text-base" style={{ color: PINK, letterSpacing: "-0.03em" }}>SaleLooterz</span>
+          <span className="font-black text-sm" style={{ color: CREAM, letterSpacing: "-0.02em" }}>SaleLooterz</span>
         </div>
-        <div className="flex flex-wrap justify-center gap-6 text-xs" style={{ color: TEXT2 }}>
+        <div className="flex flex-wrap justify-center gap-8 text-xs" style={{ color: TEXT2 }}>
           {["Privacy Policy", "Terms", "Contact", "About"].map(l => (
-            <a key={l} href="#" className="transition-colors hover:text-white">{l}</a>
+            <a key={l} href="#" className="transition-colors hover:text-white" style={{ textDecoration: "none" }}>{l}</a>
           ))}
         </div>
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>© {new Date().getFullYear()} Salelooterz</p>
+        <p className="text-xs" style={{ color: "rgba(242,234,216,0.18)" }}>© {new Date().getFullYear()} Salelooterz. All rights reserved.</p>
       </div>
     </footer>
   );
