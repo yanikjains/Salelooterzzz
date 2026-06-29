@@ -353,10 +353,88 @@ function Stats() {
 }
 
 // ── Deal Showcase ──────────────────────────────────────────────────────────────
+function DealCard({ d, i }: { d: { src: string; title: string; pct: string; cat: string }; i: number }) {
+  const { ref, rx, ry, onMouseMove, onMouseLeave: tiltLeave } = use3DTilt();
+  const [active, setActive] = useState(false);
+
+  function handleMouseEnter() { setActive(true); }
+  function handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) { setActive(false); tiltLeave(e); }
+  function handleTap(e: React.MouseEvent<HTMLDivElement>) {
+    if (window.matchMedia("(hover: none)").matches) {
+      e.preventDefault();
+      setActive(v => !v);
+    }
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+      initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
+      onMouseMove={onMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleTap}
+      className="rounded-2xl overflow-hidden cursor-pointer"
+      style={{
+        background: CARD,
+        border: `1px solid ${BORDER}`,
+        boxShadow: active ? `0 24px 70px rgba(0,0,0,0.55), 0 0 0 1px ${BROWN}40` : "0 16px 50px rgba(0,0,0,0.35)",
+        aspectRatio: "4/5",
+        position: "relative",
+        transition: "box-shadow 0.35s ease",
+      }}>
+      {/* Image */}
+      <img src={d.src} alt={d.title}
+        className="w-full h-full object-cover"
+        style={{ transform: active ? "scale(1.07)" : "scale(1)", transition: "transform 0.7s ease" }} />
+
+      {/* Base gradient */}
+      <div className="absolute inset-0"
+        style={{ background: "linear-gradient(to top, rgba(14,12,10,0.95) 0%, rgba(14,12,10,0.2) 55%, transparent 100%)" }} />
+
+      {/* Hover/tap overlay — darkens card and reveals buttons */}
+      <AnimatePresence>
+        {active && (
+          <motion.div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-5"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            style={{ background: "rgba(14,12,10,0.72)", backdropFilter: "blur(4px)" }}>
+            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-85 active:scale-95"
+              style={{ background: BROWN, color: BG }}>
+              <TelegramIcon size={15} /> Join Telegram
+            </a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10 active:scale-95"
+              style={{ border: `1.5px solid ${BORDER}`, color: TEXT, background: "rgba(255,255,255,0.04)" }}>
+              <WhatsAppIcon size={15} /> Join WhatsApp
+            </a>
+            {/* Mobile-only: tap outside hint */}
+            <p className="text-[10px] mt-1 md:hidden" style={{ color: TEXT2 }}>Tap outside to close</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Card info (slides down on hover) */}
+      <motion.div className="absolute bottom-0 left-0 right-0 p-7"
+        animate={{ y: active ? 12 : 0, opacity: active ? 0 : 1 }}
+        transition={{ duration: 0.22 }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
+        <h3 className="font-black text-2xl mb-1.5" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
+        <p className="text-xs" style={{ color: TEXT2 }}>{d.cat}</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function DealShowcase() {
   const deals = [
-    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF",  cat: "boAt · Samsung · JBL"     },
-    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF",  cat: "Myntra · Ajio · Meesho"  },
+    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF",  cat: "boAt · Samsung · JBL"          },
+    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF",  cat: "Myntra · Ajio · Meesho"        },
     { src: "/assets/product2.png", title: "Home & Living", pct: "Up to 60% OFF",  cat: "Amazon · Flipkart · Pepperfry" },
   ];
 
@@ -380,32 +458,7 @@ function DealShowcase() {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {deals.map((d, i) => {
-            const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
-            return (
-              <motion.div key={i} ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
-                onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
-                className="rounded-2xl overflow-hidden group cursor-pointer"
-                style={{
-                  background: CARD,
-                  border: `1px solid ${BORDER}`,
-                  boxShadow: "0 16px 50px rgba(0,0,0,0.35)",
-                  aspectRatio: "4/5",
-                  position: "relative",
-                }}>
-                <img src={d.src} alt={d.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0"
-                  style={{ background: "linear-gradient(to top, rgba(14,12,10,0.95) 0%, rgba(14,12,10,0.2) 50%, transparent 100%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 p-7">
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
-                  <h3 className="font-black text-2xl mb-1.5" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
-                  <p className="text-xs" style={{ color: TEXT2 }}>{d.cat}</p>
-                </div>
-              </motion.div>
-            );
-          })}
+          {deals.map((d, i) => <DealCard key={i} d={d} i={i} />)}
         </div>
       </div>
     </section>
