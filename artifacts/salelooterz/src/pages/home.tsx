@@ -1,19 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import {
+  motion, AnimatePresence,
+  useMotionValue, useSpring, useTransform,
+  useScroll,
+} from "framer-motion";
+import { ChevronDown, Zap, Bell, TrendingDown, Shield } from "lucide-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
-const BG     = "#0e0c0a";
-const CARD   = "#1f1b16";
-const CARD2  = "#252018";
-const BROWN  = "#b8834a";
-const CREAM  = "#f2ead8";
+const BG     = "#0a0806";
+const CARD   = "#1a1510";
+const CARD2  = "#221c14";
+const BROWN  = "#c49040";
+const CREAM  = "#f0e6cc";
 const TEXT   = "#f5f0e8";
-const TEXT2  = "rgba(242,234,216,0.4)";
-const BORDER = "rgba(184,131,74,0.15)";
+const TEXT2  = "rgba(240,230,204,0.38)";
+const BORDER = "rgba(196,144,64,0.14)";
 const EXPO: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
@@ -32,212 +36,290 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-// ── Custom Cursor (desktop only) ───────────────────────────────────────────────
-function CustomCursor() {
-  const cx = useMotionValue(-100);
-  const cy = useMotionValue(-100);
-  const sx = useSpring(cx, { stiffness: 120, damping: 18, mass: 0.5 });
-  const sy = useSpring(cy, { stiffness: 120, damping: 18, mass: 0.5 });
-  const [hovering, setHovering] = useState(false);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const move = (e: MouseEvent) => { cx.set(e.clientX); cy.set(e.clientY); setVisible(true); };
-    const over = (e: MouseEvent) => {
-      const el = e.target as HTMLElement;
-      setHovering(!!el.closest("a, button, [role=button]"));
-    };
-    const leave = () => setVisible(false);
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseover", over);
-    window.addEventListener("mouseleave", leave);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseover", over);
-      window.removeEventListener("mouseleave", leave);
-    };
-  }, [cx, cy]);
-
-  return (
-    <>
-      {/* Dot */}
-      <motion.div className="fixed top-0 left-0 z-[9998] pointer-events-none rounded-full hidden md:block"
-        style={{
-          x: cx, y: cy,
-          width: 6, height: 6,
-          marginLeft: -3, marginTop: -3,
-          background: BROWN,
-        }}
-        animate={{ opacity: visible ? 1 : 0, scale: hovering ? 0 : 1 }}
-        transition={{ duration: 0.15 }} />
-      {/* Ring */}
-      <motion.div className="fixed top-0 left-0 z-[9997] pointer-events-none rounded-full hidden md:block"
-        style={{
-          x: sx, y: sy,
-          width: hovering ? 48 : 32,
-          height: hovering ? 48 : 32,
-          marginLeft: hovering ? -24 : -16,
-          marginTop: hovering ? -24 : -16,
-          border: `1.5px solid ${BROWN}80`,
-          transition: "width 0.25s ease, height 0.25s ease, margin 0.25s ease",
-        }}
-        animate={{ opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.2 }} />
-    </>
-  );
-}
-
-// ── Animated counter hook ──────────────────────────────────────────────────────
-function useCountUp(raw: string, inView: boolean) {
-  const match = raw.match(/^([₹]?)(\d+\.?\d*)(M\+|Cr\+|\+|★)?$/);
-  const prefix = match?.[1] ?? "";
-  const num    = parseFloat(match?.[2] ?? "0");
-  const suffix = match?.[3] ?? "";
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const duration = 1800;
-    const step = 16;
-    const steps = duration / step;
-    const inc = num / steps;
-    const t = setInterval(() => {
-      start += inc;
-      if (start >= num) { setCount(num); clearInterval(t); }
-      else setCount(start);
-    }, step);
-    return () => clearInterval(t);
-  }, [inView, num]);
-
-  const display = num >= 10 ? Math.round(count).toString() : count.toFixed(num % 1 !== 0 ? 2 : 0);
-  return `${prefix}${display}${suffix}`;
-}
-
-// ── Text scramble hook ─────────────────────────────────────────────────────────
-const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$₹%";
-function useScramble(text: string) {
-  const [display, setDisplay] = useState(text);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const scramble = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    let iteration = 0;
-    timerRef.current = setInterval(() => {
-      setDisplay(
-        text.split("").map((char, i) => {
-          if (char === " " || char === ".") return char;
-          if (i < iteration) return text[i];
-          return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-        }).join("")
-      );
-      iteration += 0.6;
-      if (iteration > text.length) {
-        setDisplay(text);
-        clearInterval(timerRef.current!);
-      }
-    }, 28);
-  }, [text]);
-
-  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
-  return { display, scramble };
-}
-
-// ── 3D Tilt card hook ──────────────────────────────────────────────────────────
-function use3DTilt() {
-  const ref = useRef<HTMLDivElement>(null);
-  const x  = useMotionValue(0);
-  const y  = useMotionValue(0);
-  const rx = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 20 });
-  const ry = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 20 });
-
-  function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!ref.current) return;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    x.set((e.clientX - left) / width  - 0.5);
-    y.set((e.clientY - top)  / height - 0.5);
-  }
-  function onMouseLeave() { x.set(0); y.set(0); }
-  return { ref, rx, ry, onMouseMove, onMouseLeave };
-}
-
-// ── Floating badge ─────────────────────────────────────────────────────────────
-function FloatBadge({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
-  return (
-    <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.7, ease: EXPO }} style={style}>
-      <motion.div animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 4 + delay, repeat: Infinity, ease: "easeInOut", delay }}>
-        {children}
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ── Grain texture ─────────────────────────────────────────────────────────────
+// ── Grain ──────────────────────────────────────────────────────────────────────
 function Grain() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9996] opacity-[0.032]"
+    <div className="pointer-events-none fixed inset-0 z-[9996] opacity-[0.028]"
       style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: "repeat", backgroundSize: "200px",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "repeat", backgroundSize: "180px",
       }} />
   );
 }
 
-// ── Live deal notification ticker ─────────────────────────────────────────────
-const DEAL_NOTIFICATIONS = [
-  { name: "Priya, Mumbai",    text: "saved ₹3,200 on boAt earbuds",            ago: "2 min ago",  emoji: "🎧" },
-  { name: "Rahul, Delhi",     text: "grabbed a laptop at 64% OFF",              ago: "5 min ago",  emoji: "💻" },
-  { name: "Sneha, Bangalore", text: "snagged Myntra fashion at 81% OFF",        ago: "7 min ago",  emoji: "👗" },
-  { name: "Arjun, Hyderabad", text: "saved ₹1,800 on Swiggy flash deal",       ago: "11 min ago", emoji: "🍕" },
-  { name: "Divya, Chennai",   text: "got a smartwatch at ₹799 (was ₹4,999)",   ago: "14 min ago", emoji: "⌚" },
-  { name: "Karan, Ahmedabad", text: "snagged a Narzo phone for ₹6,999",        ago: "18 min ago", emoji: "📱" },
-  { name: "Meena, Pune",      text: "saved ₹920 on Nykaa beauty",              ago: "21 min ago", emoji: "💄" },
-  { name: "Vijay, Kolkata",   text: "grabbed HyperX headset at 70% OFF",       ago: "25 min ago", emoji: "🎮" },
-];
+// ── Custom cursor ──────────────────────────────────────────────────────────────
+function CustomCursor() {
+  const cx = useMotionValue(-200);
+  const cy = useMotionValue(-200);
+  const sx = useSpring(cx, { stiffness: 100, damping: 16, mass: 0.4 });
+  const sy = useSpring(cy, { stiffness: 100, damping: 16, mass: 0.4 });
+  const [hov, setHov] = useState(false);
+  const [vis, setVis] = useState(false);
 
-function LiveTicker() {
-  const [idx, setIdx] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setIdx(i => (i + 1) % DEAL_NOTIFICATIONS.length), 3500);
-    return () => clearInterval(t);
+    const mv = (e: MouseEvent) => { cx.set(e.clientX); cy.set(e.clientY); setVis(true); };
+    const ov = (e: MouseEvent) => setHov(!!(e.target as HTMLElement).closest("a,button,[role=button]"));
+    const lv = () => setVis(false);
+    window.addEventListener("mousemove", mv);
+    window.addEventListener("mouseover", ov);
+    window.addEventListener("mouseleave", lv);
+    return () => { window.removeEventListener("mousemove", mv); window.removeEventListener("mouseover", ov); window.removeEventListener("mouseleave", lv); };
+  }, [cx, cy]);
+
+  return (
+    <>
+      <motion.div className="fixed z-[9999] pointer-events-none rounded-full hidden md:block"
+        style={{ x: cx, y: cy, width: 6, height: 6, marginLeft: -3, marginTop: -3, background: BROWN }}
+        animate={{ opacity: vis ? 1 : 0, scale: hov ? 0 : 1 }} transition={{ duration: 0.12 }} />
+      <motion.div className="fixed z-[9998] pointer-events-none rounded-full hidden md:block"
+        style={{
+          x: sx, y: sy,
+          width: hov ? 52 : 30, height: hov ? 52 : 30,
+          marginLeft: hov ? -26 : -15, marginTop: hov ? -26 : -15,
+          border: `1.5px solid ${BROWN}70`,
+          transition: "width .22s ease,height .22s ease,margin .22s ease",
+        }}
+        animate={{ opacity: vis ? 1 : 0 }} transition={{ duration: 0.18 }} />
+    </>
+  );
+}
+
+// ── Particle canvas hero ───────────────────────────────────────────────────────
+function ParticleCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const mouse = useRef({ x: -999, y: -999 });
+  const animRef = useRef<number>(0);
+
+  useEffect(() => {
+    const canvas = ref.current!;
+    const ctx = canvas.getContext("2d")!;
+    let W = canvas.width = canvas.offsetWidth;
+    let H = canvas.height = canvas.offsetHeight;
+
+    type Particle = { x: number; y: number; ox: number; oy: number; vx: number; vy: number; r: number; a: number };
+    const N = 90;
+    const pts: Particle[] = Array.from({ length: N }, () => {
+      const x = Math.random() * W, y = Math.random() * H;
+      return { x, y, ox: x, oy: y, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, r: Math.random() * 1.2 + .4, a: Math.random() };
+    });
+
+    const CONN = 110, REPEL = 130;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Spotlight
+      const g = ctx.createRadialGradient(mouse.current.x, mouse.current.y, 0, mouse.current.x, mouse.current.y, 380);
+      g.addColorStop(0, "rgba(196,144,64,0.07)");
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      for (const p of pts) {
+        const dx = p.x - mouse.current.x, dy = p.y - mouse.current.y;
+        const d = Math.hypot(dx, dy);
+        if (d < REPEL) {
+          const f = (REPEL - d) / REPEL * 2.5;
+          p.vx += (dx / d) * f * 0.08;
+          p.vy += (dy / d) * f * 0.08;
+        }
+        // Drift back to origin
+        p.vx += (p.ox - p.x) * 0.004;
+        p.vy += (p.oy - p.y) * 0.004;
+        p.vx *= 0.94;
+        p.vy *= 0.94;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Proximity to mouse: glow brighter
+        const md = Math.hypot(p.x - mouse.current.x, p.y - mouse.current.y);
+        const glow = md < 200 ? 1 - md / 200 : 0;
+        const alpha = 0.15 + glow * 0.6;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r + glow * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(196,144,64,${alpha})`;
+        ctx.fill();
+      }
+
+      // Connections
+      for (let i = 0; i < N; i++) {
+        for (let j = i + 1; j < N; j++) {
+          const dd = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+          if (dd < CONN) {
+            const op = (1 - dd / CONN) * 0.18;
+            ctx.strokeStyle = `rgba(196,144,64,${op})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animRef.current = requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    const onMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+    const onLeave = () => { mouse.current = { x: -999, y: -999 }; };
+    canvas.addEventListener("mousemove", onMove);
+    canvas.addEventListener("mouseleave", onLeave);
+
+    const onResize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      pts.forEach(p => { p.ox = Math.random() * W; p.oy = Math.random() * H; p.x = p.ox; p.y = p.oy; });
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      canvas.removeEventListener("mousemove", onMove);
+      canvas.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
-  const n = DEAL_NOTIFICATIONS[idx];
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} />;
+}
+
+// ── Magnetic button ────────────────────────────────────────────────────────────
+function MagneticBtn({ children, href, primary = false }: { children: React.ReactNode; href: string; primary?: boolean }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0), y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 180, damping: 14 });
+  const sy = useSpring(y, { stiffness: 180, damping: 14 });
+
+  const move = (e: React.MouseEvent) => {
+    if (!wrapRef.current) return;
+    const r = wrapRef.current.getBoundingClientRect();
+    x.set((e.clientX - r.left - r.width / 2) * 0.42);
+    y.set((e.clientY - r.top - r.height / 2) * 0.42);
+  };
+  const leave = () => { x.set(0); y.set(0); };
+
   return (
-    <div className="px-6 md:px-14 pb-10">
-      <div className="max-w-6xl mx-auto">
-        <div className="rounded-2xl px-5 py-3.5 flex items-center gap-4 overflow-hidden"
-          style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-          {/* Pulse dot */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
-            <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:block" style={{ color: "#22c55e" }}>Live</span>
-          </div>
-          <div className="w-px h-4 shrink-0" style={{ background: BORDER }} />
-          {/* Animated notification */}
-          <div className="flex-1 overflow-hidden" style={{ height: 22 }}>
-            <AnimatePresence mode="wait">
-              <motion.div key={idx}
-                initial={{ y: 22, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -22, opacity: 0 }}
-                transition={{ duration: 0.35, ease: EXPO }}
-                className="flex items-center gap-2 whitespace-nowrap">
-                <span className="text-sm">{n.emoji}</span>
-                <span className="text-sm font-bold" style={{ color: CREAM }}>{n.name}</span>
-                <span className="text-sm" style={{ color: TEXT2 }}>{n.text}</span>
-                <span className="text-xs ml-2 hidden sm:inline" style={{ color: TEXT2 }}>· {n.ago}</span>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-            className="shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
-            style={{ background: `${BROWN}25`, color: BROWN }}>
-            Join free →
-          </a>
-        </div>
-      </div>
+    <div ref={wrapRef} onMouseMove={move} onMouseLeave={leave} style={{ display: "inline-block" }}>
+      <motion.a href={href} target="_blank" rel="noopener noreferrer"
+        style={{ x: sx, y: sy, display: "inline-flex", alignItems: "center", gap: 8 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-8 py-4 rounded-full font-bold text-sm transition-all"
+        {...(primary
+          ? { style: { x: sx, y: sy, display: "inline-flex", alignItems: "center", gap: 8, background: BROWN, color: BG, boxShadow: `0 0 40px ${BROWN}40` } }
+          : { style: { x: sx, y: sy, display: "inline-flex", alignItems: "center", gap: 8, border: `1px solid ${BORDER}`, color: TEXT } }
+        )}>
+        {children}
+      </motion.a>
     </div>
+  );
+}
+
+// ── Scramble hook ─────────────────────────────────────────────────────────────
+const SC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ₹!@#0123456789";
+function useScramble(text: string) {
+  const [disp, setDisp] = useState(text);
+  const t = useRef<ReturnType<typeof setInterval> | null>(null);
+  const go = useCallback(() => {
+    if (t.current) clearInterval(t.current);
+    let it = 0;
+    t.current = setInterval(() => {
+      setDisp(text.split("").map((c, i) => {
+        if (c === " " || c === ".") return c;
+        if (i < it) return text[i];
+        return SC[Math.floor(Math.random() * SC.length)];
+      }).join(""));
+      it += 0.55;
+      if (it > text.length) { setDisp(text); clearInterval(t.current!); }
+    }, 26);
+  }, [text]);
+  useEffect(() => () => { if (t.current) clearInterval(t.current); }, []);
+  return { disp, go };
+}
+
+// ── Count-up hook ──────────────────────────────────────────────────────────────
+function useCountUp(raw: string, inView: boolean) {
+  const m = raw.match(/^([₹]?)(\d+\.?\d*)(M\+|Cr\+|\+|★)?$/);
+  const prefix = m?.[1] ?? "", num = parseFloat(m?.[2] ?? "0"), suffix = m?.[3] ?? "";
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    let cur = 0; const dur = 1800, step = 16, inc = num / (dur / step);
+    const id = setInterval(() => {
+      cur += inc;
+      if (cur >= num) { setN(num); clearInterval(id); } else setN(cur);
+    }, step);
+    return () => clearInterval(id);
+  }, [inView, num]);
+  const d = num >= 10 ? Math.round(n).toString() : n.toFixed(num % 1 ? 2 : 0);
+  return `${prefix}${d}${suffix}`;
+}
+
+// ── Live ticker notifications ─────────────────────────────────────────────────
+const NOTIFICATIONS = [
+  { name: "Priya, Mumbai",    text: "saved ₹3,200 on boAt earbuds",         ago: "2 min",  emoji: "🎧" },
+  { name: "Rahul, Delhi",     text: "grabbed a laptop at 64% OFF",           ago: "5 min",  emoji: "💻" },
+  { name: "Sneha, Bengaluru", text: "got Myntra fashion at 81% OFF",         ago: "8 min",  emoji: "👗" },
+  { name: "Arjun, Hyderabad", text: "saved ₹1,800 on Swiggy",               ago: "12 min", emoji: "🍕" },
+  { name: "Divya, Chennai",   text: "got a smartwatch at ₹799 (was ₹4,999)","ago": "15 min", emoji: "⌚" },
+  { name: "Karan, Ahmedabad", text: "snagged Narzo phone for ₹6,999",       ago: "19 min", emoji: "📱" },
+  { name: "Meena, Pune",      text: "saved ₹920 on Nykaa beauty",           ago: "22 min", emoji: "💄" },
+  { name: "Vijay, Kolkata",   text: "grabbed HyperX at 70% OFF",            ago: "26 min", emoji: "🎮" },
+];
+
+// ── Floating alert that randomly appears ─────────────────────────────────────
+function FloatingAlert() {
+  const [visible, setVisible] = useState(false);
+  const [item, setItem] = useState(NOTIFICATIONS[0]);
+  const [pos, setPos] = useState({ x: 20, y: 60 });
+
+  useEffect(() => {
+    const show = () => {
+      const n = NOTIFICATIONS[Math.floor(Math.random() * NOTIFICATIONS.length)];
+      const side = Math.random() > 0.5;
+      setItem(n);
+      setPos({
+        x: side ? 20 : undefined as any,
+        y: 30 + Math.random() * 40,
+      });
+      setVisible(true);
+      setTimeout(() => setVisible(false), 4500);
+    };
+    const first = setTimeout(show, 5000);
+    const interval = setInterval(show, 9000);
+    return () => { clearTimeout(first); clearInterval(interval); };
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="fixed z-[9000] pointer-events-none hidden md:flex items-center gap-3 px-4 py-3 rounded-2xl"
+          style={{
+            left: 24, bottom: `${pos.y}vh`,
+            background: CARD2, border: `1px solid ${BORDER}`,
+            boxShadow: `0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px ${BROWN}20`,
+            maxWidth: 280,
+          }}
+          initial={{ x: -120, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -120, opacity: 0 }}
+          transition={{ duration: 0.45, ease: EXPO }}>
+          <span style={{ fontSize: 22 }}>{item.emoji}</span>
+          <div>
+            <p className="text-xs font-bold leading-tight" style={{ color: CREAM }}>{item.name}</p>
+            <p className="text-[11px] leading-tight mt-0.5" style={{ color: TEXT2 }}>{item.text}</p>
+          </div>
+          <span className="text-[10px] shrink-0 px-2 py-1 rounded-full ml-1"
+            style={{ background: `${BROWN}18`, color: BROWN }}>{item.ago} ago</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -247,25 +329,27 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
   return (
     <motion.div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center select-none"
       style={{ background: BG }}
-      exit={{ opacity: 0, transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}>
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: EXPO }}
         className="flex flex-col items-center gap-6">
         <motion.img src="/assets/logo.jpg" alt="Salelooterz" className="h-16 w-16 rounded-2xl object-contain"
-          initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0.75, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, ease: EXPO }}
-          style={{ boxShadow: `0 0 60px ${BROWN}40` }} />
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-center mb-3" style={{ color: TEXT2 }}>Est. 2021 · India</p>
-          <h1 className="font-black uppercase text-center leading-none"
-            style={{ fontSize: "clamp(3rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>SALELOOTERZ</h1>
+          style={{ boxShadow: `0 0 60px ${BROWN}50` }} />
+        <div className="text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: TEXT2 }}>Est. 2021 · India</p>
+          <h1 className="font-black uppercase leading-none"
+            style={{ fontSize: "clamp(2.8rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>SALELOOTERZ</h1>
         </div>
-        <div style={{ width: 240, height: 1, background: BORDER, position: "relative", overflow: "hidden" }}>
-          <motion.div style={{ position: "absolute", inset: 0, background: BROWN, transformOrigin: "left" }}
+        <div className="relative overflow-hidden" style={{ width: 220, height: 1, background: BORDER }}>
+          <motion.div className="absolute inset-0" style={{ background: BROWN, transformOrigin: "left" }}
             initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-            transition={{ delay: 0.5, duration: 2, ease: "linear" }} />
+            transition={{ delay: 0.6, duration: 2, ease: "linear" }} />
         </div>
-        <p className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: TEXT2 }}>India's #1 Deal Alert Community</p>
+        <p className="text-[11px] font-medium tracking-[0.28em] uppercase" style={{ color: TEXT2 }}>
+          India's #1 Deal Alert Community
+        </p>
       </motion.div>
     </motion.div>
   );
@@ -278,14 +362,16 @@ export default function Home() {
     <div style={{ background: BG, fontFamily: "'Inter', sans-serif" }}>
       <Grain />
       <CustomCursor />
+      <FloatingAlert />
       <AnimatePresence>{!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}</AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.7 }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.8 }}>
         <Navbar />
         <Hero />
         <LiveTicker />
         <MarqueeStrip />
         <Stats />
-        <DealShowcase />
+        <DragCarouselSection />
+        <WhySection />
         <SavingsCalculator />
         <FAQ />
         <FinalCTA />
@@ -299,31 +385,36 @@ export default function Home() {
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
+    const fn = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
-
   return (
-    <motion.header initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+    <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: EXPO }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-14 py-5"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-14 py-4"
       style={{
-        background: scrolled ? `${BG}ee` : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
+        background: scrolled ? `${BG}f0` : "transparent",
+        backdropFilter: scrolled ? "blur(24px)" : "none",
         borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
         transition: "all 0.4s ease",
       }}>
       <a href="#" className="flex items-center gap-3 no-underline">
         <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-xl object-contain"
           style={{ boxShadow: `0 0 20px ${BROWN}30` }} />
-        <span className="font-black text-base" style={{ color: CREAM, letterSpacing: "-0.02em" }}>SaleLooterz</span>
+        <span className="font-black text-sm" style={{ color: CREAM, letterSpacing: "-0.02em" }}>SaleLooterz</span>
       </a>
-      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-        className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold transition-all hover:opacity-80 active:scale-95"
-        style={{ background: BROWN, color: BG, borderRadius: 100 }}>
-        <TelegramIcon size={13} /> Join Telegram
-      </a>
+      <div className="hidden md:flex items-center gap-4">
+        <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: TEXT2 }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
+          2.63M+ members
+        </span>
+        <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all hover:opacity-80"
+          style={{ background: BROWN, color: BG }}>
+          <TelegramIcon size={13} /> Join Free
+        </a>
+      </div>
     </motion.header>
   );
 }
@@ -332,240 +423,204 @@ function Navbar() {
 function Hero() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y    = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fade = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
+  const up   = useTransform(scrollYProgress, [0, 0.55], [0, -80]);
 
-  const line1 = useScramble("Stop Overpaying.");
-  const line2 = useScramble("Start Saving Big.");
+  const h1 = useScramble("Stop Overpaying.");
+  const h2 = useScramble("Start Saving Big.");
+
+  const words1 = h1.disp.split(" ");
+  const words2 = h2.disp.split(" ");
 
   return (
-    <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
-      {/* Glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 700, borderRadius: "50%", background: `radial-gradient(circle, ${BROWN}16 0%, transparent 65%)` }} />
-        <div style={{ position: "absolute", bottom: 0, left: "20%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(90,55,20,0.18) 0%, transparent 70%)" }} />
+    <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <ParticleCanvas />
+
+      {/* Deep glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+        <div style={{ position: "absolute", top: "40%", left: "50%", transform: "translate(-50%,-50%)", width: 900, height: 900, borderRadius: "50%", background: `radial-gradient(circle, ${BROWN}0e 0%, transparent 60%)` }} />
       </div>
 
-      {/* ── LEFT SIDE DECORATIONS ── */}
-      <div className="hidden xl:block absolute left-5 top-0 bottom-0 pointer-events-none" style={{ width: 120 }}>
-        <motion.div className="absolute"
-          style={{ left: 18, top: "15%", width: 1, height: "55%", background: `linear-gradient(to bottom, transparent, ${BROWN}50, transparent)` }}
-          initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
-          transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
-        <motion.p className="absolute font-black uppercase text-[10px]"
-          style={{ left: 5, top: "22%", color: TEXT2, writingMode: "vertical-rl", transform: "rotate(180deg)", letterSpacing: "0.35em" }}
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.7 }}>
-          Deal Alert Community
+      {/* Content */}
+      <motion.div style={{ y: up, opacity: fade, position: "relative", zIndex: 2 }}
+        className="flex flex-col items-center text-center px-6 pt-28 pb-20">
+
+        {/* Label */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="flex items-center gap-2 px-4 py-2 rounded-full mb-10"
+          style={{ background: `${BROWN}18`, border: `1px solid ${BROWN}30` }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: BROWN }} />
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BROWN }}>
+            India's #1 Deal Alert Community
+          </span>
+        </motion.div>
+
+        {/* Scramble headline — hover each line */}
+        <h1 className="font-black text-center leading-[0.9] mb-8 cursor-default select-none"
+          style={{ fontSize: "clamp(4rem, 11vw, 10rem)", letterSpacing: "-0.05em", maxWidth: 1100 }}>
+          <motion.div className="block overflow-hidden" initial={{ y: 80 }} animate={{ y: 0 }} transition={{ delay: 0.2, duration: 0.9, ease: EXPO }}>
+            <span onMouseEnter={h1.go} style={{ color: TEXT, display: "inline-block" }}>
+              {words1.map((w, i) => (
+                <span key={i} style={{ display: "inline-block", marginRight: i < words1.length - 1 ? "0.22em" : 0 }}>{w}</span>
+              ))}
+            </span>
+          </motion.div>
+          <motion.div className="block overflow-hidden" initial={{ y: 80 }} animate={{ y: 0 }} transition={{ delay: 0.32, duration: 0.9, ease: EXPO }}>
+            <span onMouseEnter={h2.go}
+              style={{ color: "transparent", WebkitTextStroke: `2px ${BROWN}`, display: "inline-block" }}>
+              {words2.map((w, i) => (
+                <span key={i} style={{ display: "inline-block", marginRight: i < words2.length - 1 ? "0.22em" : 0 }}>{w}</span>
+              ))}
+            </span>
+          </motion.div>
+        </h1>
+
+        {/* Sub */}
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="max-w-lg text-lg leading-relaxed mb-14" style={{ color: TEXT2 }}>
+          Join <strong style={{ color: CREAM }}>2.63M+ smart shoppers</strong> getting instant alerts on flash sales,
+          price drops &amp; crazy discounts — delivered straight to your phone.
         </motion.p>
-        <FloatBadge delay={1.3} style={{ position: "absolute", top: "32%", left: 30 }}>
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: BROWN, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-            🔥 500+ Deals/Day
-          </div>
-        </FloatBadge>
-        <FloatBadge delay={1.6} style={{ position: "absolute", top: "50%", left: 20 }}>
-          <div className="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT2, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-            ⚡ Flash Sales
-          </div>
-        </FloatBadge>
-        <FloatBadge delay={1.9} style={{ position: "absolute", top: "66%", left: 32 }}>
-          <div className="px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap"
-            style={{ background: `${BROWN}20`, border: `1px solid ${BROWN}40`, color: BROWN }}>
-            Est. 2021
-          </div>
-        </FloatBadge>
-      </div>
 
-      {/* ── RIGHT SIDE DECORATIONS ── */}
-      <div className="hidden xl:block absolute right-5 top-0 bottom-0 pointer-events-none" style={{ width: 130 }}>
-        <motion.div className="absolute"
-          style={{ right: 18, top: "18%", width: 1, height: "50%", background: `linear-gradient(to bottom, transparent, ${BROWN}40, transparent)` }}
-          initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
-          transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
-        <FloatBadge delay={1.2} style={{ position: "absolute", top: "26%", right: 16 }}>
-          <div className="rounded-2xl px-4 py-3 text-center"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 12px 32px rgba(0,0,0,0.5)" }}>
-            <p className="font-black text-2xl leading-none" style={{ color: BROWN, letterSpacing: "-0.04em" }}>80%</p>
-            <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Avg Discount</p>
-          </div>
-        </FloatBadge>
-        <FloatBadge delay={1.5} style={{ position: "absolute", top: "46%", right: 22 }}>
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e", flexShrink: 0 }} />
-            Live Deals
-          </div>
-        </FloatBadge>
-        <FloatBadge delay={1.8} style={{ position: "absolute", top: "60%", right: 14 }}>
-          <div className="rounded-xl px-4 py-3 text-center"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-            <p className="font-black text-xl leading-none" style={{ color: CREAM, letterSpacing: "-0.03em" }}>2.63M+</p>
-            <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Members</p>
-          </div>
-        </FloatBadge>
-        <motion.p className="absolute font-black uppercase text-[10px]"
-          style={{ right: 5, top: "25%", color: TEXT2, writingMode: "vertical-rl", letterSpacing: "0.35em" }}
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: 0.7 }}>
-          Zero Spam · 100% Free
-        </motion.p>
-      </div>
+        {/* Magnetic CTAs */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.62, duration: 0.6 }}
+          className="flex flex-wrap gap-4 justify-center mb-20">
+          <MagneticBtn href={TELEGRAM_URL} primary>
+            <TelegramIcon size={15} /> Join on Telegram — Free
+          </MagneticBtn>
+          <MagneticBtn href={WHATSAPP_URL}>
+            <WhatsAppIcon size={15} /> Join on WhatsApp
+          </MagneticBtn>
+        </motion.div>
 
-      {/* Top label */}
-      <motion.p style={{ y, opacity: fade }}
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.7 }}
-        className="text-xs font-semibold uppercase tracking-[0.28em] mb-8" style={{ color: BROWN }}>
-        India's #1 Deal Alert Community
-      </motion.p>
-
-      {/* Scramble headline */}
-      <motion.h1 style={{ y, opacity: fade }}
-        initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.9, ease: EXPO }}
-        className="font-black text-center leading-none mb-8 cursor-default select-none"
-        style={{ fontSize: "clamp(3.5rem, 9vw, 8.5rem)", letterSpacing: "-0.045em", maxWidth: 900 }}>
-        <span
-          onMouseEnter={line1.scramble}
-          style={{ color: TEXT, display: "block" }}>
-          {line1.display}
-        </span>
-        <span
-          onMouseEnter={line2.scramble}
-          style={{ color: "transparent", WebkitTextStroke: `1.5px ${BROWN}`, display: "block" }}>
-          {line2.display}
-        </span>
-      </motion.h1>
-
-      {/* Sub */}
-      <motion.p style={{ y, opacity: fade }}
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.38, duration: 0.7 }}
-        className="text-center max-w-md mb-12 text-base leading-relaxed" style={{ color: TEXT2 }}>
-        Join 2.63M+ shoppers getting instant alerts on the best deals across India.
-        Flash sales, price drops &amp; crazy discounts.
-      </motion.p>
-
-      {/* CTA */}
-      <motion.div style={{ y, opacity: fade }}
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.52, duration: 0.6 }}
-        className="flex flex-wrap gap-3 justify-center mb-20">
-        <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:opacity-85 active:scale-95"
-          style={{ background: BROWN, color: BG }}>
-          <TelegramIcon size={14} /> Join on Telegram
-        </a>
-        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:bg-white/5 active:scale-95"
-          style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
-          <WhatsAppIcon size={14} /> Join on WhatsApp
-        </a>
+        {/* Social proof strip */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.75, duration: 0.6 }}
+          className="flex flex-wrap justify-center gap-6 text-xs font-semibold" style={{ color: TEXT2 }}>
+          {["✅ 100% Free forever", "⚡ 500+ deals/day", "🚫 Zero spam", "🔒 No registration"].map(t => (
+            <span key={t}>{t}</span>
+          ))}
+        </motion.div>
       </motion.div>
 
-      {/* 3D Product card fan */}
-      <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.65, duration: 1, ease: EXPO }}
-        className="w-full max-w-5xl relative" style={{ perspective: 1000 }}>
-        <div className="flex gap-4 justify-center items-end">
-          {([
-            { src: "/assets/product1.png", label: "37% OFF",     rotate: -6, ty: 20, zi: 1 },
-            { src: "/assets/product3.png", label: "⚡ Flash",    rotate: -2, ty: 8,  zi: 2 },
-            { src: "/assets/hero.png",     label: "🔥 Hot Deal", rotate: 0,  ty: 0,  zi: 3 },
-            { src: "/assets/product2.png", label: "Up to 80%",   rotate: 2,  ty: 8,  zi: 2 },
-            { src: "/assets/product1.png", label: "Loot Price",  rotate: 6,  ty: 20, zi: 1 },
-          ] as const).map((c, i) => (
-            <HeroCard key={i} src={c.src} label={c.label} rotate={c.rotate} translateY={c.ty} zIndex={c.zi} delay={0.7 + i * 0.07} />
-          ))}
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-          style={{ background: `linear-gradient(to top, ${BG} 0%, transparent 100%)` }} />
+      {/* Scroll cue */}
+      <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        style={{ zIndex: 2, opacity: fade }}
+        initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 1.4 }}>
+        <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="w-5 h-8 rounded-full border flex items-start justify-center pt-1.5"
+          style={{ borderColor: TEXT2 }}>
+          <div className="w-1 h-2 rounded-full" style={{ background: TEXT2 }} />
+        </motion.div>
+        <span className="text-[10px] uppercase tracking-widest" style={{ color: TEXT2 }}>Scroll</span>
       </motion.div>
     </section>
   );
 }
 
-function HeroCard({ src, label, rotate, translateY, zIndex, delay }: {
-  src: string; label: string; rotate: number; translateY: number; zIndex: number; delay: number;
-}) {
-  const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+// ── Live ticker ────────────────────────────────────────────────────────────────
+function LiveTicker() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % NOTIFICATIONS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+  const n = NOTIFICATIONS[idx];
   return (
-    <motion.div ref={ref} style={{ zIndex, rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-      initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: translateY }}
-      transition={{ delay, duration: 0.9, ease: EXPO }}
-      onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
-      className="relative rounded-2xl overflow-hidden shrink-0 cursor-pointer"
-      whileHover={{ scale: 1.04, y: translateY - 8, transition: { duration: 0.3, ease: "easeOut" } }}
-      style={{
-        width: 160, aspectRatio: "3/4", transform: `rotate(${rotate}deg)`,
-        background: CARD,
-        boxShadow: `0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px ${BORDER}, inset 0 1px 0 rgba(255,255,255,0.04)`,
-      }}>
-      <img src={src} alt="Deal" className="w-full h-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }} />
-      <span className="absolute bottom-3 left-3 right-3 text-[10px] font-bold text-center py-1 px-2 rounded-full"
-        style={{ background: BROWN, color: BG }}>{label}</span>
-    </motion.div>
-  );
-}
-
-// ── Marquee ────────────────────────────────────────────────────────────────────
-const BRANDS = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato", "boAt", "Croma", "Pepperfry", "Reliance Digital"];
-function MarqueeStrip() {
-  return (
-    <div className="relative overflow-hidden py-5"
-      style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: "#141008" }}>
-      <div className="flex gap-16 items-center whitespace-nowrap"
-        style={{ animation: "marquee 22s linear infinite" }}>
-        {[...BRANDS, ...BRANDS, ...BRANDS].map((b, i) => (
-          <span key={i} className="text-sm font-black uppercase tracking-wider shrink-0" style={{ color: TEXT2, letterSpacing: "0.1em" }}>{b}</span>
-        ))}
+    <div className="px-6 md:px-14 pb-10">
+      <div className="max-w-6xl mx-auto">
+        <motion.div whileHover={{ scale: 1.01 }} transition={{ duration: 0.25 }}
+          className="rounded-2xl px-5 py-3.5 flex items-center gap-4 overflow-hidden cursor-default"
+          style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
+            <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:block" style={{ color: "#22c55e" }}>Live</span>
+          </div>
+          <div className="w-px h-4 shrink-0" style={{ background: BORDER }} />
+          <div className="flex-1 overflow-hidden" style={{ height: 22 }}>
+            <AnimatePresence mode="wait">
+              <motion.div key={idx} initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -24, opacity: 0 }} transition={{ duration: 0.3, ease: EXPO }}
+                className="flex items-center gap-2 whitespace-nowrap">
+                <span className="text-sm">{n.emoji}</span>
+                <span className="text-sm font-bold" style={{ color: CREAM }}>{n.name}</span>
+                <span className="text-sm" style={{ color: TEXT2 }}>{n.text}</span>
+                <span className="text-xs ml-2 hidden sm:inline" style={{ color: TEXT2 }}>· {n.ago} ago</span>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+            className="shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
+            style={{ background: `${BROWN}22`, color: BROWN }}>Join free →</a>
+        </motion.div>
       </div>
-      <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
     </div>
   );
 }
 
-// ── Stats with animated counters ───────────────────────────────────────────────
-const STAT_DATA = [
+// ── Marquee ────────────────────────────────────────────────────────────────────
+const BRANDS = ["Amazon","Flipkart","Myntra","Nykaa","Meesho","Ajio","Swiggy","Zomato","boAt","Croma","Pepperfry","Reliance Digital","Tata Cliq","BigBasket"];
+function MarqueeStrip() {
+  return (
+    <div className="relative overflow-hidden py-5" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: "#0f0c07" }}>
+      <div className="flex gap-16 items-center whitespace-nowrap" style={{ animation: "marquee 26s linear infinite" }}>
+        {[...BRANDS,...BRANDS,...BRANDS].map((b,i) => (
+          <span key={i} className="text-sm font-black uppercase tracking-widest shrink-0" style={{ color: TEXT2, letterSpacing: "0.1em" }}>{b}</span>
+        ))}
+      </div>
+      <style>{`@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-33.333%)} }`}</style>
+    </div>
+  );
+}
+
+// ── Stats with count-up ────────────────────────────────────────────────────────
+const STATS = [
   { raw: "2.63M+", label: "Active Members",      sub: "Telegram & WhatsApp combined" },
   { raw: "500+",   label: "Deals Posted Daily",  sub: "Across all categories"        },
   { raw: "100Cr+", label: "Community Savings",   sub: "₹ Estimated total saved"     },
   { raw: "4.9★",   label: "Member Satisfaction", sub: "Based on community reviews"   },
 ];
 
-function StatCard({ s, i }: { s: typeof STAT_DATA[number]; i: number }) {
-  const [inView, setInView] = useState(false);
+function StatCard({ s, i }: { s: typeof STATS[number]; i: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { ref: tiltRef, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+  const [inView, setInView] = useState(false);
+  const cx  = useMotionValue(0.5), cy = useMotionValue(0.5);
+  const rx  = useSpring(useTransform(cy, [0,1], [6,-6]),  { stiffness: 180, damping: 22 });
+  const ry  = useSpring(useTransform(cx, [0,1], [-6, 6]), { stiffness: 180, damping: 22 });
   const counted = useCountUp(s.raw, inView);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.5 });
-    obs.observe(el);
-    return () => obs.disconnect();
+  const move = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    cx.set((e.clientX - r.left) / r.width);
+    cy.set((e.clientY - r.top) / r.height);
+  };
+  const leave = () => { cx.set(0.5); cy.set(0.5); };
+
+  const setRef = useCallback((node: HTMLDivElement | null) => {
+    (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    if (!node) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.4 });
+    obs.observe(node);
   }, []);
 
-  const setRefs = useCallback((node: HTMLDivElement | null) => {
-    (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    (tiltRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-  }, [tiltRef]);
-
   return (
-    <motion.div ref={setRefs} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+    <motion.div ref={setRef} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+      initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
-      onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
-      className="rounded-2xl p-7 relative overflow-hidden"
-      style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)" }}>
-      <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
-        style={{ background: `radial-gradient(circle at top right, ${BROWN}18, transparent 70%)` }} />
-      <p className="font-black mb-2 leading-none" style={{ fontSize: "clamp(2.2rem, 4vw, 3rem)", color: CREAM, letterSpacing: "-0.04em" }}>
+      onMouseMove={move} onMouseLeave={leave}
+      className="rounded-2xl p-8 relative overflow-hidden cursor-default"
+      style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 40px rgba(0,0,0,0.35)" }}>
+      <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
+        style={{ background: `radial-gradient(circle at top right, ${BROWN}1a, transparent 70%)` }} />
+      <p className="font-black mb-2 leading-none"
+        style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.2rem)", color: CREAM, letterSpacing: "-0.05em" }}>
         {s.raw === "100Cr+" ? `₹${counted}` : counted}
       </p>
-      <p className="font-bold text-sm mb-1.5" style={{ color: TEXT }}>{s.label}</p>
+      <p className="font-bold text-sm mb-1" style={{ color: TEXT }}>{s.label}</p>
       <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
     </motion.div>
   );
@@ -575,104 +630,215 @@ function Stats() {
   return (
     <section className="px-6 md:px-14 py-28">
       <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>By the numbers</p>
-          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>By the numbers</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.045em" }}>
             The community<br />speaks for itself
           </h2>
         </motion.div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STAT_DATA.map((s, i) => <StatCard key={i} s={s} i={i} />)}
+          {STATS.map((s, i) => <StatCard key={i} s={s} i={i} />)}
         </div>
       </div>
     </section>
   );
 }
 
-// ── Deal Showcase ──────────────────────────────────────────────────────────────
-function DealCard({ d, i }: { d: { src: string; title: string; pct: string; cat: string }; i: number }) {
-  const { ref, rx, ry, onMouseMove, onMouseLeave: tiltLeave } = use3DTilt();
-  const [active, setActive] = useState(false);
+// ── Draggable deal carousel ───────────────────────────────────────────────────
+const DEALS = [
+  { src: "/assets/product1.png", title: "Electronics", pct: "Up to 70% OFF", cat: "boAt · Samsung · JBL",          color: "#1a3040" },
+  { src: "/assets/product3.png", title: "Fashion",     pct: "Up to 85% OFF", cat: "Myntra · Ajio · Meesho",        color: "#301a2a" },
+  { src: "/assets/product2.png", title: "Home",        pct: "Up to 60% OFF", cat: "Amazon · Flipkart · Pepperfry", color: "#1a2d1a" },
+  { src: "/assets/hero.png",     title: "Gaming",      pct: "Up to 75% OFF", cat: "Croma · Reliance · Flipkart",   color: "#2a1a10" },
+  { src: "/assets/product1.png", title: "Travel",      pct: "Up to 50% OFF", cat: "MakeMyTrip · IRCTC · Goibibo",  color: "#10202e" },
+];
 
-  function handleMouseEnter() { setActive(true); }
-  function handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) { setActive(false); tiltLeave(e); }
-  function handleTap(e: React.MouseEvent<HTMLDivElement>) {
-    if (window.matchMedia("(hover: none)").matches) { e.preventDefault(); setActive(v => !v); }
-  }
+function DealSlide({ d, i }: { d: typeof DEALS[number]; i: number }) {
+  const [hov, setHov] = useState(false);
+  const x = useMotionValue(0.5), y = useMotionValue(0.5);
+  const rx = useSpring(useTransform(y, [0,1], [8,-8]), { stiffness: 200, damping: 22 });
+  const ry = useSpring(useTransform(x, [0,1], [-8, 8]), { stiffness: 200, damping: 22 });
+  const ref = useRef<HTMLDivElement>(null);
+
+  const move = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    x.set((e.clientX - r.left) / r.width);
+    y.set((e.clientY - r.top) / r.height);
+  };
+  const leave = () => { x.set(0.5); y.set(0.5); setHov(false); };
 
   return (
-    <motion.div ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-      initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
-      onMouseMove={onMouseMove} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleTap}
-      className="rounded-2xl overflow-hidden cursor-pointer"
-      style={{
-        background: CARD, border: `1px solid ${BORDER}`,
-        boxShadow: active ? `0 24px 70px rgba(0,0,0,0.55), 0 0 0 1px ${BROWN}40` : "0 16px 50px rgba(0,0,0,0.35)",
-        aspectRatio: "4/5", position: "relative", transition: "box-shadow 0.35s ease",
-      }}>
-      <img src={d.src} alt={d.title} className="w-full h-full object-cover"
-        style={{ transform: active ? "scale(1.07)" : "scale(1)", transition: "transform 0.7s ease" }} />
-      <div className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(14,12,10,0.95) 0%, rgba(14,12,10,0.2) 55%, transparent 100%)" }} />
-      <AnimatePresence>
-        {active && (
-          <motion.div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-5"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            style={{ background: "rgba(14,12,10,0.72)", backdropFilter: "blur(4px)" }}>
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-85 active:scale-95"
+    <motion.div ref={ref}
+      style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d", flexShrink: 0, width: 280 }}
+      onMouseMove={move} onMouseEnter={() => setHov(true)} onMouseLeave={leave}
+      animate={{ scale: hov ? 1.03 : 1 }} transition={{ duration: 0.3 }}>
+      <div className="rounded-3xl overflow-hidden relative cursor-pointer"
+        style={{
+          height: 380,
+          background: d.color,
+          border: `1px solid ${hov ? BROWN + "50" : BORDER}`,
+          boxShadow: hov ? `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px ${BROWN}30` : "0 16px 48px rgba(0,0,0,0.35)",
+          transition: "border-color .3s, box-shadow .3s",
+        }}>
+        <img src={d.src} alt={d.title} className="w-full h-full object-cover"
+          style={{ transform: hov ? "scale(1.08)" : "scale(1)", transition: "transform .6s ease", opacity: 0.85 }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)" }} />
+
+        {/* Top badge */}
+        <AnimatePresence>
+          {hov && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
+              className="absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-black"
               style={{ background: BROWN, color: BG }}>
-              <TelegramIcon size={15} /> Join Telegram
-            </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10 active:scale-95"
-              style={{ border: `1.5px solid ${BORDER}`, color: TEXT, background: "rgba(255,255,255,0.04)" }}>
-              <WhatsAppIcon size={15} /> Join WhatsApp
-            </a>
-            <p className="text-[10px] mt-1 md:hidden" style={{ color: TEXT2 }}>Tap outside to close</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <motion.div className="absolute bottom-0 left-0 right-0 p-7"
-        animate={{ y: active ? 12 : 0, opacity: active ? 0 : 1 }} transition={{ duration: 0.22 }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
-        <h3 className="font-black text-2xl mb-1.5" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
-        <p className="text-xs" style={{ color: TEXT2 }}>{d.cat}</p>
-      </motion.div>
+              🔥 {d.pct}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
+          <h3 className="font-black text-2xl mb-1" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
+          <p className="text-xs mb-4" style={{ color: TEXT2 }}>{d.cat}</p>
+
+          <AnimatePresence>
+            {hov && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.25 }}
+                className="flex gap-2">
+                <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-xs"
+                  style={{ background: BROWN, color: BG }}>
+                  <TelegramIcon size={11} /> Telegram
+                </a>
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-xs"
+                  style={{ border: `1px solid ${BORDER}`, color: TEXT, background: "rgba(255,255,255,0.06)" }}>
+                  <WhatsAppIcon size={11} /> WhatsApp
+                </a>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </motion.div>
   );
 }
 
-function DealShowcase() {
-  const deals = [
-    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF", cat: "boAt · Samsung · JBL"          },
-    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF", cat: "Myntra · Ajio · Meesho"        },
-    { src: "/assets/product2.png", title: "Home & Living", pct: "Up to 60% OFF", cat: "Amazon · Flipkart · Pepperfry" },
-  ];
+function DragCarouselSection() {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [dragW, setDragW] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const measure = () => {
+      if (outerRef.current && innerRef.current) {
+        setDragW(innerRef.current.scrollWidth - outerRef.current.offsetWidth);
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
   return (
-    <section className="px-6 md:px-14 pb-28">
-      <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+    <section className="pb-28">
+      <div className="max-w-6xl mx-auto px-6 md:px-14 mb-14">
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }}
-          className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>What we cover</p>
-            <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+            <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>Drag to explore</p>
+            <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.045em" }}>
               Every category.<br />Every platform.
             </h2>
           </div>
           <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm shrink-0 transition-all hover:opacity-80"
             style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
-            <TelegramIcon size={13} /> See all deals
+            <TelegramIcon size={13} /> See live deals
           </a>
         </motion.div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {deals.map((d, i) => <DealCard key={i} d={d} i={i} />)}
+      </div>
+
+      {/* Drag instruction */}
+      <div className="flex justify-center mb-6">
+        <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: TEXT2 }}>
+          ← Drag to explore deals →
+        </span>
+      </div>
+
+      <div ref={outerRef} className="overflow-hidden px-6 md:px-14" style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+        <motion.div ref={innerRef} className="flex gap-5"
+          drag="x"
+          dragConstraints={{ left: -dragW, right: 0 }}
+          dragElastic={0.08}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+          style={{ width: "max-content" }}>
+          {DEALS.map((d, i) => <DealSlide key={i} d={d} i={i} />)}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ── Why section (horizontal step cards) ───────────────────────────────────────
+const WHY = [
+  { icon: Zap,         title: "Instant Alerts",    body: "Deals drop the second they go live. No delay, no FOMO.",           n: "01" },
+  { icon: Shield,      title: "Zero Spam",          body: "Every message is a verified deal. Nothing else. Ever.",           n: "02" },
+  { icon: Bell,        title: "All Categories",     body: "Electronics, fashion, food, travel — we cover everything.",       n: "03" },
+  { icon: TrendingDown,title: "Biggest Discounts",  body: "We hunt the deepest cuts so you don't have to.",                 n: "04" },
+];
+
+function WhySection() {
+  return (
+    <section className="px-6 md:px-14 pb-28">
+      <div className="max-w-6xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }} className="mb-16 text-center">
+          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>Why 2.63M people joined</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.045em" }}>
+            Built different.<br />Built for you.
+          </h2>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {WHY.map((w, i) => {
+            const Icon = w.icon;
+            const [hov, setHov] = useState(false);
+            return (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
+                onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+                animate={{ y: hov ? -6 : 0 }} transition={{ duration: 0.3 }}
+                className="rounded-2xl p-7 relative overflow-hidden"
+                style={{
+                  background: hov ? CARD2 : CARD,
+                  border: `1px solid ${hov ? BROWN + "40" : BORDER}`,
+                  boxShadow: hov ? `0 20px 60px rgba(0,0,0,0.45)` : "none",
+                  transition: "background .3s, border-color .3s, box-shadow .3s",
+                  cursor: "default",
+                }}>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center"
+                    style={{ background: hov ? BROWN : `${BROWN}18`, transition: "background .3s" }}>
+                    <Icon size={20} color={hov ? BG : BROWN} />
+                  </div>
+                  <span className="font-black text-3xl" style={{ color: `${BROWN}25`, letterSpacing: "-0.06em" }}>{w.n}</span>
+                </div>
+                <h3 className="font-black text-lg mb-2" style={{ color: TEXT, letterSpacing: "-0.025em" }}>{w.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>{w.body}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -682,85 +848,68 @@ function DealShowcase() {
 // ── Savings Calculator ─────────────────────────────────────────────────────────
 function SavingsCalculator() {
   const [spend, setSpend] = useState(5000);
-  const saved   = Math.round(spend * 0.80);
-  const perYear = saved * 12;
+  const saved = Math.round(spend * 0.80);
+  const yearly = saved * 12;
 
   return (
     <section className="px-6 md:px-14 pb-28">
       <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="rounded-3xl p-10 md:p-14 relative overflow-hidden"
           style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-          {/* BG glow */}
-          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(to right, transparent, ${BROWN}60, transparent)` }} />
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse 60% 50% at 50% 0%, ${BROWN}10 0%, transparent 70%)` }} />
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(to right, transparent, ${BROWN}55, transparent)` }} />
+          <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse 60% 50% at 50% 0%, ${BROWN}0d 0%, transparent 65%)` }} />
 
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left */}
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>Savings Calculator</p>
+              <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>Savings Calculator</p>
               <h2 className="font-black leading-none mb-6"
-                style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+                style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: TEXT, letterSpacing: "-0.045em" }}>
                 How much could<br />you save?
               </h2>
               <p className="text-sm leading-relaxed mb-8" style={{ color: TEXT2 }}>
-                Our community members save an average of <strong style={{ color: BROWN }}>80%</strong> on their purchases.
-                Drag to estimate your monthly savings.
+                Community members save an average of <strong style={{ color: BROWN }}>80%</strong> on purchases.
+                Drag the slider to see your potential savings.
               </p>
-
-              {/* Slider */}
-              <div className="mb-3 flex justify-between text-xs font-semibold" style={{ color: TEXT2 }}>
+              <div className="mb-2 flex justify-between text-xs font-semibold" style={{ color: TEXT2 }}>
                 <span>Monthly online spend</span>
                 <span style={{ color: CREAM }}>₹{spend.toLocaleString("en-IN")}</span>
               </div>
-              <div className="relative mb-8">
-                <input type="range" min={500} max={50000} step={500} value={spend}
-                  onChange={e => setSpend(Number(e.target.value))}
-                  className="w-full appearance-none rounded-full h-1.5 cursor-pointer outline-none"
-                  style={{
-                    background: `linear-gradient(to right, ${BROWN} ${((spend - 500) / 49500) * 100}%, rgba(255,255,255,0.1) 0%)`,
-                  }} />
-                <style>{`input[type=range]::-webkit-slider-thumb { appearance:none; width:18px; height:18px; border-radius:50%; background:${BROWN}; cursor:pointer; box-shadow:0 0 12px ${BROWN}60; } input[type=range]::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:${BROWN}; border:none; cursor:pointer; }`}</style>
-              </div>
-
-              <p className="text-xs" style={{ color: TEXT2 }}>
-                Based on 80% average discount across Telegram & WhatsApp deals
-              </p>
+              <input type="range" min={500} max={50000} step={500} value={spend}
+                onChange={e => setSpend(Number(e.target.value))}
+                className="w-full appearance-none rounded-full h-1.5 cursor-pointer outline-none mb-8"
+                style={{ background: `linear-gradient(to right, ${BROWN} ${((spend-500)/49500)*100}%, rgba(255,255,255,0.1) 0%)` }} />
+              <style>{`input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:${BROWN};cursor:pointer;box-shadow:0 0 14px ${BROWN}60}input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:${BROWN};border:none;cursor:pointer}`}</style>
+              <p className="text-xs" style={{ color: TEXT2 }}>Based on 80% average discount across our deal posts</p>
             </div>
 
-            {/* Right: result cards */}
             <div className="flex flex-col gap-4">
-              <motion.div key={`m-${saved}`} initial={{ scale: 0.96, opacity: 0.7 }} animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.25 }}
-                className="rounded-2xl p-7 relative overflow-hidden"
+              <motion.div key={`m${saved}`} initial={{ scale: 0.97, opacity: 0.7 }} animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.22 }}
+                className="rounded-2xl p-8 relative overflow-hidden"
                 style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
-                <div className="absolute top-0 right-0 w-32 h-32" style={{ background: `radial-gradient(circle at top right, ${BROWN}15, transparent 70%)` }} />
+                <div className="absolute top-0 right-0 w-36 h-36" style={{ background: `radial-gradient(circle at top right, ${BROWN}12, transparent 70%)` }} />
                 <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: BROWN }}>Monthly savings</p>
-                <p className="font-black leading-none" style={{ fontSize: "clamp(3rem, 7vw, 5rem)", color: CREAM, letterSpacing: "-0.05em" }}>
+                <p className="font-black leading-none" style={{ fontSize: "clamp(3rem, 8vw, 5.5rem)", color: CREAM, letterSpacing: "-0.055em" }}>
                   ₹{saved.toLocaleString("en-IN")}
                 </p>
-                <p className="text-sm mt-2" style={{ color: TEXT2 }}>saved every month on average</p>
+                <p className="text-sm mt-2" style={{ color: TEXT2 }}>saved on average every month</p>
               </motion.div>
-
               <div className="grid grid-cols-2 gap-4">
-                <motion.div key={`y-${perYear}`} initial={{ scale: 0.96, opacity: 0.7 }} animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.25 }}
-                  className="rounded-2xl p-5"
-                  style={{ background: `${BROWN}15`, border: `1px solid ${BROWN}30` }}>
+                <motion.div key={`y${yearly}`} initial={{ scale: 0.97 }} animate={{ scale: 1 }} transition={{ duration: 0.22 }}
+                  className="rounded-2xl p-5" style={{ background: `${BROWN}12`, border: `1px solid ${BROWN}25` }}>
                   <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: BROWN }}>Per year</p>
                   <p className="font-black text-2xl leading-none" style={{ color: CREAM, letterSpacing: "-0.04em" }}>
-                    ₹{perYear.toLocaleString("en-IN")}
+                    ₹{yearly.toLocaleString("en-IN")}
                   </p>
                 </motion.div>
-                <div className="rounded-2xl p-5 flex flex-col justify-between"
-                  style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: TEXT2 }}>Join now</p>
+                <div className="rounded-2xl p-5 flex flex-col justify-between" style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: TEXT2 }}>Start now</p>
                   <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs transition-all hover:opacity-85"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs transition-all hover:opacity-85"
                     style={{ background: BROWN, color: BG }}>
-                    <TelegramIcon size={11} /> Free →
+                    <TelegramIcon size={11} /> Join Free →
                   </a>
                 </div>
               </div>
@@ -786,11 +935,11 @@ function FAQ() {
   return (
     <section className="px-6 md:px-14 pb-28">
       <div className="max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }} className="mb-12 text-center">
-          <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>FAQ</p>
-          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.04em" }}>
-            Common<br />Questions
+          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>FAQ</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.045em" }}>
+            Common Questions
           </h2>
         </motion.div>
         <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${BORDER}`, background: CARD }}>
@@ -807,7 +956,7 @@ function FAQ() {
               <AnimatePresence initial={false}>
                 {open === i && (
                   <motion.div key="body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}
+                    exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.28 }}
                     className="overflow-hidden" style={{ borderBottom: `1px solid ${BORDER}` }}>
                     <p className="px-8 pb-6 pt-2 text-sm leading-relaxed" style={{ color: TEXT2 }}>{faq.a}</p>
                   </motion.div>
@@ -823,40 +972,44 @@ function FAQ() {
 
 // ── Final CTA ──────────────────────────────────────────────────────────────────
 function FinalCTA() {
-  const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+  const ref = useRef<HTMLDivElement>(null);
+  const cx = useMotionValue(0.5), cy = useMotionValue(0.5);
+  const rx = useSpring(useTransform(cy, [0,1], [5,-5]), { stiffness: 160, damping: 20 });
+  const ry = useSpring(useTransform(cx, [0,1], [-5, 5]), { stiffness: 160, damping: 20 });
+  const move = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    cx.set((e.clientX - r.left) / r.width);
+    cy.set((e.clientY - r.top) / r.height);
+  };
+  const leave = () => { cx.set(0.5); cy.set(0.5); };
+
   return (
     <section className="px-6 md:px-14 pb-28">
       <div className="max-w-6xl mx-auto">
         <motion.div ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-          onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+          onMouseMove={move} onMouseLeave={leave}
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
           className="rounded-3xl p-16 md:p-24 text-center relative overflow-hidden"
-          style={{ background: CARD2, border: `1px solid ${BORDER}`, boxShadow: "0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)" }}>
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse 70% 60% at 50% 0%, ${BROWN}25 0%, transparent 65%)` }} />
-          <div className="absolute top-0 right-0 w-px h-32 pointer-events-none"
-            style={{ background: `linear-gradient(to bottom, ${BROWN}60, transparent)` }} />
-          <div className="absolute top-0 right-0 h-px w-32 pointer-events-none"
-            style={{ background: `linear-gradient(to left, ${BROWN}60, transparent)` }} />
+          style={{ background: CARD2, border: `1px solid ${BORDER}`, boxShadow: "0 40px 100px rgba(0,0,0,0.55)" }}>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse 70% 65% at 50% 0%, ${BROWN}22 0%, transparent 65%)` }} />
+          <div className="absolute top-0 right-0 w-px h-40" style={{ background: `linear-gradient(to bottom, ${BROWN}70, transparent)` }} />
+          <div className="absolute top-0 right-0 h-px w-40" style={{ background: `linear-gradient(to left, ${BROWN}70, transparent)` }} />
           <div className="relative z-10">
-            <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-8" style={{ color: BROWN }}>Join 2.63M+ smart shoppers</p>
+            <p className="text-xs uppercase tracking-[0.32em] font-semibold mb-8" style={{ color: BROWN }}>Join 2.63M+ smart shoppers</p>
             <h2 className="font-black text-white leading-none mb-6"
-              style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.045em" }}>
+              style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.048em" }}>
               Ready to start<br />saving?
             </h2>
-            <p className="text-base mb-12 max-w-sm mx-auto" style={{ color: TEXT2 }}>Free to join. Deals every day. No spam. No catch.</p>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:opacity-85 active:scale-95"
-                style={{ background: BROWN, color: BG }}>
+            <p className="text-base mb-14 max-w-sm mx-auto" style={{ color: TEXT2 }}>Free to join. 500+ deals a day. No spam. No catch.</p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <MagneticBtn href={TELEGRAM_URL} primary>
                 <TelegramIcon size={14} /> Join Telegram — Free
-              </a>
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:bg-white/5 active:scale-95"
-                style={{ border: `1px solid ${BORDER}`, color: TEXT }}>
+              </MagneticBtn>
+              <MagneticBtn href={WHATSAPP_URL}>
                 <WhatsAppIcon size={14} /> Join WhatsApp
-              </a>
+              </MagneticBtn>
             </div>
           </div>
         </motion.div>
@@ -875,11 +1028,11 @@ function Footer() {
           <span className="font-black text-sm" style={{ color: CREAM, letterSpacing: "-0.02em" }}>SaleLooterz</span>
         </div>
         <div className="flex flex-wrap justify-center gap-8 text-xs" style={{ color: TEXT2 }}>
-          {["Privacy Policy", "Terms", "Contact", "About"].map(l => (
+          {["Privacy","Terms","Contact","About"].map(l => (
             <a key={l} href="#" className="transition-colors hover:text-white" style={{ textDecoration: "none" }}>{l}</a>
           ))}
         </div>
-        <p className="text-xs" style={{ color: "rgba(242,234,216,0.18)" }}>© {new Date().getFullYear()} Salelooterz. All rights reserved.</p>
+        <p className="text-xs" style={{ color: "rgba(240,230,204,0.16)" }}>© {new Date().getFullYear()} Salelooterz.</p>
       </div>
     </footer>
   );
