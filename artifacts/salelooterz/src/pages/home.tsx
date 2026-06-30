@@ -1,22 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-const TELEGRAM_URL  = "https://t.me/salelooterz";
-const WHATSAPP_URL  = "https://whatsapp.com/channel/salelooterz";
+const TELEGRAM_URL = "https://t.me/salelooterz";
+const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
 
 // ── Palette ────────────────────────────────────────────────────────────────────
-const BG      = "#0e0c0a";
-const SURFACE = "#181410";
-const CARD    = "#1f1b16";
-const CARD2   = "#252018";
-const BROWN   = "#b8834a";
-const BROWN2  = "#8a6035";
-const CREAM   = "#f2ead8";
-const TEXT    = "#f5f0e8";
-const TEXT2   = "rgba(242,234,216,0.4)";
-const BORDER  = "rgba(184,131,74,0.15)";
-
+const BG     = "#0e0c0a";
+const CARD   = "#1f1b16";
+const CARD2  = "#252018";
+const BROWN  = "#b8834a";
+const CREAM  = "#f2ead8";
+const TEXT   = "#f5f0e8";
+const TEXT2  = "rgba(242,234,216,0.4)";
+const BORDER = "rgba(184,131,74,0.15)";
 const EXPO: [number,number,number,number] = [0.16, 1, 0.3, 1];
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
@@ -35,13 +32,124 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   );
 }
 
+// ── Custom Cursor (desktop only) ───────────────────────────────────────────────
+function CustomCursor() {
+  const cx = useMotionValue(-100);
+  const cy = useMotionValue(-100);
+  const sx = useSpring(cx, { stiffness: 120, damping: 18, mass: 0.5 });
+  const sy = useSpring(cy, { stiffness: 120, damping: 18, mass: 0.5 });
+  const [hovering, setHovering] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const move = (e: MouseEvent) => { cx.set(e.clientX); cy.set(e.clientY); setVisible(true); };
+    const over = (e: MouseEvent) => {
+      const el = e.target as HTMLElement;
+      setHovering(!!el.closest("a, button, [role=button]"));
+    };
+    const leave = () => setVisible(false);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseover", over);
+    window.addEventListener("mouseleave", leave);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseover", over);
+      window.removeEventListener("mouseleave", leave);
+    };
+  }, [cx, cy]);
+
+  return (
+    <>
+      {/* Dot */}
+      <motion.div className="fixed top-0 left-0 z-[9998] pointer-events-none rounded-full hidden md:block"
+        style={{
+          x: cx, y: cy,
+          width: 6, height: 6,
+          marginLeft: -3, marginTop: -3,
+          background: BROWN,
+        }}
+        animate={{ opacity: visible ? 1 : 0, scale: hovering ? 0 : 1 }}
+        transition={{ duration: 0.15 }} />
+      {/* Ring */}
+      <motion.div className="fixed top-0 left-0 z-[9997] pointer-events-none rounded-full hidden md:block"
+        style={{
+          x: sx, y: sy,
+          width: hovering ? 48 : 32,
+          height: hovering ? 48 : 32,
+          marginLeft: hovering ? -24 : -16,
+          marginTop: hovering ? -24 : -16,
+          border: `1.5px solid ${BROWN}80`,
+          transition: "width 0.25s ease, height 0.25s ease, margin 0.25s ease",
+        }}
+        animate={{ opacity: visible ? 1 : 0 }}
+        transition={{ duration: 0.2 }} />
+    </>
+  );
+}
+
+// ── Animated counter hook ──────────────────────────────────────────────────────
+function useCountUp(raw: string, inView: boolean) {
+  const match = raw.match(/^([₹]?)(\d+\.?\d*)(M\+|Cr\+|\+|★)?$/);
+  const prefix = match?.[1] ?? "";
+  const num    = parseFloat(match?.[2] ?? "0");
+  const suffix = match?.[3] ?? "";
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const duration = 1800;
+    const step = 16;
+    const steps = duration / step;
+    const inc = num / steps;
+    const t = setInterval(() => {
+      start += inc;
+      if (start >= num) { setCount(num); clearInterval(t); }
+      else setCount(start);
+    }, step);
+    return () => clearInterval(t);
+  }, [inView, num]);
+
+  const display = num >= 10 ? Math.round(count).toString() : count.toFixed(num % 1 !== 0 ? 2 : 0);
+  return `${prefix}${display}${suffix}`;
+}
+
+// ── Text scramble hook ─────────────────────────────────────────────────────────
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$₹%";
+function useScramble(text: string) {
+  const [display, setDisplay] = useState(text);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const scramble = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    let iteration = 0;
+    timerRef.current = setInterval(() => {
+      setDisplay(
+        text.split("").map((char, i) => {
+          if (char === " " || char === ".") return char;
+          if (i < iteration) return text[i];
+          return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        }).join("")
+      );
+      iteration += 0.6;
+      if (iteration > text.length) {
+        setDisplay(text);
+        clearInterval(timerRef.current!);
+      }
+    }, 28);
+  }, [text]);
+
+  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+  return { display, scramble };
+}
+
 // ── 3D Tilt card hook ──────────────────────────────────────────────────────────
 function use3DTilt() {
   const ref = useRef<HTMLDivElement>(null);
-  const x   = useMotionValue(0);
-  const y   = useMotionValue(0);
-  const rx  = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]),  { stiffness: 200, damping: 20 });
-  const ry  = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]),  { stiffness: 200, damping: 20 });
+  const x  = useMotionValue(0);
+  const y  = useMotionValue(0);
+  const rx = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 20 });
+  const ry = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 20 });
 
   function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     if (!ref.current) return;
@@ -50,21 +158,15 @@ function use3DTilt() {
     y.set((e.clientY - top)  / height - 0.5);
   }
   function onMouseLeave() { x.set(0); y.set(0); }
-
   return { ref, rx, ry, onMouseMove, onMouseLeave };
 }
 
-// ── Floating badge component ───────────────────────────────────────────────────
-function FloatBadge({ children, delay = 0, style = {} }: {
-  children: React.ReactNode; delay?: number; style?: React.CSSProperties;
-}) {
+// ── Floating badge ─────────────────────────────────────────────────────────────
+function FloatBadge({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.7, ease: EXPO }}
-      style={style}>
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
+    <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.7, ease: EXPO }} style={style}>
+      <motion.div animate={{ y: [0, -8, 0] }}
         transition={{ duration: 4 + delay, repeat: Infinity, ease: "easeInOut", delay }}>
         {children}
       </motion.div>
@@ -72,12 +174,70 @@ function FloatBadge({ children, delay = 0, style = {} }: {
   );
 }
 
-// ── Grain overlay (adds luxury texture) ───────────────────────────────────────
+// ── Grain texture ─────────────────────────────────────────────────────────────
 function Grain() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-[999] opacity-[0.035]"
-      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: "repeat", backgroundSize: "200px" }} />
+    <div className="pointer-events-none fixed inset-0 z-[9996] opacity-[0.032]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "repeat", backgroundSize: "200px",
+      }} />
+  );
+}
+
+// ── Live deal notification ticker ─────────────────────────────────────────────
+const DEAL_NOTIFICATIONS = [
+  { name: "Priya, Mumbai",    text: "saved ₹3,200 on boAt earbuds",            ago: "2 min ago",  emoji: "🎧" },
+  { name: "Rahul, Delhi",     text: "grabbed a laptop at 64% OFF",              ago: "5 min ago",  emoji: "💻" },
+  { name: "Sneha, Bangalore", text: "snagged Myntra fashion at 81% OFF",        ago: "7 min ago",  emoji: "👗" },
+  { name: "Arjun, Hyderabad", text: "saved ₹1,800 on Swiggy flash deal",       ago: "11 min ago", emoji: "🍕" },
+  { name: "Divya, Chennai",   text: "got a smartwatch at ₹799 (was ₹4,999)",   ago: "14 min ago", emoji: "⌚" },
+  { name: "Karan, Ahmedabad", text: "snagged a Narzo phone for ₹6,999",        ago: "18 min ago", emoji: "📱" },
+  { name: "Meena, Pune",      text: "saved ₹920 on Nykaa beauty",              ago: "21 min ago", emoji: "💄" },
+  { name: "Vijay, Kolkata",   text: "grabbed HyperX headset at 70% OFF",       ago: "25 min ago", emoji: "🎮" },
+];
+
+function LiveTicker() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % DEAL_NOTIFICATIONS.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+
+  const n = DEAL_NOTIFICATIONS[idx];
+  return (
+    <div className="px-6 md:px-14 pb-10">
+      <div className="max-w-6xl mx-auto">
+        <div className="rounded-2xl px-5 py-3.5 flex items-center gap-4 overflow-hidden"
+          style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+          {/* Pulse dot */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
+            <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:block" style={{ color: "#22c55e" }}>Live</span>
+          </div>
+          <div className="w-px h-4 shrink-0" style={{ background: BORDER }} />
+          {/* Animated notification */}
+          <div className="flex-1 overflow-hidden" style={{ height: 22 }}>
+            <AnimatePresence mode="wait">
+              <motion.div key={idx}
+                initial={{ y: 22, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -22, opacity: 0 }}
+                transition={{ duration: 0.35, ease: EXPO }}
+                className="flex items-center gap-2 whitespace-nowrap">
+                <span className="text-sm">{n.emoji}</span>
+                <span className="text-sm font-bold" style={{ color: CREAM }}>{n.name}</span>
+                <span className="text-sm" style={{ color: TEXT2 }}>{n.text}</span>
+                <span className="text-xs ml-2 hidden sm:inline" style={{ color: TEXT2 }}>· {n.ago}</span>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+            className="shrink-0 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:opacity-80"
+            style={{ background: `${BROWN}25`, color: BROWN }}>
+            Join free →
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -91,27 +251,21 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: EXPO }}
         className="flex flex-col items-center gap-6">
-        <motion.img src="/assets/logo.jpg" alt="Salelooterz"
-          className="h-16 w-16 rounded-2xl object-contain"
+        <motion.img src="/assets/logo.jpg" alt="Salelooterz" className="h-16 w-16 rounded-2xl object-contain"
           initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, ease: EXPO }}
           style={{ boxShadow: `0 0 60px ${BROWN}40` }} />
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-center mb-3"
-            style={{ color: TEXT2 }}>Est. 2021 · India</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-center mb-3" style={{ color: TEXT2 }}>Est. 2021 · India</p>
           <h1 className="font-black uppercase text-center leading-none"
-            style={{ fontSize: "clamp(3rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>
-            SALELOOTERZ
-          </h1>
+            style={{ fontSize: "clamp(3rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>SALELOOTERZ</h1>
         </div>
         <div style={{ width: 240, height: 1, background: BORDER, position: "relative", overflow: "hidden" }}>
           <motion.div style={{ position: "absolute", inset: 0, background: BROWN, transformOrigin: "left" }}
             initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
             transition={{ delay: 0.5, duration: 2, ease: "linear" }} />
         </div>
-        <p className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: TEXT2 }}>
-          India's #1 Deal Alert Community
-        </p>
+        <p className="text-xs font-medium tracking-[0.3em] uppercase" style={{ color: TEXT2 }}>India's #1 Deal Alert Community</p>
       </motion.div>
     </motion.div>
   );
@@ -123,13 +277,16 @@ export default function Home() {
   return (
     <div style={{ background: BG, fontFamily: "'Inter', sans-serif" }}>
       <Grain />
+      <CustomCursor />
       <AnimatePresence>{!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}</AnimatePresence>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: splashDone ? 1 : 0 }} transition={{ duration: 0.7 }}>
         <Navbar />
         <Hero />
+        <LiveTicker />
         <MarqueeStrip />
         <Stats />
         <DealShowcase />
+        <SavingsCalculator />
         <FAQ />
         <FinalCTA />
         <Footer />
@@ -152,7 +309,7 @@ function Navbar() {
       transition={{ duration: 0.7, ease: EXPO }}
       className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-14 py-5"
       style={{
-        background: scrolled ? `${BG}e8` : "transparent",
+        background: scrolled ? `${BG}ee` : "transparent",
         backdropFilter: scrolled ? "blur(20px)" : "none",
         borderBottom: scrolled ? `1px solid ${BORDER}` : "none",
         transition: "all 0.4s ease",
@@ -160,17 +317,11 @@ function Navbar() {
       <a href="#" className="flex items-center gap-3 no-underline">
         <img src="/assets/logo.jpg" alt="Salelooterz" className="h-8 w-8 rounded-xl object-contain"
           style={{ boxShadow: `0 0 20px ${BROWN}30` }} />
-        <span className="font-black text-base tracking-tight" style={{ color: CREAM, letterSpacing: "-0.02em" }}>
-          SaleLooterz
-        </span>
+        <span className="font-black text-base" style={{ color: CREAM, letterSpacing: "-0.02em" }}>SaleLooterz</span>
       </a>
       <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
         className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold transition-all hover:opacity-80 active:scale-95"
-        style={{
-          background: BROWN,
-          color: BG,
-          borderRadius: 100,
-        }}>
+        style={{ background: BROWN, color: BG, borderRadius: 100 }}>
         <TelegramIcon size={13} /> Join Telegram
       </a>
     </motion.header>
@@ -184,54 +335,40 @@ function Hero() {
   const y    = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
+  const line1 = useScramble("Stop Overpaying.");
+  const line2 = useScramble("Start Saving Big.");
+
   return (
     <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16">
-      {/* Radial glow */}
+      {/* Glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div style={{
-          position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)",
-          width: 700, height: 700, borderRadius: "50%",
-          background: `radial-gradient(circle, ${BROWN}18 0%, transparent 65%)`,
-        }} />
-        <div style={{
-          position: "absolute", bottom: 0, left: "20%",
-          width: 400, height: 400, borderRadius: "50%",
-          background: `radial-gradient(circle, rgba(90,55,20,0.2) 0%, transparent 70%)`,
-        }} />
+        <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 700, borderRadius: "50%", background: `radial-gradient(circle, ${BROWN}16 0%, transparent 65%)` }} />
+        <div style={{ position: "absolute", bottom: 0, left: "20%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(90,55,20,0.18) 0%, transparent 70%)" }} />
       </div>
 
-      {/* ── LEFT SIDE DECORATIONS (desktop only) ── */}
+      {/* ── LEFT SIDE DECORATIONS ── */}
       <div className="hidden xl:block absolute left-5 top-0 bottom-0 pointer-events-none" style={{ width: 120 }}>
-        {/* Vertical line */}
         <motion.div className="absolute"
           style={{ left: 18, top: "15%", width: 1, height: "55%", background: `linear-gradient(to bottom, transparent, ${BROWN}50, transparent)` }}
           initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
           transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
-
-        {/* Vertical label */}
-        <motion.p
-          className="absolute font-black uppercase text-[10px] tracking-[0.35em]"
+        <motion.p className="absolute font-black uppercase text-[10px]"
           style={{ left: 5, top: "22%", color: TEXT2, writingMode: "vertical-rl", transform: "rotate(180deg)", letterSpacing: "0.35em" }}
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.7 }}>
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.7 }}>
           Deal Alert Community
         </motion.p>
-
-        {/* Floating deal badges on left */}
         <FloatBadge delay={1.3} style={{ position: "absolute", top: "32%", left: 30 }}>
           <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: BROWN, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: BROWN, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
             🔥 500+ Deals/Day
           </div>
         </FloatBadge>
-
         <FloatBadge delay={1.6} style={{ position: "absolute", top: "50%", left: 20 }}>
           <div className="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT2, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT2, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
             ⚡ Flash Sales
           </div>
         </FloatBadge>
-
         <FloatBadge delay={1.9} style={{ position: "absolute", top: "66%", left: 32 }}>
           <div className="px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap"
             style={{ background: `${BROWN}20`, border: `1px solid ${BROWN}40`, color: BROWN }}>
@@ -240,45 +377,36 @@ function Hero() {
         </FloatBadge>
       </div>
 
-      {/* ── RIGHT SIDE DECORATIONS (desktop only) ── */}
+      {/* ── RIGHT SIDE DECORATIONS ── */}
       <div className="hidden xl:block absolute right-5 top-0 bottom-0 pointer-events-none" style={{ width: 130 }}>
-        {/* Vertical line */}
         <motion.div className="absolute"
           style={{ right: 18, top: "18%", width: 1, height: "50%", background: `linear-gradient(to bottom, transparent, ${BROWN}40, transparent)` }}
           initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
           transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
-
-        {/* Big % badge */}
         <FloatBadge delay={1.2} style={{ position: "absolute", top: "26%", right: 16 }}>
           <div className="rounded-2xl px-4 py-3 text-center"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: `0 12px 32px rgba(0,0,0,0.5)` }}>
+            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 12px 32px rgba(0,0,0,0.5)" }}>
             <p className="font-black text-2xl leading-none" style={{ color: BROWN, letterSpacing: "-0.04em" }}>80%</p>
             <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Avg Discount</p>
           </div>
         </FloatBadge>
-
         <FloatBadge delay={1.5} style={{ position: "absolute", top: "46%", right: 22 }}>
           <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
             <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e", flexShrink: 0 }} />
             Live Deals
           </div>
         </FloatBadge>
-
         <FloatBadge delay={1.8} style={{ position: "absolute", top: "60%", right: 14 }}>
           <div className="rounded-xl px-4 py-3 text-center"
-            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
             <p className="font-black text-xl leading-none" style={{ color: CREAM, letterSpacing: "-0.03em" }}>2.63M+</p>
             <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Members</p>
           </div>
         </FloatBadge>
-
-        {/* Vertical label */}
-        <motion.p
-          className="absolute font-black uppercase text-[10px] tracking-[0.35em]"
+        <motion.p className="absolute font-black uppercase text-[10px]"
           style={{ right: 5, top: "25%", color: TEXT2, writingMode: "vertical-rl", letterSpacing: "0.35em" }}
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.7 }}>
+          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: 0.7 }}>
           Zero Spam · 100% Free
         </motion.p>
       </div>
@@ -287,36 +415,38 @@ function Hero() {
       <motion.p style={{ y, opacity: fade }}
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.7 }}
-        className="text-xs font-semibold uppercase tracking-[0.28em] mb-8"
-        style={{ color: BROWN }}>
+        className="text-xs font-semibold uppercase tracking-[0.28em] mb-8" style={{ color: BROWN }}>
         India's #1 Deal Alert Community
       </motion.p>
 
-      {/* Main headline */}
+      {/* Scramble headline */}
       <motion.h1 style={{ y, opacity: fade }}
         initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.9, ease: EXPO }}
-        className="font-black text-center leading-none mb-8"
-        style={{ fontSize: "clamp(3.5rem, 9vw, 8.5rem)", color: TEXT, letterSpacing: "-0.045em", maxWidth: 900 }}>
-        Stop Overpaying.{" "}
-        <span style={{
-          color: "transparent",
-          WebkitTextStroke: `1.5px ${BROWN}`,
-          display: "inline",
-        }}>Start Saving</span>{" "}Big.
+        className="font-black text-center leading-none mb-8 cursor-default select-none"
+        style={{ fontSize: "clamp(3.5rem, 9vw, 8.5rem)", letterSpacing: "-0.045em", maxWidth: 900 }}>
+        <span
+          onMouseEnter={line1.scramble}
+          style={{ color: TEXT, display: "block" }}>
+          {line1.display}
+        </span>
+        <span
+          onMouseEnter={line2.scramble}
+          style={{ color: "transparent", WebkitTextStroke: `1.5px ${BROWN}`, display: "block" }}>
+          {line2.display}
+        </span>
       </motion.h1>
 
       {/* Sub */}
       <motion.p style={{ y, opacity: fade }}
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.38, duration: 0.7 }}
-        className="text-center max-w-md mb-12 text-base leading-relaxed"
-        style={{ color: TEXT2 }}>
+        className="text-center max-w-md mb-12 text-base leading-relaxed" style={{ color: TEXT2 }}>
         Join 2.63M+ shoppers getting instant alerts on the best deals across India.
         Flash sales, price drops &amp; crazy discounts.
       </motion.p>
 
-      {/* CTA buttons */}
+      {/* CTA */}
       <motion.div style={{ y, opacity: fade }}
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.52, duration: 0.6 }}
@@ -333,23 +463,21 @@ function Hero() {
         </a>
       </motion.div>
 
-      {/* 3D Product cards row */}
+      {/* 3D Product card fan */}
       <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.65, duration: 1, ease: EXPO }}
-        className="w-full max-w-5xl relative"
-        style={{ perspective: 1000 }}>
+        className="w-full max-w-5xl relative" style={{ perspective: 1000 }}>
         <div className="flex gap-4 justify-center items-end">
-          {[
-            { src: "/assets/product1.png", label: "37% OFF",     rotate: -6, translateY: 20,  zIndex: 1 },
-            { src: "/assets/product3.png", label: "⚡ Flash",    rotate: -2, translateY: 8,   zIndex: 2 },
-            { src: "/assets/hero.png",     label: "🔥 Hot Deal", rotate: 0,  translateY: 0,   zIndex: 3 },
-            { src: "/assets/product2.png", label: "Up to 80%",   rotate: 2,  translateY: 8,   zIndex: 2 },
-            { src: "/assets/product1.png", label: "Loot Price",  rotate: 6,  translateY: 20,  zIndex: 1 },
-          ].map((card, i) => (
-            <HeroCard key={i} {...card} delay={0.7 + i * 0.07} />
+          {([
+            { src: "/assets/product1.png", label: "37% OFF",     rotate: -6, ty: 20, zi: 1 },
+            { src: "/assets/product3.png", label: "⚡ Flash",    rotate: -2, ty: 8,  zi: 2 },
+            { src: "/assets/hero.png",     label: "🔥 Hot Deal", rotate: 0,  ty: 0,  zi: 3 },
+            { src: "/assets/product2.png", label: "Up to 80%",   rotate: 2,  ty: 8,  zi: 2 },
+            { src: "/assets/product1.png", label: "Loot Price",  rotate: 6,  ty: 20, zi: 1 },
+          ] as const).map((c, i) => (
+            <HeroCard key={i} src={c.src} label={c.label} rotate={c.rotate} translateY={c.ty} zIndex={c.zi} delay={0.7 + i * 0.07} />
           ))}
         </div>
-        {/* Reflection gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
           style={{ background: `linear-gradient(to top, ${BG} 0%, transparent 100%)` }} />
       </motion.div>
@@ -369,34 +497,28 @@ function HeroCard({ src, label, rotate, translateY, zIndex, delay }: {
       className="relative rounded-2xl overflow-hidden shrink-0 cursor-pointer"
       whileHover={{ scale: 1.04, y: translateY - 8, transition: { duration: 0.3, ease: "easeOut" } }}
       style={{
-        width: 160, aspectRatio: "3/4",
-        transform: `rotate(${rotate}deg)`,
+        width: 160, aspectRatio: "3/4", transform: `rotate(${rotate}deg)`,
         background: CARD,
         boxShadow: `0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px ${BORDER}, inset 0 1px 0 rgba(255,255,255,0.04)`,
       }}>
       <img src={src} alt="Deal" className="w-full h-full object-cover" />
-      <div className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }} />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }} />
       <span className="absolute bottom-3 left-3 right-3 text-[10px] font-bold text-center py-1 px-2 rounded-full"
-        style={{ background: BROWN, color: BG }}>
-        {label}
-      </span>
+        style={{ background: BROWN, color: BG }}>{label}</span>
     </motion.div>
   );
 }
 
-// ── Marquee strip ──────────────────────────────────────────────────────────────
-const MARQUEE_ITEMS = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato", "boAt", "Croma"];
-
+// ── Marquee ────────────────────────────────────────────────────────────────────
+const BRANDS = ["Amazon", "Flipkart", "Myntra", "Nykaa", "Meesho", "Ajio", "Swiggy", "Zomato", "boAt", "Croma", "Pepperfry", "Reliance Digital"];
 function MarqueeStrip() {
   return (
     <div className="relative overflow-hidden py-5"
-      style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: SURFACE }}>
+      style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: "#141008" }}>
       <div className="flex gap-16 items-center whitespace-nowrap"
         style={{ animation: "marquee 22s linear infinite" }}>
-        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((b, i) => (
-          <span key={i} className="text-sm font-black uppercase tracking-wider shrink-0"
-            style={{ color: TEXT2, letterSpacing: "0.1em" }}>{b}</span>
+        {[...BRANDS, ...BRANDS, ...BRANDS].map((b, i) => (
+          <span key={i} className="text-sm font-black uppercase tracking-wider shrink-0" style={{ color: TEXT2, letterSpacing: "0.1em" }}>{b}</span>
         ))}
       </div>
       <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
@@ -404,13 +526,50 @@ function MarqueeStrip() {
   );
 }
 
-// ── Stats ──────────────────────────────────────────────────────────────────────
+// ── Stats with animated counters ───────────────────────────────────────────────
 const STAT_DATA = [
-  { value: "2.63M+",  label: "Active Members",        sub: "Telegram & WhatsApp combined" },
-  { value: "500+",    label: "Deals Posted Daily",     sub: "Across all categories"        },
-  { value: "₹100Cr+", label: "Community Savings",     sub: "Estimated total saved"        },
-  { value: "4.9★",    label: "Member Satisfaction",   sub: "Based on community reviews"   },
+  { raw: "2.63M+", label: "Active Members",      sub: "Telegram & WhatsApp combined" },
+  { raw: "500+",   label: "Deals Posted Daily",  sub: "Across all categories"        },
+  { raw: "100Cr+", label: "Community Savings",   sub: "₹ Estimated total saved"     },
+  { raw: "4.9★",   label: "Member Satisfaction", sub: "Based on community reviews"   },
 ];
+
+function StatCard({ s, i }: { s: typeof STAT_DATA[number]; i: number }) {
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { ref: tiltRef, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
+  const counted = useCountUp(s.raw, inView);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.5 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const setRefs = useCallback((node: HTMLDivElement | null) => {
+    (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    (tiltRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+  }, [tiltRef]);
+
+  return (
+    <motion.div ref={setRefs} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
+      onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
+      className="rounded-2xl p-7 relative overflow-hidden"
+      style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)" }}>
+      <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+        style={{ background: `radial-gradient(circle at top right, ${BROWN}18, transparent 70%)` }} />
+      <p className="font-black mb-2 leading-none" style={{ fontSize: "clamp(2.2rem, 4vw, 3rem)", color: CREAM, letterSpacing: "-0.04em" }}>
+        {s.raw === "100Cr+" ? `₹${counted}` : counted}
+      </p>
+      <p className="font-bold text-sm mb-1.5" style={{ color: TEXT }}>{s.label}</p>
+      <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
+    </motion.div>
+  );
+}
 
 function Stats() {
   return (
@@ -424,29 +583,8 @@ function Stats() {
             The community<br />speaks for itself
           </h2>
         </motion.div>
-
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STAT_DATA.map((s, i) => {
-            const { ref, rx, ry, onMouseMove, onMouseLeave } = use3DTilt();
-            return (
-              <motion.div key={i} ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
-                onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}
-                className="rounded-2xl p-7 relative overflow-hidden"
-                style={{
-                  background: CARD,
-                  border: `1px solid ${BORDER}`,
-                  boxShadow: `0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)`,
-                }}>
-                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
-                  style={{ background: `radial-gradient(circle at top right, ${BROWN}18, transparent 70%)` }} />
-                <p className="font-black mb-2 leading-none" style={{ fontSize: "clamp(2.2rem, 4vw, 3rem)", color: CREAM, letterSpacing: "-0.04em" }}>{s.value}</p>
-                <p className="font-bold text-sm mb-1.5" style={{ color: TEXT }}>{s.label}</p>
-                <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
-              </motion.div>
-            );
-          })}
+          {STAT_DATA.map((s, i) => <StatCard key={i} s={s} i={i} />)}
         </div>
       </div>
     </section>
@@ -461,69 +599,46 @@ function DealCard({ d, i }: { d: { src: string; title: string; pct: string; cat:
   function handleMouseEnter() { setActive(true); }
   function handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) { setActive(false); tiltLeave(e); }
   function handleTap(e: React.MouseEvent<HTMLDivElement>) {
-    if (window.matchMedia("(hover: none)").matches) {
-      e.preventDefault();
-      setActive(v => !v);
-    }
+    if (window.matchMedia("(hover: none)").matches) { e.preventDefault(); setActive(v => !v); }
   }
 
   return (
-    <motion.div
-      ref={ref}
-      style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+    <motion.div ref={ref} style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
       initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: EXPO }}
-      onMouseMove={onMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleTap}
+      onMouseMove={onMouseMove} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleTap}
       className="rounded-2xl overflow-hidden cursor-pointer"
       style={{
-        background: CARD,
-        border: `1px solid ${BORDER}`,
+        background: CARD, border: `1px solid ${BORDER}`,
         boxShadow: active ? `0 24px 70px rgba(0,0,0,0.55), 0 0 0 1px ${BROWN}40` : "0 16px 50px rgba(0,0,0,0.35)",
-        aspectRatio: "4/5",
-        position: "relative",
-        transition: "box-shadow 0.35s ease",
+        aspectRatio: "4/5", position: "relative", transition: "box-shadow 0.35s ease",
       }}>
-      {/* Image */}
-      <img src={d.src} alt={d.title}
-        className="w-full h-full object-cover"
+      <img src={d.src} alt={d.title} className="w-full h-full object-cover"
         style={{ transform: active ? "scale(1.07)" : "scale(1)", transition: "transform 0.7s ease" }} />
-
-      {/* Base gradient */}
       <div className="absolute inset-0"
         style={{ background: "linear-gradient(to top, rgba(14,12,10,0.95) 0%, rgba(14,12,10,0.2) 55%, transparent 100%)" }} />
-
-      {/* Hover/tap overlay — darkens card and reveals buttons */}
       <AnimatePresence>
         {active && (
           <motion.div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-5"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
             style={{ background: "rgba(14,12,10,0.72)", backdropFilter: "blur(4px)" }}>
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
+            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
               className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-85 active:scale-95"
               style={{ background: BROWN, color: BG }}>
               <TelegramIcon size={15} /> Join Telegram
             </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
               className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10 active:scale-95"
               style={{ border: `1.5px solid ${BORDER}`, color: TEXT, background: "rgba(255,255,255,0.04)" }}>
               <WhatsAppIcon size={15} /> Join WhatsApp
             </a>
-            {/* Mobile-only: tap outside hint */}
             <p className="text-[10px] mt-1 md:hidden" style={{ color: TEXT2 }}>Tap outside to close</p>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Card info (slides down on hover) */}
       <motion.div className="absolute bottom-0 left-0 right-0 p-7"
-        animate={{ y: active ? 12 : 0, opacity: active ? 0 : 1 }}
-        transition={{ duration: 0.22 }}>
+        animate={{ y: active ? 12 : 0, opacity: active ? 0 : 1 }} transition={{ duration: 0.22 }}>
         <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BROWN }}>{d.pct}</p>
         <h3 className="font-black text-2xl mb-1.5" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{d.title}</h3>
         <p className="text-xs" style={{ color: TEXT2 }}>{d.cat}</p>
@@ -534,11 +649,10 @@ function DealCard({ d, i }: { d: { src: string; title: string; pct: string; cat:
 
 function DealShowcase() {
   const deals = [
-    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF",  cat: "boAt · Samsung · JBL"          },
-    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF",  cat: "Myntra · Ajio · Meesho"        },
-    { src: "/assets/product2.png", title: "Home & Living", pct: "Up to 60% OFF",  cat: "Amazon · Flipkart · Pepperfry" },
+    { src: "/assets/product1.png", title: "Electronics",   pct: "Up to 70% OFF", cat: "boAt · Samsung · JBL"          },
+    { src: "/assets/product3.png", title: "Fashion",       pct: "Up to 85% OFF", cat: "Myntra · Ajio · Meesho"        },
+    { src: "/assets/product2.png", title: "Home & Living", pct: "Up to 60% OFF", cat: "Amazon · Flipkart · Pepperfry" },
   ];
-
   return (
     <section className="px-6 md:px-14 pb-28">
       <div className="max-w-6xl mx-auto">
@@ -557,7 +671,6 @@ function DealShowcase() {
             <TelegramIcon size={13} /> See all deals
           </a>
         </motion.div>
-
         <div className="grid md:grid-cols-3 gap-4">
           {deals.map((d, i) => <DealCard key={i} d={d} i={i} />)}
         </div>
@@ -566,13 +679,106 @@ function DealShowcase() {
   );
 }
 
+// ── Savings Calculator ─────────────────────────────────────────────────────────
+function SavingsCalculator() {
+  const [spend, setSpend] = useState(5000);
+  const saved   = Math.round(spend * 0.80);
+  const perYear = saved * 12;
+
+  return (
+    <section className="px-6 md:px-14 pb-28">
+      <div className="max-w-6xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.7 }}
+          className="rounded-3xl p-10 md:p-14 relative overflow-hidden"
+          style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+          {/* BG glow */}
+          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(to right, transparent, ${BROWN}60, transparent)` }} />
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse 60% 50% at 50% 0%, ${BROWN}10 0%, transparent 70%)` }} />
+
+          <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left */}
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>Savings Calculator</p>
+              <h2 className="font-black leading-none mb-6"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", color: TEXT, letterSpacing: "-0.04em" }}>
+                How much could<br />you save?
+              </h2>
+              <p className="text-sm leading-relaxed mb-8" style={{ color: TEXT2 }}>
+                Our community members save an average of <strong style={{ color: BROWN }}>80%</strong> on their purchases.
+                Drag to estimate your monthly savings.
+              </p>
+
+              {/* Slider */}
+              <div className="mb-3 flex justify-between text-xs font-semibold" style={{ color: TEXT2 }}>
+                <span>Monthly online spend</span>
+                <span style={{ color: CREAM }}>₹{spend.toLocaleString("en-IN")}</span>
+              </div>
+              <div className="relative mb-8">
+                <input type="range" min={500} max={50000} step={500} value={spend}
+                  onChange={e => setSpend(Number(e.target.value))}
+                  className="w-full appearance-none rounded-full h-1.5 cursor-pointer outline-none"
+                  style={{
+                    background: `linear-gradient(to right, ${BROWN} ${((spend - 500) / 49500) * 100}%, rgba(255,255,255,0.1) 0%)`,
+                  }} />
+                <style>{`input[type=range]::-webkit-slider-thumb { appearance:none; width:18px; height:18px; border-radius:50%; background:${BROWN}; cursor:pointer; box-shadow:0 0 12px ${BROWN}60; } input[type=range]::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:${BROWN}; border:none; cursor:pointer; }`}</style>
+              </div>
+
+              <p className="text-xs" style={{ color: TEXT2 }}>
+                Based on 80% average discount across Telegram & WhatsApp deals
+              </p>
+            </div>
+
+            {/* Right: result cards */}
+            <div className="flex flex-col gap-4">
+              <motion.div key={`m-${saved}`} initial={{ scale: 0.96, opacity: 0.7 }} animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-2xl p-7 relative overflow-hidden"
+                style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
+                <div className="absolute top-0 right-0 w-32 h-32" style={{ background: `radial-gradient(circle at top right, ${BROWN}15, transparent 70%)` }} />
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: BROWN }}>Monthly savings</p>
+                <p className="font-black leading-none" style={{ fontSize: "clamp(3rem, 7vw, 5rem)", color: CREAM, letterSpacing: "-0.05em" }}>
+                  ₹{saved.toLocaleString("en-IN")}
+                </p>
+                <p className="text-sm mt-2" style={{ color: TEXT2 }}>saved every month on average</p>
+              </motion.div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <motion.div key={`y-${perYear}`} initial={{ scale: 0.96, opacity: 0.7 }} animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="rounded-2xl p-5"
+                  style={{ background: `${BROWN}15`, border: `1px solid ${BROWN}30` }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: BROWN }}>Per year</p>
+                  <p className="font-black text-2xl leading-none" style={{ color: CREAM, letterSpacing: "-0.04em" }}>
+                    ₹{perYear.toLocaleString("en-IN")}
+                  </p>
+                </motion.div>
+                <div className="rounded-2xl p-5 flex flex-col justify-between"
+                  style={{ background: CARD2, border: `1px solid ${BORDER}` }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: TEXT2 }}>Join now</p>
+                  <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs transition-all hover:opacity-85"
+                    style={{ background: BROWN, color: BG }}>
+                    <TelegramIcon size={11} /> Free →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ── FAQ ────────────────────────────────────────────────────────────────────────
 const FAQS = [
-  { q: "Is Salelooterz completely free to join?",       a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
-  { q: "How many deals are shared per day?",             a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
-  { q: "Will I get spammed with unnecessary messages?",  a: "Absolutely not. Every message is a verified deal with a real discount. No promotional fluff, no sponsored junk." },
-  { q: "Are the deals only for India?",                  a: "Primarily yes — most deals are from Amazon India, Flipkart, Myntra, Nykaa, Meesho, and others." },
-  { q: "How do I claim a deal once I see it?",           a: "Each deal post includes a direct link. Just click it and you'll be taken straight to the checkout or coupon page." },
+  { q: "Is Salelooterz completely free to join?",      a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
+  { q: "How many deals are shared per day?",            a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
+  { q: "Will I get spammed with unnecessary messages?", a: "Absolutely not. Every message is a verified deal with a real discount. No promotional fluff, no sponsored junk." },
+  { q: "Are the deals only for India?",                 a: "Primarily yes — most deals are from Amazon India, Flipkart, Myntra, Nykaa, Meesho, and others." },
+  { q: "How do I claim a deal once I see it?",          a: "Each deal post includes a direct link. Just click it and you'll be taken straight to the checkout or coupon page." },
 ];
 
 function FAQ() {
@@ -581,14 +787,12 @@ function FAQ() {
     <section className="px-6 md:px-14 pb-28">
       <div className="max-w-3xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.7 }}
-          className="mb-12 text-center">
+          viewport={{ once: true }} transition={{ duration: 0.7 }} className="mb-12 text-center">
           <p className="text-xs uppercase tracking-[0.28em] font-semibold mb-4" style={{ color: BROWN }}>FAQ</p>
           <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.04em" }}>
             Common<br />Questions
           </h2>
         </motion.div>
-
         <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${BORDER}`, background: CARD }}>
           {FAQS.map((faq, i) => (
             <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
@@ -628,31 +832,20 @@ function FinalCTA() {
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
           className="rounded-3xl p-16 md:p-24 text-center relative overflow-hidden"
-          style={{
-            background: CARD2,
-            border: `1px solid ${BORDER}`,
-            boxShadow: `0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)`,
-          }}>
-          {/* Glow */}
+          style={{ background: CARD2, border: `1px solid ${BORDER}`, boxShadow: "0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)" }}>
           <div className="absolute inset-0 pointer-events-none"
             style={{ background: `radial-gradient(ellipse 70% 60% at 50% 0%, ${BROWN}25 0%, transparent 65%)` }} />
-          {/* Corner decoration */}
           <div className="absolute top-0 right-0 w-px h-32 pointer-events-none"
             style={{ background: `linear-gradient(to bottom, ${BROWN}60, transparent)` }} />
           <div className="absolute top-0 right-0 h-px w-32 pointer-events-none"
             style={{ background: `linear-gradient(to left, ${BROWN}60, transparent)` }} />
-
           <div className="relative z-10">
-            <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-8" style={{ color: BROWN }}>
-              Join 2.63M+ smart shoppers
-            </p>
+            <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-8" style={{ color: BROWN }}>Join 2.63M+ smart shoppers</p>
             <h2 className="font-black text-white leading-none mb-6"
               style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.045em" }}>
               Ready to start<br />saving?
             </h2>
-            <p className="text-base mb-12 max-w-sm mx-auto" style={{ color: TEXT2 }}>
-              Free to join. Deals every day. No spam. No catch.
-            </p>
+            <p className="text-base mb-12 max-w-sm mx-auto" style={{ color: TEXT2 }}>Free to join. Deals every day. No spam. No catch.</p>
             <div className="flex flex-wrap gap-3 justify-center">
               <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-2 px-8 py-4 rounded-full font-bold text-sm transition-all hover:opacity-85 active:scale-95"
