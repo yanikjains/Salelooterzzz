@@ -9,6 +9,36 @@ import { ChevronDown, Zap, Bell, TrendingDown, Shield } from "lucide-react";
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
 
+// ── Live member counter (grows ~1.4 members/sec — roughly 120k/day) ────────────
+const LIVE_BASE = 2_634_291;
+const LIVE_START = Date.now();
+const LIVE_RATE  = 1.4; // members per second
+function getLive() { return Math.floor(LIVE_BASE + ((Date.now() - LIVE_START) / 1000) * LIVE_RATE); }
+function fmtLive(n: number) { return n.toLocaleString("en-IN"); }
+function useLiveCount(intervalMs = 1800) {
+  const [n, setN] = useState(getLive());
+  useEffect(() => { const t = setInterval(() => setN(getLive()), intervalMs); return () => clearInterval(t); }, [intervalMs]);
+  return n;
+}
+
+// Small inline components for live count in different contexts
+function LiveNavCount() {
+  const n = useLiveCount(2000);
+  return <>{fmtLive(n)} members</>;
+}
+function LiveHeroCount() {
+  const n = useLiveCount(2000);
+  return <>{fmtLive(n)}</>;
+}
+function LiveCTACount() {
+  const n = useLiveCount(2000);
+  return <>{fmtLive(n)}</>;
+}
+function LiveStatCount() {
+  const n = useLiveCount(1800);
+  return <>{fmtLive(n)}</>;
+}
+
 // ── Palette ────────────────────────────────────────────────────────────────────
 const BG     = "#0a0806";
 const CARD   = "#1a1510";
@@ -338,7 +368,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
           transition={{ duration: 0.7, ease: EXPO }}
           style={{ boxShadow: `0 0 60px ${BROWN}50` }} />
         <div className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: TEXT2 }}>Est. 2021 · India</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] mb-3" style={{ color: TEXT2 }}>Est. 2026 · India</p>
           <h1 className="font-black uppercase leading-none"
             style={{ fontSize: "clamp(2.8rem, 10vw, 7rem)", color: TEXT, letterSpacing: "-0.04em" }}>SALELOOTERZ</h1>
         </div>
@@ -407,7 +437,7 @@ function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: TEXT2 }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e" }} />
-          2.63M+ members
+          <LiveNavCount />
         </span>
         <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all hover:opacity-80"
@@ -480,7 +510,7 @@ function Hero() {
         <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
           className="max-w-lg text-lg leading-relaxed mb-14" style={{ color: TEXT2 }}>
-          Join <strong style={{ color: CREAM }}>2.63M+ smart shoppers</strong> getting instant alerts on flash sales,
+          Join <strong style={{ color: CREAM }}><LiveHeroCount /> smart shoppers</strong> getting instant alerts on flash sales,
           price drops &amp; crazy discounts — delivered straight to your phone.
         </motion.p>
 
@@ -578,7 +608,7 @@ function MarqueeStrip() {
 
 // ── Stats with count-up ────────────────────────────────────────────────────────
 const STATS = [
-  { raw: "2.63M+", label: "Active Members",      sub: "Telegram & WhatsApp combined" },
+  { raw: "LIVE",   label: "Active Members",      sub: "Telegram & WhatsApp · growing now" },
   { raw: "500+",   label: "Deals Posted Daily",  sub: "Across all categories"        },
   { raw: "100Cr+", label: "Community Savings",   sub: "₹ Estimated total saved"     },
   { raw: "4.9★",   label: "Member Satisfaction", sub: "Based on community reviews"   },
@@ -617,9 +647,15 @@ function StatCard({ s, i }: { s: typeof STATS[number]; i: number }) {
       <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
         style={{ background: `radial-gradient(circle at top right, ${BROWN}1a, transparent 70%)` }} />
       <p className="font-black mb-2 leading-none"
-        style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.2rem)", color: CREAM, letterSpacing: "-0.05em" }}>
-        {s.raw === "100Cr+" ? `₹${counted}` : counted}
+        style={{ fontSize: s.raw === "LIVE" ? "clamp(1.5rem, 3.2vw, 2.2rem)" : "clamp(2.4rem, 4.5vw, 3.2rem)", color: CREAM, letterSpacing: "-0.05em" }}>
+        {s.raw === "LIVE" ? <LiveStatCount /> : s.raw === "100Cr+" ? `₹${counted}` : counted}
       </p>
+      {s.raw === "LIVE" && (
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-1"
+          style={{ background: "#22c55e18", color: "#22c55e" }}>
+          <span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "#22c55e" }} /> live
+        </span>
+      )}
       <p className="font-bold text-sm mb-1" style={{ color: TEXT }}>{s.label}</p>
       <p className="text-xs" style={{ color: TEXT2 }}>{s.sub}</p>
     </motion.div>
@@ -803,7 +839,7 @@ function WhySection() {
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }} className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>Why 2.63M people joined</p>
+          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: BROWN }}>Why millions of Indians joined</p>
           <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", color: TEXT, letterSpacing: "-0.045em" }}>
             Built different.<br />Built for you.
           </h2>
@@ -997,7 +1033,7 @@ function FinalCTA() {
           <div className="absolute top-0 right-0 w-px h-40" style={{ background: `linear-gradient(to bottom, ${BROWN}70, transparent)` }} />
           <div className="absolute top-0 right-0 h-px w-40" style={{ background: `linear-gradient(to left, ${BROWN}70, transparent)` }} />
           <div className="relative z-10">
-            <p className="text-xs uppercase tracking-[0.32em] font-semibold mb-8" style={{ color: BROWN }}>Join 2.63M+ smart shoppers</p>
+            <p className="text-xs uppercase tracking-[0.32em] font-semibold mb-8" style={{ color: BROWN }}>Join <LiveCTACount /> smart shoppers</p>
             <h2 className="font-black text-white leading-none mb-6"
               style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.048em" }}>
               Ready to start<br />saving?
