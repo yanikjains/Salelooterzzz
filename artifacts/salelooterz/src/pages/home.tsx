@@ -530,7 +530,7 @@ function Hero() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.75, duration: 0.6 }}
           className="flex flex-wrap justify-center gap-6 text-xs font-semibold" style={{ color: TEXT2 }}>
-          {["✅ 100% Free forever", "⚡ 500+ deals/day", "🚫 Zero spam", "🔒 No registration"].map(t => (
+          {["✅ 100% Free forever", "📢 300+ Telegram deals/day", "💬 20+ WhatsApp deals/day", "🚫 Zero spam"].map(t => (
             <span key={t}>{t}</span>
           ))}
         </motion.div>
@@ -609,7 +609,7 @@ function MarqueeStrip() {
 // ── Stats with count-up ────────────────────────────────────────────────────────
 const STATS = [
   { raw: "LIVE",   label: "Active Members",      sub: "Telegram & WhatsApp · growing now" },
-  { raw: "500+",   label: "Deals Posted Daily",  sub: "Across all categories"        },
+  { raw: "DEALS",  label: "Deals Posted Daily",  sub: "Telegram 300+ · WhatsApp 20+"  },
   { raw: "100Cr+", label: "Community Savings",   sub: "₹ Estimated total saved"     },
   { raw: "4.9★",   label: "Member Satisfaction", sub: "Based on community reviews"   },
 ];
@@ -646,10 +646,23 @@ function StatCard({ s, i }: { s: typeof STATS[number]; i: number }) {
       style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: "0 8px 40px rgba(0,0,0,0.35)" }}>
       <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none"
         style={{ background: `radial-gradient(circle at top right, ${BROWN}1a, transparent 70%)` }} />
-      <p className="font-black mb-2 leading-none"
-        style={{ fontSize: s.raw === "LIVE" ? "clamp(1.5rem, 3.2vw, 2.2rem)" : "clamp(2.4rem, 4.5vw, 3.2rem)", color: CREAM, letterSpacing: "-0.05em" }}>
-        {s.raw === "LIVE" ? <LiveStatCount /> : s.raw === "100Cr+" ? `₹${counted}` : counted}
-      </p>
+      {s.raw === "DEALS" ? (
+        <div className="mb-2">
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="font-black leading-none" style={{ fontSize: "clamp(2rem, 3.5vw, 2.6rem)", color: CREAM, letterSpacing: "-0.05em" }}>300+</span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: BROWN }}>Telegram</span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-black leading-none" style={{ fontSize: "clamp(1.4rem, 2.5vw, 2rem)", color: CREAM, letterSpacing: "-0.04em" }}>20+</span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: TEXT2 }}>WhatsApp</span>
+          </div>
+        </div>
+      ) : (
+        <p className="font-black mb-2 leading-none"
+          style={{ fontSize: s.raw === "LIVE" ? "clamp(1.5rem, 3.2vw, 2.2rem)" : "clamp(2.4rem, 4.5vw, 3.2rem)", color: CREAM, letterSpacing: "-0.05em" }}>
+          {s.raw === "LIVE" ? <LiveStatCount /> : s.raw === "100Cr+" ? `₹${counted}` : counted}
+        </p>
+      )}
       {s.raw === "LIVE" && (
         <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-1"
           style={{ background: "#22c55e18", color: "#22c55e" }}>
@@ -960,7 +973,7 @@ function SavingsCalculator() {
 // ── FAQ ────────────────────────────────────────────────────────────────────────
 const FAQS = [
   { q: "Is Salelooterz completely free to join?",      a: "Yes, 100% free. Always has been, always will be. We share deals because we're passionate about helping people save." },
-  { q: "How many deals are shared per day?",            a: "We typically share 500+ deals per day across Telegram and WhatsApp — electronics, fashion, food, travel, home goods, and more." },
+  { q: "How many deals are shared per day?",            a: "We share 300+ deals daily on Telegram and 20+ deals on WhatsApp — covering electronics, fashion, food, travel, home goods, and more." },
   { q: "Will I get spammed with unnecessary messages?", a: "Absolutely not. Every message is a verified deal with a real discount. No promotional fluff, no sponsored junk." },
   { q: "Are the deals only for India?",                 a: "Primarily yes — most deals are from Amazon India, Flipkart, Myntra, Nykaa, Meesho, and others." },
   { q: "How do I claim a deal once I see it?",          a: "Each deal post includes a direct link. Just click it and you'll be taken straight to the checkout or coupon page." },
@@ -1038,7 +1051,7 @@ function FinalCTA() {
               style={{ fontSize: "clamp(2.5rem, 6vw, 5.5rem)", letterSpacing: "-0.048em" }}>
               Ready to start<br />saving?
             </h2>
-            <p className="text-base mb-14 max-w-sm mx-auto" style={{ color: TEXT2 }}>Free to join. 500+ deals a day. No spam. No catch.</p>
+            <p className="text-base mb-14 max-w-sm mx-auto" style={{ color: TEXT2 }}>Free to join. 300+ Telegram deals + 20+ WhatsApp deals daily. No spam. No catch.</p>
             <div className="flex flex-wrap gap-4 justify-center">
               <MagneticBtn href={TELEGRAM_URL} primary>
                 <TelegramIcon size={14} /> Join Telegram — Free
