@@ -54,6 +54,24 @@ function use3DTilt() {
   return { ref, rx, ry, onMouseMove, onMouseLeave };
 }
 
+// ── Floating badge component ───────────────────────────────────────────────────
+function FloatBadge({ children, delay = 0, style = {} }: {
+  children: React.ReactNode; delay?: number; style?: React.CSSProperties;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.7, ease: EXPO }}
+      style={style}>
+      <motion.div
+        animate={{ y: [0, -8, 0] }}
+        transition={{ duration: 4 + delay, repeat: Infinity, ease: "easeInOut", delay }}>
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Grain overlay (adds luxury texture) ───────────────────────────────────────
 function Grain() {
   return (
@@ -180,6 +198,89 @@ function Hero() {
           width: 400, height: 400, borderRadius: "50%",
           background: `radial-gradient(circle, rgba(90,55,20,0.2) 0%, transparent 70%)`,
         }} />
+      </div>
+
+      {/* ── LEFT SIDE DECORATIONS (desktop only) ── */}
+      <div className="hidden xl:block absolute left-5 top-0 bottom-0 pointer-events-none" style={{ width: 120 }}>
+        {/* Vertical line */}
+        <motion.div className="absolute"
+          style={{ left: 18, top: "15%", width: 1, height: "55%", background: `linear-gradient(to bottom, transparent, ${BROWN}50, transparent)` }}
+          initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
+          transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
+
+        {/* Vertical label */}
+        <motion.p
+          className="absolute font-black uppercase text-[10px] tracking-[0.35em]"
+          style={{ left: 5, top: "22%", color: TEXT2, writingMode: "vertical-rl", transform: "rotate(180deg)", letterSpacing: "0.35em" }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.7 }}>
+          Deal Alert Community
+        </motion.p>
+
+        {/* Floating deal badges on left */}
+        <FloatBadge delay={1.3} style={{ position: "absolute", top: "32%", left: 30 }}>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: BROWN, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            🔥 500+ Deals/Day
+          </div>
+        </FloatBadge>
+
+        <FloatBadge delay={1.6} style={{ position: "absolute", top: "50%", left: 20 }}>
+          <div className="px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT2, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            ⚡ Flash Sales
+          </div>
+        </FloatBadge>
+
+        <FloatBadge delay={1.9} style={{ position: "absolute", top: "66%", left: 32 }}>
+          <div className="px-3 py-1.5 rounded-full text-[10px] font-bold whitespace-nowrap"
+            style={{ background: `${BROWN}20`, border: `1px solid ${BROWN}40`, color: BROWN }}>
+            Est. 2021
+          </div>
+        </FloatBadge>
+      </div>
+
+      {/* ── RIGHT SIDE DECORATIONS (desktop only) ── */}
+      <div className="hidden xl:block absolute right-5 top-0 bottom-0 pointer-events-none" style={{ width: 130 }}>
+        {/* Vertical line */}
+        <motion.div className="absolute"
+          style={{ right: 18, top: "18%", width: 1, height: "50%", background: `linear-gradient(to bottom, transparent, ${BROWN}40, transparent)` }}
+          initial={{ scaleY: 0, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }}
+          transition={{ delay: 1.0, duration: 1.2, ease: EXPO }} />
+
+        {/* Big % badge */}
+        <FloatBadge delay={1.2} style={{ position: "absolute", top: "26%", right: 16 }}>
+          <div className="rounded-2xl px-4 py-3 text-center"
+            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: `0 12px 32px rgba(0,0,0,0.5)` }}>
+            <p className="font-black text-2xl leading-none" style={{ color: BROWN, letterSpacing: "-0.04em" }}>80%</p>
+            <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Avg Discount</p>
+          </div>
+        </FloatBadge>
+
+        <FloatBadge delay={1.5} style={{ position: "absolute", top: "46%", right: 22 }}>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap"
+            style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#22c55e", flexShrink: 0 }} />
+            Live Deals
+          </div>
+        </FloatBadge>
+
+        <FloatBadge delay={1.8} style={{ position: "absolute", top: "60%", right: 14 }}>
+          <div className="rounded-xl px-4 py-3 text-center"
+            style={{ background: CARD, border: `1px solid ${BORDER}`, boxShadow: `0 8px 24px rgba(0,0,0,0.4)` }}>
+            <p className="font-black text-xl leading-none" style={{ color: CREAM, letterSpacing: "-0.03em" }}>2.63M+</p>
+            <p className="text-[9px] font-semibold uppercase tracking-wider mt-1" style={{ color: TEXT2 }}>Members</p>
+          </div>
+        </FloatBadge>
+
+        {/* Vertical label */}
+        <motion.p
+          className="absolute font-black uppercase text-[10px] tracking-[0.35em]"
+          style={{ right: 5, top: "25%", color: TEXT2, writingMode: "vertical-rl", letterSpacing: "0.35em" }}
+          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.7 }}>
+          Zero Spam · 100% Free
+        </motion.p>
       </div>
 
       {/* Top label */}
