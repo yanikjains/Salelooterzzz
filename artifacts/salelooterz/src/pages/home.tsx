@@ -601,7 +601,7 @@ function Testimonials() {
 // ── Savings calculator ────────────────────────────────────────────────────────
 function SavingsCalc() {
   const [spend, setSpend] = useState(5000);
-  const saved = Math.round(spend * 0.8);
+  const saved = Math.round(spend * 0.51);
   const yearly = saved * 12;
 
   return (
@@ -619,7 +619,7 @@ function SavingsCalc() {
                 How much could<br />you save?
               </h2>
               <p className="text-sm leading-relaxed mb-8 text-white/60">
-                Community members save an average of <strong className="text-white">80%</strong>. Drag the slider to see your potential monthly savings.
+                Community members save an average of <strong className="text-white">51%</strong>. Drag the slider to see your potential monthly savings.
               </p>
               <div className="flex justify-between text-xs font-semibold mb-2.5 text-white/50">
                 <span>Monthly online spend</span>
