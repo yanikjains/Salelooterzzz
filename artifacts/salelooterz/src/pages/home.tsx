@@ -155,7 +155,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 
         {/* Tagline */}
         <motion.p className="text-[11px] font-semibold uppercase tracking-[0.32em]"
-          style={{ color: `${PURPLE}80` }}
+          style={{ color: TEXT }}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6, ease: EXPO }}>
           India's #1 Deal Alert Community
