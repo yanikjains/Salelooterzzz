@@ -314,12 +314,13 @@ function Hero() {
             <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-3.5 rounded-full font-bold text-sm text-white transition-all hover:opacity-90"
               style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}40` }}>
-              <TelegramIcon size={15} /> Let's Get Started
+              <TelegramIcon size={15} /> Join on Telegram
             </a>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-6 py-3.5 rounded-full font-bold text-sm transition-all hover:opacity-80"
-              style={{ background: CARD, border: `1.5px solid ${BORDER}`, color: TEXT, boxShadow: "0 4px 16px rgba(13,11,26,0.07)" }}>
-              <WhatsAppIcon size={15} /> Watch Tutorial <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `${PURPLE}15` }}>▶</span>
+              className="flex items-center gap-2 px-6 py-3.5 rounded-full font-bold text-sm text-white transition-all hover:opacity-90"
+              style={{ background: "#25D366", boxShadow: "0 8px 28px rgba(37,211,102,0.35)" }}>
+              <span className="text-base leading-none">👑</span>
+              <WhatsAppIcon size={15} /> Join on WhatsApp
             </a>
           </motion.div>
 
