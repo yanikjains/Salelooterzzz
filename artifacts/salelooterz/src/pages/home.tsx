@@ -345,13 +345,13 @@ function Hero() {
 }
 
 // ── Brand strip ───────────────────────────────────────────────────────────────
-const BRANDS = ["Amazon","Flipkart","Myntra","Nykaa","Meesho","Ajio","Swiggy","Zomato","boAt","Croma","Pepperfry","Reliance","Tata Cliq","BigBasket"];
+const BRANDS = ["Amazon","Flipkart","Meesho","Croma","Tata Cliq","boAt","Pepperfry","Reliance Digital","BigBasket","Samsung","Apple","Deals","Flash Sale","Best Offers","Discount"];
 function BrandStrip() {
   return (
-    <div className="relative overflow-hidden py-4" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: CARD }}>
-      <div className="flex gap-12 items-center whitespace-nowrap" style={{ animation: "marquee 28s linear infinite" }}>
+    <div className="relative overflow-hidden py-5" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: CARD }}>
+      <div className="flex gap-16 items-center whitespace-nowrap" style={{ animation: "marquee 32s linear infinite" }}>
         {[...BRANDS,...BRANDS,...BRANDS].map((b, i) => (
-          <span key={i} className="text-[11px] font-black uppercase tracking-[0.14em] shrink-0" style={{ color: "rgba(13,11,26,0.18)" }}>{b}</span>
+          <span key={i} className="text-base font-black uppercase tracking-[0.08em] shrink-0" style={{ color: TEXT }}>{b}</span>
         ))}
       </div>
       <style>{`@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}`}</style>
