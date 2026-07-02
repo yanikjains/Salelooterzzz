@@ -345,7 +345,7 @@ function Hero() {
 }
 
 // ── Brand strip ───────────────────────────────────────────────────────────────
-const BRANDS = ["Amazon","Flipkart","Meesho","Croma","Tata Cliq","boAt","Pepperfry","Reliance Digital","BigBasket","Samsung","Apple","Deals","Flash Sale","Best Offers","Discount"];
+const BRANDS = ["Amazon","Amazon India","Best Deals","Flash Sale","Lightning Deals","Deal of the Day","Top Offers","Prime Deals","Discount","Exclusive Offers","Limited Time","Today's Deals","Big Sale","Price Drop"];
 function BrandStrip() {
   return (
     <div className="relative overflow-hidden py-5" style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: CARD }}>
@@ -364,7 +364,7 @@ const FEATURES = [
   { text: "300+ verified deals every single day",            highlight: false },
   { text: "Gain instant alerts the moment prices drop",      highlight: false },
   { text: "Always free — zero fees, zero subscriptions",     highlight: true  },
-  { text: "Cover every platform — Amazon, Flipkart & more",  highlight: false },
+  { text: "Exclusively curated Amazon India deals, every day", highlight: false },
 ];
 
 function OurDifference() {
@@ -544,7 +544,7 @@ function HowItWorks() {
 // ── Testimonials / social proof ───────────────────────────────────────────────
 const TESTIMONIALS = [
   { name: "Priya S.", city: "Mumbai",    text: "Saved ₹3,200 on boAt earbuds in the first week. Absolutely love this channel!",         emoji: "🎧", savings: "₹3,200" },
-  { name: "Rahul K.", city: "Delhi",     text: "Got a laptop at 64% off on Flipkart. Would have never found that deal myself.",          emoji: "💻", savings: "₹18,000" },
+  { name: "Rahul K.", city: "Delhi",     text: "Got a laptop at 64% off on Amazon. Would have never found that deal myself.",            emoji: "💻", savings: "₹18,000" },
   { name: "Sneha M.", city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for less than ₹2,000 total.",      emoji: "👗", savings: "₹4,800" },
   { name: "Arjun P.", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",        emoji: "🏆", savings: "₹6,500" },
   { name: "Divya R.", city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at ₹799. Was ₹4,999 on Amazon!",        emoji: "⌚", savings: "₹4,200" },
@@ -666,7 +666,7 @@ const FAQS = [
   { q: "Is Salelooterz completely free?",          a: "100% free, always. We share deals because we love saving money — no subscriptions, no fees, ever." },
   { q: "How many deals are posted per day?",        a: "300+ deals daily on Telegram and 20+ on WhatsApp — covering electronics, fashion, food, travel, home goods, and more." },
   { q: "Will I get spammed?",                       a: "Never. Every single message is a verified deal with a real discount. No promotional content, no random forwards." },
-  { q: "Are deals only for India?",                 a: "Primarily yes — Amazon India, Flipkart, Myntra, Nykaa, Meesho, Swiggy, and all major Indian platforms." },
+  { q: "Are deals only for Amazon?",                a: "Yes — we focus exclusively on Amazon India, bringing you the best verified deals, lightning deals, and price drops every day." },
   { q: "How do I claim a deal?",                    a: "Every post includes a direct link. One tap takes you straight to the checkout or coupon page." },
 ];
 
