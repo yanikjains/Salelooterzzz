@@ -112,12 +112,12 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
   return (
     <motion.div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "#000" }}
+      style={{ background: "#EDE8FF" }}
       exit={{ clipPath: "inset(0 0 100% 0)", transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}>
 
       {/* Radial glow pulse behind content */}
       <motion.div className="absolute pointer-events-none"
-        style={{ width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${ACCENT}22 0%, transparent 70%)` }}
+        style={{ width: 600, height: 600, borderRadius: "50%", background: `radial-gradient(circle, ${PURPLE}28 0%, transparent 70%)` }}
         initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1.6, opacity: 1 }}
         transition={{ duration: 1.8, ease: EXPO }} />
 
@@ -127,7 +127,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
           initial={{ scale: 0, rotate: -15, opacity: 0 }}
           animate={{ scale: 1, rotate: 0, opacity: 1 }}
           transition={{ duration: 0.7, ease: EXPO }}
-          style={{ boxShadow: `0 0 64px ${ACCENT}55`, borderRadius: 20 }}>
+          style={{ boxShadow: `0 0 64px ${PURPLE}40`, borderRadius: 20 }}>
           <img src="/assets/logo.jpg" alt="Salelooterz" className="h-16 w-16 rounded-2xl object-contain" />
         </motion.div>
 
@@ -136,8 +136,8 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
           {BRAND_LETTERS.map((l, i) => (
             <div key={i} style={{ overflow: "hidden" }}>
               <motion.span
-                className="font-black text-white inline-block"
-                style={{ fontSize: "clamp(2.8rem, 10vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 1 }}
+                className="font-black inline-block"
+                style={{ fontSize: "clamp(2.8rem, 10vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 1, color: PURPLE }}
                 initial={{ y: "110%", opacity: 0 }}
                 animate={{ y: "0%", opacity: 1 }}
                 transition={{ duration: 0.65, delay: 0.25 + i * 0.045, ease: EXPO }}>
@@ -148,22 +148,22 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
         </div>
 
         {/* Accent rule */}
-        <motion.div style={{ height: 2, background: ACCENT, borderRadius: 99, transformOrigin: "center" }}
-          initial={{ scaleX: 0, opacity: 0 }} animate={{ scaleX: 1, opacity: 1 }}
+        <motion.div style={{ height: 2, background: PURPLE, borderRadius: 99, transformOrigin: "center", opacity: 0.4 }}
+          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
           transition={{ delay: 0.85, duration: 0.6, ease: EXPO }}
           className="w-24" />
 
         {/* Tagline */}
         <motion.p className="text-[11px] font-semibold uppercase tracking-[0.32em]"
-          style={{ color: "rgba(255,255,255,0.38)" }}
+          style={{ color: `${PURPLE}80` }}
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6, ease: EXPO }}>
           India's #1 Deal Alert Community
         </motion.p>
 
         {/* Progress bar */}
-        <div style={{ width: 180, height: 1.5, background: "rgba(255,255,255,0.1)", overflow: "hidden", borderRadius: 99 }}>
-          <motion.div style={{ height: "100%", background: ACCENT, transformOrigin: "left" }}
+        <div style={{ width: 180, height: 1.5, background: `${PURPLE}20`, overflow: "hidden", borderRadius: 99 }}>
+          <motion.div style={{ height: "100%", background: PURPLE, transformOrigin: "left" }}
             initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
             transition={{ delay: 0.4, duration: 2.2, ease: "linear" }} />
         </div>
