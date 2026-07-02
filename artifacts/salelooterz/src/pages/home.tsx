@@ -202,8 +202,6 @@ function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const y       = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
   const liveN   = useLive(2000);
-  const sc1 = useScramble("Stop Overpaying.");
-  const sc2 = useScramble("Start Saving Big.");
 
   return (
     <section ref={ref} className="relative min-h-screen overflow-hidden">
@@ -259,15 +257,14 @@ function Hero() {
             <div style={{ overflow: "hidden" }}>
               <motion.div initial={{ y: "105%" }} animate={{ y: "0%" }}
                 transition={{ delay: 0.12, duration: 0.9, ease: EXPO }}>
-                <span onMouseEnter={sc1.go} style={{ color: TEXT, display: "inline-block" }}>{sc1.d}</span>
+                <span style={{ color: TEXT, display: "inline-block" }}>Stop Overpaying.</span>
               </motion.div>
             </div>
             <div style={{ overflow: "hidden" }}>
               <motion.div initial={{ y: "105%" }} animate={{ y: "0%" }}
                 transition={{ delay: 0.24, duration: 0.9, ease: EXPO }}>
-                <span onMouseEnter={sc2.go}
-                  style={{ color: "transparent", WebkitTextStroke: `2.5px ${ACCENT}`, display: "inline-block" }}>
-                  {sc2.d}
+                <span style={{ color: "transparent", WebkitTextStroke: `2.5px ${ACCENT}`, display: "inline-block" }}>
+                  Start Saving Big.
                 </span>
               </motion.div>
             </div>
