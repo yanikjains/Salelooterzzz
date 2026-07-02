@@ -475,7 +475,7 @@ function StatsRow() {
 
 // ── How it works ──────────────────────────────────────────────────────────────
 const STEPS = [
-  { n: "01", title: "Join for free",          body: "Click "Join on Telegram" or "Join on WhatsApp" — takes 5 seconds.",    color: PURPLE },
+  { n: "01", title: "Join for free",          body: "Click \u201cJoin on Telegram\u201d or \u201cJoin on WhatsApp\u201d \u2014 takes 5 seconds.",    color: PURPLE },
   { n: "02", title: "Get instant alerts",     body: "Every deal goes live in the channel the moment our team finds it.",      color: ACCENT },
   { n: "03", title: "Tap & save",             body: "One tap takes you straight to the deal. No searching, no hunting.",      color: GREEN  },
 ];
