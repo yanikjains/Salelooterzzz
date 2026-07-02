@@ -137,7 +137,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
             <div key={i} style={{ overflow: "hidden" }}>
               <motion.span
                 className="font-black inline-block"
-                style={{ fontSize: "clamp(2.8rem, 10vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 1, color: PURPLE }}
+                style={{ fontSize: "clamp(2.8rem, 10vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 1, color: TEXT }}
                 initial={{ y: "110%", opacity: 0 }}
                 animate={{ y: "0%", opacity: 1 }}
                 transition={{ duration: 0.65, delay: 0.25 + i * 0.045, ease: EXPO }}>
@@ -200,7 +200,6 @@ export default function Home() {
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const liveN = useLive(2000);
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 60); window.addEventListener("scroll", fn); return () => window.removeEventListener("scroll", fn); }, []);
 
   return (
@@ -215,7 +214,7 @@ function Navbar() {
       <div className="hidden md:flex items-center gap-3">
         <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: TEXT2 }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GREEN }} />
-          {fmtIN(liveN)} live members
+          Many members
         </span>
         <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
           className="flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm text-white transition-all hover:opacity-90"
@@ -233,7 +232,6 @@ function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const y       = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
-  const liveN   = useLive(2000);
 
   return (
     <section ref={ref} className="relative min-h-screen overflow-hidden">
@@ -267,7 +265,7 @@ function Hero() {
               className="absolute -bottom-2 -left-6 px-4 py-2.5 rounded-2xl shadow-lg font-bold text-sm"
               style={{ background: CARD, border: `1px solid ${BORDER}` }}>
               <span className="text-xs" style={{ color: TEXT2 }}>saved by</span>
-              <p className="font-black" style={{ color: TEXT, letterSpacing: "-0.03em" }}>{fmtIN(liveN)}</p>
+              <p className="font-black" style={{ color: TEXT, letterSpacing: "-0.03em" }}>MANY</p>
             </motion.div>
           </motion.div>
         </div>
@@ -306,7 +304,7 @@ function Hero() {
           <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45, duration: 0.7, ease: EXPO }}
             className="text-base leading-relaxed mb-10 max-w-md" style={{ color: TEXT2 }}>
-            Embrace the smartest way to shop — join <strong style={{ color: TEXT }}>{fmtIN(liveN)} smart shoppers</strong> getting instant alerts on flash sales, price drops &amp; crazy discounts delivered straight to your phone.
+            Embrace the smartest way to shop — join <strong style={{ color: TEXT }}>many smart shoppers</strong> getting instant alerts on flash sales, price drops &amp; crazy discounts delivered straight to your phone.
           </motion.p>
 
           {/* CTA buttons */}
@@ -455,10 +453,9 @@ function OurDifference() {
 }
 
 function LiveStat() {
-  const n = useLive(1800);
   return (
     <p className="font-black text-xl leading-none" style={{ color: TEXT, letterSpacing: "-0.04em" }}>
-      {fmtIN(n)}
+      MANY
     </p>
   );
 }
@@ -714,7 +711,6 @@ function FAQ() {
 
 // ── Final CTA ─────────────────────────────────────────────────────────────────
 function FinalCTA() {
-  const liveN = useLive(2000);
   return (
     <section className="px-6 md:px-12 pb-28" style={{ background: BG }}>
       <div className="max-w-6xl mx-auto">
@@ -731,7 +727,7 @@ function FinalCTA() {
             ))}
             <div className="relative z-10">
               <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-6" style={{ color: `${PURPLE}bb` }}>
-                Join {fmtIN(liveN)} smart shoppers
+                Join many smart shoppers
               </p>
               <h2 className="font-black text-white leading-none mb-5"
                 style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", letterSpacing: "-0.055em" }}>
