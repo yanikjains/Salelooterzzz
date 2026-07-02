@@ -466,7 +466,7 @@ const STATS = [
   { value: "20+",     sub: "WhatsApp deals/day",      color: PURPLE  },
   { value: "2.6M+",   sub: "Community members",       color: GREEN   },
   { value: "₹100Cr+", sub: "Community savings",       color: "#D97706" },
-  { value: "4.9★",    sub: "Member satisfaction",     color: PURPLE  },
+  { value: "51%",     sub: "Avg. discount received",  color: PURPLE  },
 ];
 
 function useCountUp(to: number, inView: boolean) {
