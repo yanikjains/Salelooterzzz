@@ -221,6 +221,11 @@ function Navbar() {
           style={{ background: PURPLE }}>
           <TelegramIcon size={13} /> Join Free
         </a>
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm text-white transition-all hover:opacity-90"
+          style={{ background: "#25D366", boxShadow: "0 8px 28px rgba(37,211,102,0.35)" }}>
+          <span>👑</span><WhatsAppIcon size={13} /> Join on WhatsApp
+        </a>
       </div>
     </motion.header>
   );
