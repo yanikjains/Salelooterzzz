@@ -191,6 +191,7 @@ export default function Home() {
         <SavingsCalc />
         <FAQ />
         <FinalCTA />
+        <AffiliateDisclosure />
         <Footer />
       </motion.div>
     </div>
@@ -770,6 +771,23 @@ function FinalCTA() {
             </div>
           </div>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ── Affiliate Disclosure banner ────────────────────────────────────────────────
+const AFFILIATE_DISCLOSURE_URL = "https://telegra.ph/Salelooterz---Affiliate-disclosure-07-05";
+
+function AffiliateDisclosure() {
+  return (
+    <section className="px-6 md:px-12 py-10" style={{ background: BG }}>
+      <div className="max-w-6xl mx-auto text-center">
+        <a href={AFFILIATE_DISCLOSURE_URL} target="_blank" rel="noopener noreferrer"
+          className="inline-block font-black transition-all hover:opacity-70"
+          style={{ fontSize: "clamp(1.1rem, 2.4vw, 1.6rem)", color: TEXT, letterSpacing: "-0.03em", textDecoration: "underline", textDecorationColor: PURPLE, textDecorationThickness: "3px", textUnderlineOffset: "6px" }}>
+          Affiliate Disclosure
+        </a>
       </div>
     </section>
   );
