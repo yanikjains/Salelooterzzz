@@ -7,7 +7,7 @@ import {
 import { ChevronDown, ArrowRight, Check } from "lucide-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
-const WHATSAPP_URL = "https://whatsapp.com/channel/salelooterz";
+const WHATSAPP_URL = "https://whatsapp.com/channel/0029VbCjpoRHFxPAxCt3rm3S";
 
 // ── Live counter ──────────────────────────────────────────────────────────────
 const LIVE_BASE  = 2_634_291;
