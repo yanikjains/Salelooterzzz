@@ -572,12 +572,12 @@ function HowItWorks() {
 
 // ── Testimonials / social proof ───────────────────────────────────────────────
 const TESTIMONIALS = [
-  { name: "Danish",    city: "Mumbai",    text: "Got boAt earbuds at a huge discount in the first week. Absolutely love this channel!",   emoji: "🎧" },
-  { name: "Aarav",     city: "Delhi",     text: "Got a laptop at 64% off on Amazon. Would have never found that deal myself.",             emoji: "💻" },
-  { name: "Tejas",     city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for way less than usual.",          emoji: "👗" },
-  { name: "Shreyansh", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",         emoji: "🏆" },
-  { name: "Aryan",     city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at a massive discount on Amazon!",       emoji: "⌚" },
-  { name: "Yash",      city: "Pune",      text: "Kitchen appliances, Swiggy coupons, flight deals — they have literally everything.",      emoji: "🍕" },
+  { name: "Danish",    city: "Mumbai",    text: "Got boAt earbuds at a huge discount in the first week. Absolutely love this channel!",   emoji: "🎧", stars: 3 },
+  { name: "Aarav",     city: "Delhi",     text: "Got a laptop at 64% off on Amazon. Would have never found that deal myself.",             emoji: "💻", stars: 5 },
+  { name: "Tejas",     city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for way less than usual.",          emoji: "👗", stars: 5 },
+  { name: "Shreyansh", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",         emoji: "🏆", stars: 2 },
+  { name: "Aryan",     city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at a massive discount on Amazon!",       emoji: "⌚", stars: 5 },
+  { name: "Yash",      city: "Pune",      text: "Kitchen appliances, Swiggy coupons, flight deals — they have literally everything.",      emoji: "🍕", stars: 5 },
 ];
 
 function Testimonials() {
@@ -609,7 +609,7 @@ function Testimonials() {
               <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>"{t.text}"</p>
               <div className="flex gap-0.5 mt-4">
                 {Array.from({ length: 5 }).map((_, j) => (
-                  <span key={j} style={{ color: "#FBBF24", fontSize: 13 }}>★</span>
+                  <span key={j} style={{ color: j < t.stars ? "#FBBF24" : "#E5E1F5", fontSize: 13 }}>★</span>
                 ))}
               </div>
             </motion.div>
