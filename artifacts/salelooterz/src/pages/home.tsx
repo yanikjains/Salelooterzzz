@@ -577,7 +577,7 @@ const TESTIMONIALS = [
   { name: "Tejas",     city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for way less than usual.",          emoji: "👗", stars: 5 },
   { name: "Shreyansh", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",         emoji: "🏆", stars: 2 },
   { name: "Aryan",     city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at a massive discount on Amazon!",       emoji: "⌚", stars: 5 },
-  { name: "Yash",      city: "Pune",      text: "Kitchen appliances, Swiggy coupons, flight deals — they have literally everything.",      emoji: "🍕", stars: 5 },
+  { name: "Yash",      city: "Pune",      text: "Specified deals on whatsapp is best. No spam exact 30 deals just pure diamond",           emoji: "🍕", stars: 5 },
 ];
 
 function Testimonials() {
