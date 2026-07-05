@@ -461,6 +461,14 @@ function OurDifference() {
                 <p className="font-black text-2xl leading-none" style={{ color: TEXT, letterSpacing: "-0.04em" }}>₹100Cr+</p>
                 <p className="text-[11px] mt-1" style={{ color: TEXT2 }}>estimated total saved</p>
               </motion.div>
+              <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: 0.26, duration: 0.75, ease: EXPO }}
+                className="rounded-2xl p-6 col-span-2"
+                style={{ background: `linear-gradient(135deg, ${PURPLE}15, ${PURPLE}05)`, border: `1.5px solid ${PURPLE}20` }}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: PURPLE }}>Average Discount</p>
+                <p className="font-black text-2xl leading-none" style={{ color: TEXT, letterSpacing: "-0.04em" }}>51%</p>
+                <p className="text-[11px] mt-1" style={{ color: TEXT2 }}>average discount received by members</p>
+              </motion.div>
             </div>
           </div>
         </div>
