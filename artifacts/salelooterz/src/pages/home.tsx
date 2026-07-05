@@ -484,7 +484,7 @@ function LiveStat() {
 const STATS = [
   { value: "300+",    sub: "Telegram deals/day",     color: ACCENT  },
   { value: "30+",     sub: "WhatsApp deals/day",      color: PURPLE  },
-  { value: "2.6M+",   sub: "Community members",       color: GREEN   },
+  { value: "Growing", sub: "Community members",       color: GREEN   },
   { value: "₹100Cr+", sub: "Community savings",       color: "#D97706" },
   { value: "51%",     sub: "Avg. discount received",  color: PURPLE  },
 ];
@@ -579,7 +579,7 @@ function Testimonials() {
           viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: PURPLE }}>Real savings · Real people</p>
           <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.05em" }}>
-            2.6 million Indians<br />can't be wrong.
+            A continuously growing<br />community.
           </h2>
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
