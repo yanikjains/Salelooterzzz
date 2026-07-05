@@ -189,9 +189,9 @@ export default function Home() {
         <HowItWorks />
         <Testimonials />
         <SavingsCalc />
+        <AffiliateDisclosure />
         <FAQ />
         <FinalCTA />
-        <AffiliateDisclosure />
         <Footer />
       </motion.div>
     </div>
@@ -781,11 +781,11 @@ const AFFILIATE_DISCLOSURE_URL = "https://telegra.ph/Salelooterz---Affiliate-dis
 
 function AffiliateDisclosure() {
   return (
-    <section className="px-6 md:px-12 py-10" style={{ background: BG }}>
+    <section className="px-6 md:px-12 py-20" style={{ background: BG }}>
       <div className="max-w-6xl mx-auto text-center">
         <a href={AFFILIATE_DISCLOSURE_URL} target="_blank" rel="noopener noreferrer"
-          className="inline-block font-black transition-all hover:opacity-70"
-          style={{ fontSize: "clamp(1.1rem, 2.4vw, 1.6rem)", color: TEXT, letterSpacing: "-0.03em", textDecoration: "underline", textDecorationColor: PURPLE, textDecorationThickness: "3px", textUnderlineOffset: "6px" }}>
+          className="inline-block font-black leading-none transition-all hover:opacity-70"
+          style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", color: TEXT, letterSpacing: "-0.05em", textDecoration: "underline", textDecorationColor: PURPLE, textDecorationThickness: "4px", textUnderlineOffset: "10px" }}>
           Affiliate Disclosure
         </a>
       </div>
