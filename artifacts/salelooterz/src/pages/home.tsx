@@ -485,7 +485,6 @@ const STATS = [
   { value: "300+",    sub: "Telegram deals/day",     color: ACCENT  },
   { value: "30+",     sub: "WhatsApp deals/day",      color: PURPLE  },
   { value: "Growing", sub: "Community members",       color: GREEN   },
-  { value: "₹100Cr+", sub: "Community savings",       color: "#D97706" },
   { value: "51%",     sub: "Avg. discount received",  color: PURPLE  },
 ];
 
@@ -504,7 +503,7 @@ function StatsRow() {
   return (
     <section className="px-6 md:px-12 py-10" style={{ background: CARD, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-0 md:divide-x" style={{ '--divider': BORDER } as React.CSSProperties}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x" style={{ '--divider': BORDER } as React.CSSProperties}>
           {STATS.map((s, i) => (
             <motion.div key={i} className="flex flex-col items-center text-center px-4 py-2"
               initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
