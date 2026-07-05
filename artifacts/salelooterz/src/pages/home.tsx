@@ -805,16 +805,16 @@ function AffiliateDisclosure() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="px-6 md:px-12 py-10" style={{ borderTop: `1px solid ${BORDER}`, background: CARD }}>
+    <footer className="px-6 md:px-12 py-10" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", background: "#0D0B1A" }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
         <div className="flex items-center gap-2.5">
           <img src="/assets/logo.jpg" alt="Salelooterz" className="h-7 w-7 rounded-xl object-contain" />
-          <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
+          <span className="font-black text-sm text-white" style={{ letterSpacing: "-0.025em" }}>SaleLooterz</span>
         </div>
         <div className="flex flex-wrap justify-center gap-7 text-xs">
-          <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity" style={{ textDecoration: "none", color: TEXT }}>salelooterz@gmail.com</a>
+          <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity text-white" style={{ textDecoration: "none" }}>salelooterz@gmail.com</a>
         </div>
-        <p className="text-xs" style={{ color: "rgba(13,11,26,0.18)" }}>© {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
       </div>
     </footer>
   );
