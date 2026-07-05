@@ -803,7 +803,7 @@ function Footer() {
           <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
         </div>
         <div className="flex flex-wrap justify-center gap-7 text-xs" style={{ color: TEXT2 }}>
-          {["Privacy","Terms","Contact","About"].map(l => (
+          {["Contact","About"].map(l => (
             <a key={l} href="#" className="hover:opacity-60 transition-opacity" style={{ textDecoration: "none", color: TEXT2 }}>{l}</a>
           ))}
         </div>
