@@ -572,12 +572,12 @@ function HowItWorks() {
 
 // ── Testimonials / social proof ───────────────────────────────────────────────
 const TESTIMONIALS = [
-  { name: "Priya S.", city: "Mumbai",    text: "Saved ₹3,200 on boAt earbuds in the first week. Absolutely love this channel!",         emoji: "🎧", savings: "₹3,200" },
-  { name: "Rahul K.", city: "Delhi",     text: "Got a laptop at 64% off on Amazon. Would have never found that deal myself.",            emoji: "💻", savings: "₹18,000" },
-  { name: "Sneha M.", city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for less than ₹2,000 total.",      emoji: "👗", savings: "₹4,800" },
-  { name: "Arjun P.", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",        emoji: "🏆", savings: "₹6,500" },
-  { name: "Divya R.", city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at ₹799. Was ₹4,999 on Amazon!",        emoji: "⌚", savings: "₹4,200" },
-  { name: "Kiran B.", city: "Pune",      text: "Kitchen appliances, Swiggy coupons, flight deals — they have literally everything.",     emoji: "🍕", savings: "₹2,900" },
+  { name: "Danish",    city: "Mumbai",    text: "Got boAt earbuds at a huge discount in the first week. Absolutely love this channel!",   emoji: "🎧" },
+  { name: "Aarav",     city: "Delhi",     text: "Got a laptop at 64% off on Amazon. Would have never found that deal myself.",             emoji: "💻" },
+  { name: "Tejas",     city: "Bengaluru", text: "The fashion deals are insane — entire wardrobe refresh for way less than usual.",          emoji: "👗" },
+  { name: "Shreyansh", city: "Hyderabad", text: "Best community on Telegram for deals. No spam, just pure gold every single day.",         emoji: "🏆" },
+  { name: "Aryan",     city: "Chennai",   text: "Smartwatch I had been eyeing for months — got it at a massive discount on Amazon!",       emoji: "⌚" },
+  { name: "Yash",      city: "Pune",      text: "Kitchen appliances, Swiggy coupons, flight deals — they have literally everything.",      emoji: "🍕" },
 ];
 
 function Testimonials() {
@@ -598,19 +598,13 @@ function Testimonials() {
               viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.7, ease: EXPO }}
               className="rounded-2xl p-6"
               style={{ background: BG, border: `1.5px solid ${BORDER}` }}>
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-                    style={{ background: `${PURPLE}12` }}>{t.emoji}</div>
-                  <div>
-                    <p className="font-bold text-sm" style={{ color: TEXT }}>{t.name}</p>
-                    <p className="text-xs" style={{ color: TEXT2 }}>{t.city}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                  style={{ background: `${PURPLE}12` }}>{t.emoji}</div>
+                <div>
+                  <p className="font-bold text-sm" style={{ color: TEXT }}>{t.name}</p>
+                  <p className="text-xs" style={{ color: TEXT2 }}>{t.city}</p>
                 </div>
-                <span className="font-black text-sm px-2.5 py-1 rounded-full"
-                  style={{ background: GREEN_HL, color: "#166534" }}>
-                  Saved {t.savings}
-                </span>
               </div>
               <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>"{t.text}"</p>
               <div className="flex gap-0.5 mt-4">
