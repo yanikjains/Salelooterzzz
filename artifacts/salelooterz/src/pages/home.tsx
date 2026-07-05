@@ -814,7 +814,7 @@ function Footer() {
         <div className="flex flex-wrap justify-center gap-7 text-xs">
           <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity text-white" style={{ textDecoration: "none" }}>salelooterz@gmail.com</a>
         </div>
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}> {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
       </div>
     </footer>
   );
