@@ -88,7 +88,7 @@ function CustomCursor() {
 const SC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@₹";
 function useScramble(text: string) {
   const [d, setD] = useState(text);
-  const t = useRef<ReturnType<typeof setInterval>>();
+  const t = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const go = useCallback(() => {
     if (t.current) clearInterval(t.current);
     let it = 0;
