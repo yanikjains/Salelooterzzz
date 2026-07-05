@@ -811,10 +811,8 @@ function Footer() {
           <img src="/assets/logo.jpg" alt="Salelooterz" className="h-7 w-7 rounded-xl object-contain" />
           <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
         </div>
-        <div className="flex flex-wrap justify-center gap-7 text-xs" style={{ color: TEXT2 }}>
-          {["Contact","About"].map(l => (
-            <a key={l} href="#" className="hover:opacity-60 transition-opacity" style={{ textDecoration: "none", color: TEXT2 }}>{l}</a>
-          ))}
+        <div className="flex flex-wrap justify-center gap-7 text-xs">
+          <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity" style={{ textDecoration: "none", color: TEXT }}>salelooterz@gmail.com</a>
         </div>
         <p className="text-xs" style={{ color: "rgba(13,11,26,0.18)" }}>© {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
       </div>
