@@ -527,18 +527,18 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section className="px-6 md:px-12 py-28 relative overflow-hidden" style={{ background: "#0D0B1A" }}>
+    <section className="px-6 md:px-12 py-28 relative overflow-hidden" style={{ background: BG }}>
       <motion.div className="absolute inset-0 pointer-events-none"
         animate={{ opacity: [0.5, 0.85, 0.5] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        style={{ background: `radial-gradient(ellipse 60% 50% at 20% 0%, ${PURPLE}35, transparent 65%)` }} />
+        style={{ background: `radial-gradient(ellipse 60% 50% at 20% 0%, ${PURPLE}12, transparent 65%)` }} />
       <motion.div className="absolute inset-0 pointer-events-none"
         animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-        style={{ background: `radial-gradient(ellipse 55% 45% at 85% 100%, ${ACCENT}30, transparent 65%)` }} />
+        style={{ background: `radial-gradient(ellipse 55% 45% at 85% 100%, ${ACCENT}10, transparent 65%)` }} />
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}>
-          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: `${PURPLE}cc` }}>How it works</p>
-          <h2 className="font-black leading-none text-white" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", letterSpacing: "-0.05em" }}>
+          <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: PURPLE }}>How it works</p>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.05em" }}>
             Saving money is<br />this simple.
           </h2>
         </motion.div>
@@ -549,19 +549,19 @@ function HowItWorks() {
               viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.75, ease: EXPO }}
               whileHover={{ y: -6, borderColor: `${s.color}80` }}
               className="rounded-2xl p-8 relative overflow-hidden"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1.5px solid rgba(255,255,255,0.08)", backdropFilter: "blur(6px)" }}>
+              style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 2px 12px rgba(13,11,26,0.04)" }}>
               <motion.div className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
                 animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
-                style={{ background: `radial-gradient(circle at top right, ${s.color}25, transparent 70%)` }} />
-              <span className="font-black text-5xl mb-6 block leading-none" style={{ color: `${s.color}30`, letterSpacing: "-0.06em" }}>{s.n}</span>
+                style={{ background: `radial-gradient(circle at top right, ${s.color}20, transparent 70%)` }} />
+              <span className="font-black text-5xl mb-6 block leading-none" style={{ color: `${s.color}20`, letterSpacing: "-0.06em" }}>{s.n}</span>
               <motion.div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
                 animate={{ boxShadow: [`0 0 0px ${s.color}00`, `0 0 16px ${s.color}60`, `0 0 0px ${s.color}00`] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
-                style={{ background: `${s.color}25` }}>
+                style={{ background: `${s.color}15` }}>
                 <span style={{ color: s.color, fontSize: 18, fontWeight: 900 }}>{i === 0 ? "✓" : i === 1 ? "⚡" : "→"}</span>
               </motion.div>
-              <h3 className="font-black text-lg mb-2.5 text-white" style={{ letterSpacing: "-0.025em" }}>{s.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>{s.body}</p>
+              <h3 className="font-black text-lg mb-2.5" style={{ color: TEXT, letterSpacing: "-0.025em" }}>{s.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: TEXT2 }}>{s.body}</p>
             </motion.div>
           ))}
         </div>
@@ -799,16 +799,16 @@ function AffiliateDisclosure() {
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="px-6 md:px-12 py-10" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", background: "#0D0B1A" }}>
+    <footer className="px-6 md:px-12 py-10" style={{ borderTop: `1px solid ${BORDER}`, background: CARD }}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
         <div className="flex items-center gap-2.5">
           <img src="/assets/logo.jpg" alt="Salelooterz" className="h-7 w-7 rounded-xl object-contain" />
-          <span className="font-black text-sm text-white" style={{ letterSpacing: "-0.025em" }}>SaleLooterz</span>
+          <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
         </div>
         <div className="flex flex-wrap justify-center gap-7 text-xs">
-          <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity text-white" style={{ textDecoration: "none" }}>salelooterz@gmail.com</a>
+          <a href="mailto:salelooterz@gmail.com" className="font-black hover:opacity-60 transition-opacity" style={{ textDecoration: "none", color: TEXT }}>salelooterz@gmail.com</a>
         </div>
-        <p className="text-xs text-white"> {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
+        <p className="text-xs" style={{ color: "rgba(13,11,26,0.3)" }}> {new Date().getFullYear()} Salelooterz. India's #1 deal community.</p>
       </div>
     </footer>
   );
