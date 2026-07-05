@@ -483,7 +483,7 @@ function LiveStat() {
 // ── Stats row ─────────────────────────────────────────────────────────────────
 const STATS = [
   { value: "300+",    sub: "Telegram deals/day",     color: ACCENT  },
-  { value: "20+",     sub: "WhatsApp deals/day",      color: PURPLE  },
+  { value: "30+",     sub: "WhatsApp deals/day",      color: PURPLE  },
   { value: "2.6M+",   sub: "Community members",       color: GREEN   },
   { value: "₹100Cr+", sub: "Community savings",       color: "#D97706" },
   { value: "51%",     sub: "Avg. discount received",  color: PURPLE  },
@@ -684,7 +684,7 @@ function SavingsCalc() {
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const FAQS = [
   { q: "Is Salelooterz completely free?",          a: "100% free, always. We share deals because we love saving money — no subscriptions, no fees, ever." },
-  { q: "How many deals are posted per day?",        a: "300+ deals daily on Telegram and 20+ on WhatsApp — covering electronics, fashion, food, travel, home goods, and more." },
+  { q: "How many deals are posted per day?",        a: "300+ deals daily on Telegram and 30+ on WhatsApp — covering electronics, fashion, food, travel, home goods, and more." },
   { q: "Will I get spammed?",                       a: "Never. Every single message is a verified deal with a real discount. No promotional content, no random forwards." },
   { q: "Are deals only for Amazon?",                a: "Yes — we focus exclusively on Amazon India, bringing you the best verified deals, lightning deals, and price drops every day." },
   { q: "How do I claim a deal?",                    a: "Every post includes a direct link. One tap takes you straight to the checkout or coupon page." },
@@ -754,7 +754,7 @@ function FinalCTA() {
                 Ready to stop<br />overpaying?
               </h2>
               <p className="text-base mb-12 max-w-xs mx-auto" style={{ color: "rgba(255,255,255,0.4)" }}>
-                Free forever. 300+ Telegram + 20+ WhatsApp deals daily. Zero spam.
+                Free forever. 300+ Telegram + 30+ WhatsApp deals daily. Zero spam.
               </p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
