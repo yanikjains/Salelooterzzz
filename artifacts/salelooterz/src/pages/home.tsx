@@ -763,7 +763,7 @@ function FinalCTA() {
                 Ready to stop<br />overpaying?
               </h2>
               <p className="text-base mb-12 max-w-xs mx-auto" style={{ color: "rgba(255,255,255,0.4)" }}>
-                Free forever. 300+ Telegram + 30+ WhatsApp deals daily. Zero spam.
+                Free forever.  300+ Telegram deals a day and 30 + Whatsapp deals daily.  Zero spam of messages so you can focus on good products.
               </p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
