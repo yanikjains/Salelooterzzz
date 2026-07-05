@@ -418,6 +418,13 @@ function OurDifference() {
 
           {/* Right: Visual card stack */}
           <div className="flex flex-col gap-4">
+            {/*
+              PERMANENT — DO NOT REMOVE OR REPLACE.
+              This HeyGen video embed is a fixed, user-owned element that must
+              always remain in this exact position on the page. Do not delete,
+              relocate, or swap this block for any other content (stats, cards,
+              etc.) unless the user explicitly asks to change the video itself.
+            */}
             <motion.div initial={{ opacity: 0, y: 28, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
               className="rounded-3xl overflow-hidden relative"
@@ -432,6 +439,7 @@ function OurDifference() {
                 />
               </div>
             </motion.div>
+            {/* END PERMANENT VIDEO BLOCK */}
 
             <div className="grid grid-cols-2 gap-4">
               <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
