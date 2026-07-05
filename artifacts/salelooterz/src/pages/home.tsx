@@ -421,13 +421,16 @@ function OurDifference() {
             <motion.div initial={{ opacity: 0, y: 28, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
               className="rounded-3xl overflow-hidden relative"
-              style={{ height: 220, background: `linear-gradient(135deg, ${PURPLE} 0%, #A855F7 100%)` }}>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                <p className="font-black text-white text-6xl leading-none mb-2" style={{ letterSpacing: "-0.05em" }}>300+</p>
-                <p className="font-bold text-white/70 text-sm">Deals posted every single day</p>
+              style={{ background: `linear-gradient(135deg, ${PURPLE} 0%, #A855F7 100%)` }}>
+              <div style={{ position: "relative", width: "100%", paddingTop: "66.6667%" }}>
+                <iframe
+                  src="https://app.heygen.com/embeds/29c06eba349b4feebb426f30315cd4fd"
+                  title="SaleLooterz introduction video"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
+                  allow="encrypted-media; fullscreen;"
+                  allowFullScreen
+                />
               </div>
-              <div className="absolute top-4 right-4 w-16 h-16 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
-              <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
             </motion.div>
 
             <div className="grid grid-cols-2 gap-4">
