@@ -553,7 +553,7 @@ function HowItWorks() {
               <motion.div className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
                 animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
                 style={{ background: `radial-gradient(circle at top right, ${s.color}20, transparent 70%)` }} />
-              <span className="font-black text-5xl mb-6 block leading-none" style={{ color: `${s.color}20`, letterSpacing: "-0.06em" }}>{s.n}</span>
+              <span className="font-black text-5xl mb-6 block leading-none" style={{ color: s.color, letterSpacing: "-0.06em" }}>{s.n}</span>
               <motion.div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
                 animate={{ boxShadow: [`0 0 0px ${s.color}00`, `0 0 16px ${s.color}60`, `0 0 0px ${s.color}00`] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
