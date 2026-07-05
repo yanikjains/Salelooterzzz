@@ -388,10 +388,12 @@ function OurDifference() {
           {/* Left: Heading + Feature list */}
           <div>
             <motion.h2 className="font-black leading-tight mb-10"
-              style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)", color: TEXT, letterSpacing: "-0.045em" }}
+              style={{ fontSize: "clamp(1.6rem, 4vw, 3.5rem)", color: TEXT, letterSpacing: "-0.045em" }}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}>
-              You Simply Can't Find<br />These in a Generic<br />Deal Channel
+              <span className="block whitespace-nowrap">You Simply Can't Find</span>
+              <span className="block whitespace-nowrap">These in a Generic</span>
+              <span className="block whitespace-nowrap">Deal Channel</span>
             </motion.h2>
 
             <div className="flex flex-col gap-2">
