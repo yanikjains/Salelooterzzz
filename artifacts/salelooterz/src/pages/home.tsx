@@ -805,25 +805,36 @@ function EmailCapture() {
   return (
     <section className="relative px-6 md:px-12 py-24 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: `linear-gradient(160deg, ${HERO_L} 0%, #ddd5ff 100%)` }} />
+        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: HERO_L }} />
         <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
       </div>
       <div className="relative max-w-2xl mx-auto text-center" style={{ zIndex: 1 }}>
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
-          className="rounded-3xl p-10 md:p-14"
-          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 8px 32px rgba(124,58,237,0.12)" }}>
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: `${PURPLE}15` }}>
+          className="relative rounded-3xl p-10 md:p-14 overflow-hidden"
+          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 8px 32px rgba(124,58,237,0.14)" }}>
+          {/* Animated glow ring */}
+          <motion.div
+            className="absolute -top-24 left-1/2 pointer-events-none"
+            style={{ width: 280, height: 280, marginLeft: -140, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}22 0%, transparent 70%)` }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6"
+            style={{ background: `${PURPLE}15` }}
+            animate={{ y: [0, -6, 0], rotate: [0, -6, 6, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
             <Mail size={22} color={PURPLE} strokeWidth={2.5} />
-          </div>
-          <h3 className="font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
-            Never miss a killer deal
+          </motion.div>
+          <h3 className="relative font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
+            Never Miss Important Info
           </h3>
-          <p className="text-sm mb-8 max-w-md mx-auto" style={{ color: TEXT2 }}>
-            We never share your details with anyone — just the important deal alerts, straight to your inbox.
+          <p className="relative text-sm mb-8 max-w-md mx-auto" style={{ color: TEXT2 }}>
+            We use email to share important announcements, run surveys and send promotional updates — never your details with anyone else.
           </p>
-          <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <form onSubmit={onSubmit} className="relative flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <input
               type="email" required value={email}
               onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
@@ -831,12 +842,13 @@ function EmailCapture() {
               className="flex-1 px-5 py-3.5 rounded-full text-sm outline-none"
               style={{ background: BG, border: `1.5px solid ${BORDER}`, color: TEXT }}
             />
-            <button
+            <motion.button
               type="submit" disabled={isPending}
-              className="px-7 py-3.5 rounded-full font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-60"
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+              className="px-7 py-3.5 rounded-full font-bold text-sm text-white disabled:opacity-60"
               style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}50` }}>
               {isPending ? "Adding…" : "Notify me"}
-            </button>
+            </motion.button>
           </form>
           <AnimatePresence>
             {status === "success" && (
