@@ -803,13 +803,17 @@ function EmailCapture() {
   };
 
   return (
-    <section className="px-6 md:px-12 py-24" style={{ background: BG }}>
-      <div className="max-w-2xl mx-auto text-center">
+    <section className="relative px-6 md:px-12 py-24 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: `linear-gradient(160deg, ${HERO_L} 0%, #ddd5ff 100%)` }} />
+        <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
+      </div>
+      <div className="relative max-w-2xl mx-auto text-center" style={{ zIndex: 1 }}>
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
           className="rounded-3xl p-10 md:p-14"
-          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 2px 12px rgba(13,11,26,0.04)" }}>
+          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 8px 32px rgba(124,58,237,0.12)" }}>
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: `${PURPLE}15` }}>
             <Mail size={22} color={PURPLE} strokeWidth={2.5} />
           </div>
@@ -817,7 +821,7 @@ function EmailCapture() {
             Never miss a killer deal
           </h3>
           <p className="text-sm mb-8 max-w-md mx-auto" style={{ color: TEXT2 }}>
-            Drop your email and we'll keep you posted on our best drops, exclusive offers and updates — straight to your inbox.
+            We never share your details with anyone — just the important deal alerts, straight to your inbox.
           </p>
           <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <input
