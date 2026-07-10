@@ -4,7 +4,8 @@ import {
   useMotionValue, useSpring, useTransform,
   useScroll,
 } from "framer-motion";
-import { ChevronDown, ArrowRight, Check } from "lucide-react";
+import { ChevronDown, ArrowRight, Check, Mail } from "lucide-react";
+import { useCreateSubscriber } from "@workspace/api-client-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/0029VbCjpoRHFxPAxCt3rm3S";
@@ -192,6 +193,7 @@ export default function Home() {
         <AffiliateDisclosure />
         <FAQ />
         <FinalCTA />
+        <EmailCapture />
         <Footer />
       </motion.div>
     </div>
@@ -773,6 +775,85 @@ function FinalCTA() {
               </div>
             </div>
           </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ── Email capture ────────────────────────────────────────────────────────────
+function EmailCapture() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "duplicate" | "error">("idle");
+  const { mutate, isPending } = useCreateSubscriber();
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    mutate(
+      { data: { email: email.trim() } },
+      {
+        onSuccess: () => { setStatus("success"); setEmail(""); },
+        onError: (err: any) => {
+          if (err?.response?.status === 409) setStatus("duplicate");
+          else setStatus("error");
+        },
+      }
+    );
+  };
+
+  return (
+    <section className="px-6 md:px-12 py-24" style={{ background: BG }}>
+      <div className="max-w-2xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
+          className="rounded-3xl p-10 md:p-14"
+          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 2px 12px rgba(13,11,26,0.04)" }}>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: `${PURPLE}15` }}>
+            <Mail size={22} color={PURPLE} strokeWidth={2.5} />
+          </div>
+          <h3 className="font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
+            Never miss a killer deal
+          </h3>
+          <p className="text-sm mb-8 max-w-md mx-auto" style={{ color: TEXT2 }}>
+            Drop your email and we'll keep you posted on our best drops, exclusive offers and updates — straight to your inbox.
+          </p>
+          <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email" required value={email}
+              onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+              placeholder="you@email.com"
+              className="flex-1 px-5 py-3.5 rounded-full text-sm outline-none"
+              style={{ background: BG, border: `1.5px solid ${BORDER}`, color: TEXT }}
+            />
+            <button
+              type="submit" disabled={isPending}
+              className="px-7 py-3.5 rounded-full font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-60"
+              style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}50` }}>
+              {isPending ? "Adding…" : "Notify me"}
+            </button>
+          </form>
+          <AnimatePresence>
+            {status === "success" && (
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="text-sm font-semibold mt-4 flex items-center justify-center gap-1.5" style={{ color: GREEN }}>
+                <Check size={16} /> You're on the list!
+              </motion.p>
+            )}
+            {status === "duplicate" && (
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="text-sm mt-4" style={{ color: TEXT2 }}>
+                You're already subscribed — sit tight!
+              </motion.p>
+            )}
+            {status === "error" && (
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className="text-sm mt-4" style={{ color: "#EF4444" }}>
+                Something went wrong. Please try again.
+              </motion.p>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     </section>

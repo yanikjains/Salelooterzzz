@@ -1,0 +1,1 @@
+- [Drizzle unique-violation errors](drizzle-pg-error-codes.md) — pg error codes (e.g. 23505) land on `err.cause.code`, not `err.code`, when caught from a drizzle-orm query.
