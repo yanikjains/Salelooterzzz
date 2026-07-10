@@ -829,6 +829,35 @@ function EmailCapture() {
         <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
       </div>
       <div className="relative max-w-5xl mx-auto" style={{ zIndex: 1 }}>
+        {/* Floating badges — kept clear of the card and each other */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: -6 }}
+          whileInView={{ opacity: 1, scale: 1, y: [-6, 6, -6] }}
+          viewport={{ once: true }}
+          transition={{ opacity: { delay: 0.2, duration: 0.6 }, scale: { delay: 0.2, duration: 0.6, ease: EXPO }, y: { duration: 3.4, repeat: Infinity, ease: "easeInOut", delay: 1.4 } }}
+          className="hidden lg:flex absolute -top-8 left-6 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs z-10"
+          style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT }}>
+          🔒 100% private
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 6 }}
+          whileInView={{ opacity: 1, scale: 1, y: [6, -6, 6] }}
+          viewport={{ once: true }}
+          transition={{ opacity: { delay: 0.35, duration: 0.6 }, scale: { delay: 0.35, duration: 0.6, ease: EXPO }, y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.8 } }}
+          className="hidden lg:flex absolute -top-8 right-6 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs text-white z-10"
+          style={{ background: ACCENT }}>
+          ⚡ Zero spam
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: -5 }}
+          whileInView={{ opacity: 1, scale: 1, y: [-5, 5, -5] }}
+          viewport={{ once: true }}
+          transition={{ opacity: { delay: 0.5, duration: 0.6 }, scale: { delay: 0.5, duration: 0.6, ease: EXPO }, y: { duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 2.2 } }}
+          className="hidden lg:flex absolute -bottom-7 left-1/2 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs z-10"
+          style={{ background: CARD, border: `1px solid ${BORDER}`, color: PURPLE, marginLeft: -70 }}>
+          🚀 Instant alerts
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
