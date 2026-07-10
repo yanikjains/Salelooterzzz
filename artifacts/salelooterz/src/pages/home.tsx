@@ -9,6 +9,7 @@ import { useCreateSubscriber } from "@workspace/api-client-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/0029VbCjpoRHFxPAxCt3rm3S";
+const LINKEDIN_URL = "https://www.linkedin.com/company/salelooterz/about/";
 
 // ── Live counter ──────────────────────────────────────────────────────────────
 const LIVE_BASE  = 2_634_291;
@@ -47,6 +48,14 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.114 20.452H3.558V9h3.556v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
     </svg>
   );
 }
@@ -228,6 +237,11 @@ function Navbar() {
           className="flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm text-white transition-all hover:opacity-90"
           style={{ background: "#25D366", boxShadow: "0 8px 28px rgba(37,211,102,0.35)" }}>
           <span>👑</span><WhatsAppIcon size={13} /> Join on WhatsApp
+        </a>
+        <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="SaleLooterz on LinkedIn"
+          className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:opacity-90"
+          style={{ background: "#0A66C2", color: "#fff" }}>
+          <LinkedInIcon size={15} />
         </a>
       </div>
     </motion.header>
@@ -802,74 +816,117 @@ function EmailCapture() {
     );
   };
 
+  const PERKS = [
+    "Important announcements — first, before anyone else",
+    "Occasional surveys to shape what deals we hunt for you",
+    "Promotional updates on our biggest exclusive drops",
+  ];
+
   return (
     <section className="relative px-6 md:px-12 py-24 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: "#ddd5ff" }} />
         <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
       </div>
-      <div className="relative max-w-2xl mx-auto text-center" style={{ zIndex: 1 }}>
+      <div className="relative max-w-5xl mx-auto" style={{ zIndex: 1 }}>
         <motion.div
-          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
-          className="relative rounded-3xl p-10 md:p-14 overflow-hidden"
-          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 8px 32px rgba(124,58,237,0.14)" }}>
-          {/* Animated glow ring */}
-          <motion.div
-            className="absolute -top-24 left-1/2 pointer-events-none"
-            style={{ width: 280, height: 280, marginLeft: -140, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}22 0%, transparent 70%)` }}
-            animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="relative w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ background: `${PURPLE}15` }}
-            animate={{ y: [0, -6, 0], rotate: [0, -6, 6, 0] }}
-            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
-            <Mail size={22} color={PURPLE} strokeWidth={2.5} />
-          </motion.div>
-          <h3 className="relative font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
-            Never Miss Important Info
-          </h3>
-          <p className="relative text-sm mb-8 max-w-md mx-auto" style={{ color: TEXT2 }}>
-            We use email to share important announcements, run surveys and send promotional updates — never your details with anyone else.
-          </p>
-          <form onSubmit={onSubmit} className="relative flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email" required value={email}
-              onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
-              placeholder="you@email.com"
-              className="flex-1 px-5 py-3.5 rounded-full text-sm outline-none"
-              style={{ background: BG, border: `1.5px solid ${BORDER}`, color: TEXT }}
+          className="relative rounded-[2rem] overflow-hidden grid md:grid-cols-2"
+          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 20px 60px rgba(124,58,237,0.18)" }}>
+
+          {/* Left — form */}
+          <div className="relative p-10 md:p-14 flex flex-col justify-center">
+            <motion.div
+              className="absolute -top-20 -left-20 pointer-events-none"
+              style={{ width: 260, height: 260, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}20 0%, transparent 70%)` }}
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
-            <motion.button
-              type="submit" disabled={isPending}
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-              className="px-7 py-3.5 rounded-full font-bold text-sm text-white disabled:opacity-60"
-              style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}50` }}>
-              {isPending ? "Adding…" : "Notify me"}
-            </motion.button>
-          </form>
-          <AnimatePresence>
-            {status === "success" && (
-              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="text-sm font-semibold mt-4 flex items-center justify-center gap-1.5" style={{ color: GREEN }}>
-                <Check size={16} /> You're on the list!
-              </motion.p>
-            )}
-            {status === "duplicate" && (
-              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="text-sm mt-4" style={{ color: TEXT2 }}>
-                You're already subscribed — sit tight!
-              </motion.p>
-            )}
-            {status === "error" && (
-              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className="text-sm mt-4" style={{ color: "#EF4444" }}>
-                Something went wrong. Please try again.
-              </motion.p>
-            )}
-          </AnimatePresence>
+            <motion.div
+              className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
+              style={{ background: `${PURPLE}15` }}
+              animate={{ y: [0, -6, 0], rotate: [0, -6, 6, 0] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
+              <Mail size={22} color={PURPLE} strokeWidth={2.5} />
+            </motion.div>
+            <h3 className="relative font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
+              Never Miss Important Info
+            </h3>
+            <p className="relative text-sm mb-8 max-w-sm" style={{ color: TEXT2 }}>
+              Drop your email below. We'll never share your details with anyone else.
+            </p>
+            <form onSubmit={onSubmit} className="relative flex flex-col sm:flex-row gap-3 max-w-md">
+              <input
+                type="email" required value={email}
+                onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+                placeholder="you@email.com"
+                className="flex-1 px-5 py-3.5 rounded-full text-sm outline-none"
+                style={{ background: BG, border: `1.5px solid ${BORDER}`, color: TEXT }}
+              />
+              <motion.button
+                type="submit" disabled={isPending}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+                className="px-7 py-3.5 rounded-full font-bold text-sm text-white disabled:opacity-60 shrink-0"
+                style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}50` }}>
+                {isPending ? "Adding…" : "Notify me"}
+              </motion.button>
+            </form>
+            <AnimatePresence>
+              {status === "success" && (
+                <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="relative text-sm font-semibold mt-4 flex items-center gap-1.5" style={{ color: GREEN }}>
+                  <Check size={16} /> You're on the list!
+                </motion.p>
+              )}
+              {status === "duplicate" && (
+                <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="relative text-sm mt-4" style={{ color: TEXT2 }}>
+                  You're already subscribed — sit tight!
+                </motion.p>
+              )}
+              {status === "error" && (
+                <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="relative text-sm mt-4" style={{ color: "#EF4444" }}>
+                  Something went wrong. Please try again.
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Right — info panel */}
+          <div className="relative p-10 md:p-14 flex flex-col justify-center overflow-hidden"
+            style={{ background: `linear-gradient(150deg, ${PURPLE} 0%, #5B21B6 100%)` }}>
+            <motion.div
+              className="absolute -bottom-24 -right-16 pointer-events-none"
+              style={{ width: 300, height: 300, borderRadius: "9999px", background: "radial-gradient(circle, rgba(255,255,255,0.14) 0%, transparent 70%)" }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute top-8 right-8 pointer-events-none"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+              style={{ opacity: 0.25 }}>
+              <Mail size={64} color="#fff" strokeWidth={1} />
+            </motion.div>
+            <p className="relative text-[11px] font-bold uppercase tracking-[0.2em] mb-4" style={{ color: "rgba(255,255,255,0.75)" }}>
+              What you'll get
+            </p>
+            <div className="relative flex flex-col gap-4">
+              {PERKS.map((perk, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.6, ease: EXPO }}
+                  className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "rgba(255,255,255,0.18)" }}>
+                    <Check size={11} strokeWidth={3} color="#fff" />
+                  </div>
+                  <p className="text-sm font-semibold leading-snug" style={{ color: "#fff" }}>{perk}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
