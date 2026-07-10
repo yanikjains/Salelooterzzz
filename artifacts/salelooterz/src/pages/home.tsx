@@ -805,7 +805,7 @@ function EmailCapture() {
   return (
     <section className="relative px-6 md:px-12 py-24 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: HERO_L }} />
+        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: "#ddd5ff" }} />
         <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
       </div>
       <div className="relative max-w-2xl mx-auto text-center" style={{ zIndex: 1 }}>
