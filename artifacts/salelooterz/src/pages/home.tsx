@@ -184,6 +184,7 @@ export default function Home() {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: ready ? 1 : 0 }} transition={{ duration: 0.6 }}>
         <Navbar />
         <Hero />
+        <EmailCapture />
         <BrandStrip />
         <OurDifference />
         <StatsRow />
@@ -193,7 +194,6 @@ export default function Home() {
         <AffiliateDisclosure />
         <FAQ />
         <FinalCTA />
-        <EmailCapture />
         <Footer />
       </motion.div>
     </div>
