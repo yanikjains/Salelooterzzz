@@ -942,38 +942,15 @@ function EmailCapture() {
             </AnimatePresence>
           </div>
 
-          {/* Right — info panel */}
-          <div className="relative p-10 md:p-14 flex flex-col justify-center overflow-hidden"
-            style={{ background: `linear-gradient(150deg, ${PURPLE} 0%, #5B21B6 100%)` }}>
-            <motion.div
-              className="absolute -bottom-24 -right-16 pointer-events-none"
-              style={{ width: 300, height: 300, borderRadius: "9999px", background: "radial-gradient(circle, rgba(255,255,255,0.14) 0%, transparent 70%)" }}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          {/* Right — video panel */}
+          <div className="relative flex items-center justify-center overflow-hidden"
+            style={{ background: "#000", minHeight: 340 }}>
+            <iframe
+              src="https://iframe.cloudflarestream.com/9b83be1d67ef491aabe49a684e054c55"
+              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
             />
-            <motion.div
-              className="absolute top-8 right-8 pointer-events-none"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-              style={{ opacity: 0.25 }}>
-              <Mail size={64} color="#fff" strokeWidth={1} />
-            </motion.div>
-            <p className="relative text-[11px] font-bold uppercase tracking-[0.2em] mb-4" style={{ color: "rgba(255,255,255,0.75)" }}>
-              What you'll get
-            </p>
-            <div className="relative flex flex-col gap-4">
-              {PERKS.map((perk, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }} transition={{ delay: i * 0.12, duration: 0.6, ease: EXPO }}
-                  className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "rgba(255,255,255,0.18)" }}>
-                    <Check size={11} strokeWidth={3} color="#fff" />
-                  </div>
-                  <p className="text-sm font-semibold leading-snug" style={{ color: "#fff" }}>{perk}</p>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </motion.div>
       </div>
