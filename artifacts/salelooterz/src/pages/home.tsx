@@ -800,12 +800,16 @@ function FinalCTA() {
 // ── Email capture ────────────────────────────────────────────────────────────
 function EmailCapture() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "success" | "duplicate" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "success" | "duplicate" | "error" | "invalid">("idle");
   const [isPending, setIsPending] = useState(false);
+
+  const isValidEmail = (val: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val.trim());
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || isPending) return;
+    if (!isValidEmail(email)) { setStatus("invalid"); return; }
     setIsPending(true);
     try {
       // Google Apps Script requires no-cors — response is opaque but the
@@ -927,6 +931,12 @@ function EmailCapture() {
                 <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   className="relative text-sm mt-4" style={{ color: "#EF4444" }}>
                   Something went wrong. Please try again.
+                </motion.p>
+              )}
+              {status === "invalid" && (
+                <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="relative text-sm mt-4" style={{ color: "#EF4444" }}>
+                  Please enter a valid email address (e.g. name@gmail.com).
                 </motion.p>
               )}
             </AnimatePresence>
