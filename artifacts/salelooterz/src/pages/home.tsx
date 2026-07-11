@@ -944,10 +944,10 @@ function EmailCapture() {
 
           {/* Right — video panel */}
           <div className="relative flex items-center justify-center overflow-hidden"
-            style={{ background: "#000", minHeight: 340 }}>
+            style={{ background: "#000", minHeight: 480 }}>
             <iframe
-              src="https://iframe.cloudflarestream.com/9b83be1d67ef491aabe49a684e054c55"
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+              src="https://app.heygen.com/embeds/9b83be1d67ef491aabe49a684e054c55"
+              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
             />
