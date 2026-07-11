@@ -11,7 +11,7 @@ const WHATSAPP_URL = "https://whatsapp.com/channel/0029VbCjpoRHFxPAxCt3rm3S";
 const LINKEDIN_URL = "https://www.linkedin.com/company/salelooterz/about/";
 
 // ── Paste your Google Apps Script Web App URL below after deploying ──
-const APPS_SCRIPT_URL = "PASTE_YOUR_SCRIPT_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTorihfc8A4YAvi_9qk6iPIdoZrvZwiGV8NzbwhphfhZJ66fHRXuwVz_cHCpU_lQg/exec";
 
 // ── Live counter ──────────────────────────────────────────────────────────────
 const LIVE_BASE  = 2_634_291;
@@ -808,18 +808,16 @@ function EmailCapture() {
     if (!email.trim() || isPending) return;
     setIsPending(true);
     try {
-      const res = await fetch(APPS_SCRIPT_URL, {
+      // Google Apps Script requires no-cors — response is opaque but the
+      // email is written to the Sheet. We show success optimistically.
+      await fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
       });
-      const json = await res.json() as { status: string };
-      if (json.status === "duplicate") {
-        setStatus("duplicate");
-      } else {
-        setStatus("success");
-        setEmail("");
-      }
+      setStatus("success");
+      setEmail("");
     } catch {
       setStatus("error");
     } finally {
