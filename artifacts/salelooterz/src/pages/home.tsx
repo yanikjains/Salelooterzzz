@@ -836,20 +836,24 @@ function EmailCapture() {
   ];
 
   return (
-    <section className="relative px-6 md:px-12 py-24 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        <div className="absolute inset-y-0 left-0 w-1/2" style={{ background: "#ddd5ff" }} />
-        <div className="absolute inset-y-0 right-0 w-1/2" style={{ background: HERO_R }} />
-      </div>
+    <section className="relative px-6 md:px-12 py-28 overflow-hidden" style={{ background: "#000" }}>
+      {/* Animated background glow orbs */}
+      <motion.div className="absolute pointer-events-none" style={{ width: 600, height: 600, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}30 0%, transparent 70%)`, top: "50%", left: "10%", transform: "translate(-50%,-50%)" }}
+        animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.div className="absolute pointer-events-none" style={{ width: 400, height: 400, borderRadius: "9999px", background: `radial-gradient(circle, ${ACCENT}25 0%, transparent 70%)`, top: "20%", right: "5%", transform: "translate(50%,-50%)" }}
+        animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }} />
+
       <div className="relative max-w-5xl mx-auto" style={{ zIndex: 1 }}>
-        {/* Floating badges — kept clear of the card and each other */}
+        {/* Floating badges */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: -6 }}
           whileInView={{ opacity: 1, scale: 1, y: [-6, 6, -6] }}
           viewport={{ once: true }}
           transition={{ opacity: { delay: 0.2, duration: 0.6 }, scale: { delay: 0.2, duration: 0.6, ease: EXPO }, y: { duration: 3.4, repeat: Infinity, ease: "easeInOut", delay: 1.4 } }}
-          className="hidden lg:flex absolute -top-8 left-6 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs z-10"
-          style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT }}>
+          className="hidden lg:flex absolute -top-8 left-6 items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-xs z-10"
+          style={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           🔒 100% private
         </motion.div>
         <motion.div
@@ -857,8 +861,8 @@ function EmailCapture() {
           whileInView={{ opacity: 1, scale: 1, y: [6, -6, 6] }}
           viewport={{ once: true }}
           transition={{ opacity: { delay: 0.35, duration: 0.6 }, scale: { delay: 0.35, duration: 0.6, ease: EXPO }, y: { duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1.8 } }}
-          className="hidden lg:flex absolute -top-8 right-6 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs text-white z-10"
-          style={{ background: ACCENT }}>
+          className="hidden lg:flex absolute -top-8 right-6 items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-xs text-white z-10"
+          style={{ background: ACCENT, boxShadow: `0 4px 20px ${ACCENT}60` }}>
           ⚡ Zero spam
         </motion.div>
         <motion.div
@@ -866,54 +870,69 @@ function EmailCapture() {
           whileInView={{ opacity: 1, scale: 1, y: [-5, 5, -5] }}
           viewport={{ once: true }}
           transition={{ opacity: { delay: 0.5, duration: 0.6 }, scale: { delay: 0.5, duration: 0.6, ease: EXPO }, y: { duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 2.2 } }}
-          className="hidden lg:flex absolute -bottom-7 left-1/2 items-center gap-1.5 px-4 py-2 rounded-2xl shadow-lg font-bold text-xs z-10"
-          style={{ background: CARD, border: `1px solid ${BORDER}`, color: PURPLE, marginLeft: -70 }}>
+          className="hidden lg:flex absolute -bottom-7 left-1/2 items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-xs z-10"
+          style={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", color: PURPLE, marginLeft: -70, boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
           🚀 Instant alerts
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}
+          initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease: EXPO }}
           className="relative rounded-[2rem] overflow-hidden grid md:grid-cols-2"
-          style={{ background: CARD, border: `1.5px solid ${BORDER}`, boxShadow: "0 20px 60px rgba(124,58,237,0.18)" }}>
+          style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,0.08)", boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 30px 80px rgba(0,0,0,0.8), 0 0 80px ${PURPLE}25` }}>
+
+          {/* Animated purple glow inside card */}
+          <motion.div className="absolute pointer-events-none"
+            style={{ width: 350, height: 350, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}18 0%, transparent 70%)`, top: -80, left: -80, zIndex: 0 }}
+            animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} />
 
           {/* Left — form */}
-          <div className="relative p-10 md:p-14 flex flex-col justify-center">
+          <div className="relative p-10 md:p-14 flex flex-col justify-center" style={{ zIndex: 1 }}>
             <motion.div
-              className="absolute -top-20 -left-20 pointer-events-none"
-              style={{ width: 260, height: 260, borderRadius: "9999px", background: `radial-gradient(circle, ${PURPLE}20 0%, transparent 70%)` }}
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-6"
-              style={{ background: `${PURPLE}15` }}
-              animate={{ y: [0, -6, 0], rotate: [0, -6, 6, 0] }}
+              className="relative w-14 h-14 rounded-2xl flex items-center justify-center mb-7"
+              style={{ background: `${PURPLE}22`, border: `1px solid ${PURPLE}40` }}
+              animate={{ y: [0, -7, 0], boxShadow: [`0 0 0px ${PURPLE}00`, `0 0 24px ${PURPLE}70`, `0 0 0px ${PURPLE}00`] }}
               transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
               <Mail size={22} color={PURPLE} strokeWidth={2.5} />
             </motion.div>
-            <h3 className="relative font-black text-2xl md:text-3xl mb-3" style={{ color: TEXT, letterSpacing: "-0.03em" }}>
-              Never Miss Important Info
-            </h3>
-            <p className="relative text-sm mb-8 max-w-sm" style={{ color: TEXT2 }}>
+
+            <motion.h3
+              initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.6, ease: EXPO }}
+              className="relative font-black mb-3 leading-none"
+              style={{ color: "#fff", letterSpacing: "-0.04em", fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
+              Never Miss<br />
+              <span style={{ color: PURPLE }}>Important Info</span>
+            </motion.h3>
+
+            <motion.p
+              initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.6, ease: EXPO }}
+              className="relative text-sm mb-8 max-w-sm" style={{ color: "rgba(255,255,255,0.45)", lineHeight: 1.7 }}>
               Drop your email below. We'll never share your details with anyone else.
-            </p>
-            <form onSubmit={onSubmit} className="relative flex flex-col sm:flex-row gap-3 max-w-md">
+            </motion.p>
+
+            <motion.form onSubmit={onSubmit}
+              initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: 0.4, duration: 0.6, ease: EXPO }}
+              className="relative flex flex-col sm:flex-row gap-3 max-w-md">
               <input
-                type="email" required value={email}
+                type="email" value={email}
                 onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
                 placeholder="you@email.com"
                 className="flex-1 px-5 py-3.5 rounded-full text-sm outline-none"
-                style={{ background: BG, border: `1.5px solid ${BORDER}`, color: TEXT }}
+                style={{ background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.12)", color: "#fff" }}
               />
               <motion.button
                 type="submit" disabled={isPending}
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-                className="px-7 py-3.5 rounded-full font-bold text-sm text-white disabled:opacity-60 shrink-0"
+                whileHover={{ scale: 1.05, boxShadow: `0 12px 36px ${PURPLE}70` }}
+                whileTap={{ scale: 0.96 }}
+                className="px-7 py-3.5 rounded-full font-bold text-sm text-white disabled:opacity-50 shrink-0"
                 style={{ background: PURPLE, boxShadow: `0 8px 28px ${PURPLE}50` }}>
                 {isPending ? "Adding…" : "Notify me"}
               </motion.button>
-            </form>
+            </motion.form>
+
             <AnimatePresence>
               {status === "success" && (
                 <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -923,7 +942,7 @@ function EmailCapture() {
               )}
               {status === "duplicate" && (
                 <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="relative text-sm mt-4" style={{ color: TEXT2 }}>
+                  className="relative text-sm mt-4" style={{ color: "rgba(255,255,255,0.4)" }}>
                   You're already subscribed — sit tight!
                 </motion.p>
               )}
@@ -944,7 +963,7 @@ function EmailCapture() {
 
           {/* Right — video panel */}
           <div className="relative flex items-center justify-center overflow-hidden"
-            style={{ background: "#000", minHeight: 480 }}>
+            style={{ background: "#000", minHeight: 480, borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
             <iframe
               src="https://app.heygen.com/embeds/9b83be1d67ef491aabe49a684e054c55"
               allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
