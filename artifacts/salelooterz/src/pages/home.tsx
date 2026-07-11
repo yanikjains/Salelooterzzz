@@ -226,6 +226,25 @@ function Navbar() {
         <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
       </a>
       <div className="hidden md:flex items-center gap-3">
+        <motion.button
+          onClick={() => document.getElementById("affiliate-disclosure")?.scrollIntoView({ behavior: "smooth" })}
+          className="relative text-xs font-bold cursor-pointer bg-transparent border-none outline-none"
+          style={{ color: PURPLE }}
+          whileHover="hover" initial="rest" animate="rest">
+          Affiliate Disclosure
+          <motion.span
+            className="absolute left-0 bottom-0 h-[1.5px] rounded-full"
+            style={{ background: PURPLE, originX: 0 }}
+            variants={{ rest: { scaleX: 0.3, opacity: 0.5 }, hover: { scaleX: 1, opacity: 1 } }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          />
+          <motion.span
+            className="absolute -top-0.5 -right-1.5 w-1.5 h-1.5 rounded-full"
+            style={{ background: ACCENT }}
+            animate={{ scale: [1, 1.6, 1], opacity: [1, 0.4, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.button>
         <span className="text-xs font-semibold flex items-center gap-1.5" style={{ color: TEXT2 }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: GREEN }} />
           Many members
@@ -982,7 +1001,7 @@ const AFFILIATE_DISCLOSURE_URL = "https://telegra.ph/Salelooterz---Affiliate-dis
 
 function AffiliateDisclosure() {
   return (
-    <section className="px-6 md:px-12 py-20" style={{ background: BG }}>
+    <section id="affiliate-disclosure" className="px-6 md:px-12 py-20" style={{ background: BG }}>
       <div className="max-w-6xl mx-auto text-center">
         <a href={AFFILIATE_DISCLOSURE_URL} target="_blank" rel="noopener noreferrer"
           className="inline-block font-black leading-none transition-all hover:opacity-70"
