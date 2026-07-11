@@ -228,8 +228,8 @@ function Navbar() {
   return (
     <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: EXPO }}
-      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-3.5 flex items-center justify-between"
-      style={{ background: scrolled ? "rgba(247,245,255,0.92)" : "transparent", backdropFilter: scrolled ? "blur(18px)" : "none", borderBottom: scrolled ? `1px solid ${BORDER}` : "none", transition: "all 0.4s" }}>
+      className="fixed top-0 left-0 right-0 z-[99999] px-6 md:px-12 py-3.5 flex items-center justify-between"
+      style={{ background: "rgba(247,245,255,0.95)", backdropFilter: "blur(18px)", borderBottom: `1px solid ${BORDER}`, transition: "all 0.4s" }}>
       <a href="#" className="flex items-center gap-2.5 no-underline">
         <img src="/assets/logo.jpg" alt="logo" className="h-8 w-8 rounded-xl object-contain" />
         <span className="font-black text-sm" style={{ color: TEXT, letterSpacing: "-0.025em" }}>SaleLooterz</span>
