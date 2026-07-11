@@ -5,11 +5,13 @@ import {
   useScroll,
 } from "framer-motion";
 import { ChevronDown, ArrowRight, Check, Mail } from "lucide-react";
-import { useCreateSubscriber } from "@workspace/api-client-react";
 
 const TELEGRAM_URL = "https://t.me/salelooterz";
 const WHATSAPP_URL = "https://whatsapp.com/channel/0029VbCjpoRHFxPAxCt3rm3S";
 const LINKEDIN_URL = "https://www.linkedin.com/company/salelooterz/about/";
+
+// ── Paste your Google Apps Script Web App URL below after deploying ──
+const APPS_SCRIPT_URL = "PASTE_YOUR_SCRIPT_URL_HERE";
 
 // ── Live counter ──────────────────────────────────────────────────────────────
 const LIVE_BASE  = 2_634_291;
@@ -799,21 +801,30 @@ function FinalCTA() {
 function EmailCapture() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "duplicate" | "error">("idle");
-  const { mutate, isPending } = useCreateSubscriber();
+  const [isPending, setIsPending] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    mutate(
-      { data: { email: email.trim() } },
-      {
-        onSuccess: () => { setStatus("success"); setEmail(""); },
-        onError: (err: any) => {
-          if (err?.response?.status === 409) setStatus("duplicate");
-          else setStatus("error");
-        },
+    if (!email.trim() || isPending) return;
+    setIsPending(true);
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const json = await res.json() as { status: string };
+      if (json.status === "duplicate") {
+        setStatus("duplicate");
+      } else {
+        setStatus("success");
+        setEmail("");
       }
-    );
+    } catch {
+      setStatus("error");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const PERKS = [
