@@ -295,7 +295,7 @@ function Hero() {
             className="relative">
             {/* Decorative blob behind image */}
             <div className="absolute inset-0 pointer-events-none" style={{ transform: "scale(1.18)", borderRadius: "60% 40% 55% 45% / 50% 55% 45% 50%", background: `linear-gradient(135deg, ${PURPLE}30, ${ACCENT}18)`, filter: "blur(32px)" }} />
-            <img src="/assets/hero.png" alt="SaleLooterz mascot"
+            <img src="/assets/hero.webp" alt="SaleLooterz mascot"
               className="relative w-64 md:w-80 lg:w-96 object-contain drop-shadow-2xl"
               style={{ filter: "drop-shadow(0 24px 48px rgba(124,58,237,0.25))" }} />
             {/* Floating discount badge */}

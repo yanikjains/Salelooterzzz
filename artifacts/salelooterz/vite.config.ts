@@ -4,36 +4,17 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const port = Number(process.env.PORT ?? "3000");
+const basePath = process.env.BASE_PATH ?? "/";
+const isDev = process.env.NODE_ENV !== "production";
 
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    ...(isDev ? [runtimeErrorOverlay()] : []),
+    ...(isDev && process.env.REPL_ID !== undefined
       ? [
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer({
@@ -57,6 +38,14 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          motion: ["framer-motion"],
+        },
+      },
+    },
   },
   server: {
     port,
