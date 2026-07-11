@@ -158,7 +158,7 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
             <div key={i} style={{ overflow: "hidden" }}>
               <motion.span
                 className="font-black inline-block"
-                style={{ fontSize: "clamp(2.8rem, 10vw, 6.5rem)", letterSpacing: "-0.04em", lineHeight: 1, color: TEXT }}
+                style={{ fontSize: "clamp(2rem, 6vw, 4.5rem)", letterSpacing: "-0.04em", lineHeight: 1, color: TEXT }}
                 initial={{ y: "110%", opacity: 0 }}
                 animate={{ y: "0%", opacity: 1 }}
                 transition={{ duration: 0.65, delay: 0.25 + i * 0.045, ease: EXPO }}>
@@ -340,7 +340,7 @@ function Hero() {
 
           {/* Headline — per-line clip reveal */}
           <h1 className="font-black leading-[0.92] mb-6 cursor-default select-none"
-            style={{ fontSize: "clamp(3rem, 7vw, 6rem)", letterSpacing: "-0.05em", maxWidth: 640 }}>
+            style={{ fontSize: "clamp(2rem, 4.5vw, 4rem)", letterSpacing: "-0.05em", maxWidth: 640 }}>
             <div style={{ overflow: "hidden" }}>
               <motion.div initial={{ y: "105%" }} animate={{ y: "0%" }}
                 transition={{ delay: 0.12, duration: 0.9, ease: EXPO }}>
@@ -440,7 +440,7 @@ function OurDifference() {
           {/* Left: Heading + Feature list */}
           <div>
             <motion.h2 className="font-black leading-tight mb-10"
-              style={{ fontSize: "clamp(1.6rem, 4vw, 3.5rem)", color: TEXT, letterSpacing: "-0.045em" }}
+              style={{ fontSize: "clamp(1.2rem, 2.8vw, 2.4rem)", color: TEXT, letterSpacing: "-0.045em" }}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.75, ease: EXPO }}>
               <span className="block whitespace-nowrap">You Simply Can't Find</span>
@@ -589,7 +589,7 @@ function HowItWorks() {
         <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7, ease: EXPO }}>
           <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: PURPLE }}>How it works</p>
-          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.05em" }}>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.05em" }}>
             Saving money is<br />this simple.
           </h2>
         </motion.div>
@@ -638,7 +638,7 @@ function Testimonials() {
         <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: PURPLE }}>Real savings · Real people</p>
-          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", color: TEXT, letterSpacing: "-0.05em" }}>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.05em" }}>
             A continuously growing<br />community.
           </h2>
         </motion.div>
@@ -688,7 +688,7 @@ function SavingsCalc() {
             <div className="p-10 md:p-14">
               <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-white/50">Savings Calculator</p>
               <h2 className="font-black leading-none mb-5 text-white"
-                style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", letterSpacing: "-0.05em" }}>
+                style={{ fontSize: "clamp(1.5rem, 3vw, 2.4rem)", letterSpacing: "-0.05em" }}>
                 How much could<br />you save?
               </h2>
               <p className="text-sm leading-relaxed mb-8 text-white/60">
@@ -709,7 +709,7 @@ function SavingsCalc() {
                 transition={{ duration: 0.2 }}
                 className="rounded-2xl p-7" style={{ background: "rgba(255,255,255,0.12)" }}>
                 <p className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/50">Monthly savings</p>
-                <p className="font-black leading-none text-white" style={{ fontSize: "clamp(3rem, 8vw, 4.5rem)", letterSpacing: "-0.06em" }}>
+                <p className="font-black leading-none text-white" style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", letterSpacing: "-0.06em" }}>
                   ₹{saved.toLocaleString("en-IN")}
                 </p>
               </motion.div>
@@ -752,7 +752,7 @@ function FAQ() {
         <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <p className="text-xs uppercase tracking-[0.3em] font-semibold mb-4" style={{ color: PURPLE }}>FAQ</p>
-          <h2 className="font-black leading-none" style={{ fontSize: "clamp(2.2rem, 5vw, 3.8rem)", color: TEXT, letterSpacing: "-0.05em" }}>
+          <h2 className="font-black leading-none" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", color: TEXT, letterSpacing: "-0.05em" }}>
             Common Questions
           </h2>
         </motion.div>
@@ -804,7 +804,7 @@ function FinalCTA() {
                 Join many smart shoppers
               </p>
               <h2 className="font-black text-white leading-none mb-5"
-                style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)", letterSpacing: "-0.055em" }}>
+                style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)", letterSpacing: "-0.055em" }}>
                 Ready to stop<br />overpaying?
               </h2>
               <p className="text-base mb-12 max-w-xs mx-auto" style={{ color: "rgba(255,255,255,0.4)" }}>
@@ -933,7 +933,7 @@ function EmailCapture() {
               initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.6, ease: EXPO }}
               className="relative font-black mb-3 leading-none"
-              style={{ color: "#fff", letterSpacing: "-0.04em", fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
+              style={{ color: "#fff", letterSpacing: "-0.04em", fontSize: "clamp(1.2rem, 2.2vw, 1.8rem)" }}>
               Never Miss<br />
               <span style={{ color: PURPLE }}>Important Info</span>
             </motion.h3>
@@ -1019,7 +1019,7 @@ function AffiliateDisclosure() {
       <div className="max-w-6xl mx-auto text-center">
         <a href={AFFILIATE_DISCLOSURE_URL} target="_blank" rel="noopener noreferrer"
           className="inline-block font-black leading-none transition-all hover:opacity-70"
-          style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", color: TEXT, letterSpacing: "-0.05em", textDecoration: "underline", textDecorationColor: PURPLE, textDecorationThickness: "4px", textUnderlineOffset: "10px" }}>
+          style={{ fontSize: "clamp(1.8rem, 4.5vw, 3.8rem)", color: TEXT, letterSpacing: "-0.05em", textDecoration: "underline", textDecorationColor: PURPLE, textDecorationThickness: "4px", textUnderlineOffset: "10px" }}>
           Affiliate Disclosure
         </a>
       </div>
